@@ -1,0 +1,3150 @@
+<!DOCTYPE html>
+<!-- Atlas des civilisations — v2.0.0 -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Atlas des civilisations 2.0.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atlas des civilisations · 5000 av. J.-C. → 1900</title>
+<style>
+:root{
+  --paper:#e6e6e2; --sea:#dae1e6; --land:#e8e4da; --land-line:#b9b6ab;
+  --surface:#f7f7f5; --surface-2:#efefec; --surface-3:#e4e4df;
+  --ink:#181b1e; --ink-2:#454c53; --muted:#7c838a;
+  --line:#d3d4d0; --line-2:#bcbdb8;
+  --accent:#2c4a63; --accent-soft:#e2e9ef;
+  --flag:#9d3d2d;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --r:3px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:13px; line-height:1.5;
+  -webkit-font-smoothing:antialiased; overflow:hidden;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none;padding:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+::selection{background:#cbd7e1}
+
+/* ---------- ossature ---------- */
+.app{
+  display:grid; height:100dvh;
+  grid-template-columns:1fr 384px;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-areas:"top top" "map side" "time side";
+}
+.topbar{
+  grid-area:top; display:flex; align-items:center; gap:14px;
+  padding:0 14px; height:46px; background:var(--surface);
+  border-bottom:1px solid var(--line-2);
+}
+.brand{display:flex;align-items:baseline;gap:9px;min-width:0}
+.brand h1{
+  font-family:var(--serif); font-size:16px; font-weight:600; margin:0;
+  letter-spacing:.01em; white-space:nowrap;
+}
+.brand .rng{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em;white-space:nowrap}
+.spacer{flex:1}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+.search{position:relative;width:230px}
+.search input{
+  width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);
+  padding:5px 9px 5px 26px;font-size:12.5px;
+}
+.search input::placeholder{color:var(--muted)}
+.search .ic{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;line-height:0}
+.results{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);
+  border:1px solid var(--line-2);border-radius:var(--r);box-shadow:0 8px 24px rgba(20,25,30,.14);
+  max-height:340px;overflow:auto;z-index:60;display:none;padding:3px
+}
+.results.on{display:block}
+.results b{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:7px 8px 3px;font-weight:400}
+.results button{display:flex;width:100%;gap:8px;align-items:baseline;padding:5px 8px;border-radius:2px;text-align:left}
+.results button:hover,.results button.cur{background:var(--accent-soft)}
+.results .yr{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-left:auto;white-space:nowrap}
+
+.btn{
+  border:1px solid var(--line-2);background:var(--surface-2);border-radius:var(--r);
+  padding:4px 9px;font-size:12px;color:var(--ink-2);white-space:nowrap;
+}
+.btn:hover{background:var(--surface-3);color:var(--ink)}
+.btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.prim{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.prim:hover{background:#22405a;color:#fff}
+.btn.danger{color:var(--flag);border-color:#dcc4bf}
+.btn.danger:hover{background:#f6e9e6}
+.btn.sm{padding:2px 6px;font-size:11px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.save-state{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em;min-width:66px;text-align:right}
+
+/* ---------- carte ---------- */
+.mapwrap{grid-area:map;position:relative;background:var(--sea);border-right:1px solid var(--line-2);overflow:hidden}
+#map{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#map.grabbing{cursor:grabbing}
+#map.drawing{cursor:crosshair}
+.land{fill:var(--land);stroke:var(--land-line);stroke-width:.7px;vector-effect:non-scaling-stroke}
+.lake{fill:var(--sea);stroke:#a7b5be;stroke-width:.6px;vector-effect:non-scaling-stroke}
+.river{fill:none;stroke:#a2b6c1;stroke-width:.9px;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.mvt{cursor:pointer}
+.mvt-label{font-family:var(--sans);font-style:italic;pointer-events:none;paint-order:stroke;stroke:rgba(247,247,245,.9);stroke-linejoin:round}
+.evm{cursor:pointer}
+.grid line{stroke:#c3ccd3;stroke-width:.6px;vector-effect:non-scaling-stroke}
+.terr{cursor:pointer}
+.terr path{stroke-linejoin:round;vector-effect:non-scaling-stroke;transition:fill-opacity .12s}
+.terr .hit{fill:transparent;stroke:none}
+.terr-label{
+  font-family:var(--serif);font-weight:600;text-anchor:middle;pointer-events:none;
+  paint-order:stroke;stroke:rgba(247,247,245,.85);stroke-linejoin:round;letter-spacing:.06em;
+}
+.poi{cursor:pointer}
+.poi-label{font-family:var(--sans);pointer-events:none;paint-order:stroke;stroke:rgba(247,247,245,.9);stroke-linejoin:round}
+.vtx{fill:var(--surface);stroke:var(--accent);stroke-width:1.4px;vector-effect:non-scaling-stroke;cursor:move}
+.vtx.mid{fill:var(--accent);stroke:none;opacity:.45;cursor:copy}
+.draft{fill:rgba(44,74,99,.12);stroke:var(--accent);stroke-width:1.4px;stroke-dasharray:5 3;vector-effect:non-scaling-stroke}
+
+.overlay-tl{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;z-index:20}
+.tool{
+  display:flex;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);
+  box-shadow:0 1px 3px rgba(20,25,30,.10);overflow:hidden;
+}
+.tool button{padding:5px 10px;font-size:12px;color:var(--ink-2);border-right:1px solid var(--line)}
+.tool button:last-child{border-right:none}
+.tool button:hover{background:var(--surface-2)}
+.tool button.on{background:var(--accent);color:#fff}
+.hint{
+  background:var(--surface);border:1px solid var(--line-2);border-left:2px solid var(--flag);
+  border-radius:var(--r);padding:6px 10px;font-size:12px;max-width:330px;
+  box-shadow:0 1px 3px rgba(20,25,30,.10);display:flex;gap:10px;align-items:center
+}
+.hint kbd{font-family:var(--mono);font-size:10px;background:var(--surface-3);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:2px;padding:0 3px}
+.overlay-br{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;z-index:20}
+.legend{
+  background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);padding:7px 9px;
+  box-shadow:0 1px 3px rgba(20,25,30,.10);max-width:210px;max-height:34vh;overflow:auto
+}
+.legend .eyebrow{margin-bottom:5px}
+.legend button{display:flex;align-items:center;gap:7px;width:100%;padding:2px 0;text-align:left;font-size:12px}
+.legend button:hover{color:var(--accent)}
+.sw{width:11px;height:11px;flex:0 0 auto;border-radius:2px;border:1px solid rgba(0,0,0,.22)}
+.tip{
+  position:absolute;z-index:40;pointer-events:none;background:#22282d;color:#f2f2ef;
+  padding:4px 8px;border-radius:var(--r);font-size:11.5px;max-width:250px;
+  box-shadow:0 3px 10px rgba(0,0,0,.25);opacity:0;transition:opacity .1s
+}
+.tip.on{opacity:1}
+.tip .yr{font-family:var(--mono);color:#a9b6c1;font-size:10.5px}
+.scalebar{font-family:var(--mono);font-size:10px;color:var(--ink-2);background:rgba(247,247,245,.82);padding:2px 6px;border-radius:2px}
+
+/* ---------- frise ---------- */
+.timeline{
+  grid-area:time;background:var(--surface);border-top:1px solid var(--line-2);
+  display:flex;flex-direction:column;height:246px;position:relative;user-select:none
+}
+.tl-head{display:flex;align-items:center;gap:10px;padding:6px 12px 4px;border-bottom:1px solid var(--line)}
+.readout{display:flex;align-items:baseline;gap:6px}
+.readout .y{font-family:var(--mono);font-size:23px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.readout .e{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.1em}
+.tl-filter{display:flex;gap:0;border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden}
+.tl-filter button{padding:3px 8px;font-size:11.5px;color:var(--ink-2);border-right:1px solid var(--line)}
+.tl-filter button:last-child{border:none}
+.tl-filter button.on{background:var(--accent);color:#fff}
+
+.tl-body{flex:1;position:relative;overflow:hidden;cursor:ew-resize;min-height:0}
+.ruler{height:26px;position:relative;border-bottom:1px solid var(--line);background:var(--surface-2);flex:0 0 auto}
+.ruler .tk{position:absolute;top:0;bottom:0;border-left:1px solid var(--line-2)}
+.ruler .tk.minor{border-color:#e2e2de}
+.ruler .tk span{position:absolute;left:4px;top:5px;font-family:var(--mono);font-size:10px;color:var(--ink-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.events-band{height:46px;position:relative;border-bottom:1px solid var(--line);flex:0 0 auto;background:linear-gradient(var(--surface-2),var(--surface))}
+.events-band .lbl{position:absolute;left:0;top:0;bottom:0;padding:6px 10px 0 12px;z-index:2;background:linear-gradient(90deg,var(--surface) 78%,transparent)}
+.ev{position:absolute;top:6px;width:9px;height:15px;margin-left:-4px;cursor:pointer}
+.ev.r1{top:26px}
+.evs{position:absolute;top:6px;height:14px;min-width:3px;border:1px solid var(--flag);border-radius:2px;background:rgba(157,61,45,.16);cursor:pointer;overflow:hidden;white-space:nowrap;font-size:10px;line-height:12px;padding:0 3px;color:#6d281c}
+.evs.r1{top:26px;background:rgba(157,61,45,.08)}
+.evs:hover{background:rgba(157,61,45,.3)}
+.evs.sel{box-shadow:0 0 0 1.5px var(--ink);background:rgba(157,61,45,.32);font-weight:600}
+.ev i{display:block;width:1.5px;height:11px;margin:0 auto;background:var(--flag)}
+.ev b{display:block;width:5px;height:5px;border-radius:50%;background:var(--flag);margin:0 auto;border:1px solid var(--surface)}
+.ev:hover i,.ev:hover b,.ev.sel i,.ev.sel b{background:var(--ink)}
+.lanes{position:absolute;inset:0;top:72px;overflow-y:auto;overflow-x:hidden}
+.lane-in{position:relative;padding:6px 0 10px}
+.bar{
+  position:absolute;height:17px;border-radius:2px;display:flex;align-items:center;
+  padding:0 5px;font-size:11px;white-space:nowrap;overflow:hidden;cursor:pointer;
+  border:1px solid rgba(0,0,0,.18);color:#1b1f22;
+}
+.bar:hover{filter:brightness(.95)}
+.bar.sel{box-shadow:0 0 0 1.5px var(--ink);z-index:2;font-weight:600}
+.bar.off{opacity:.42}
+.bar span{overflow:hidden;text-overflow:ellipsis}
+.filiations{position:absolute;left:0;top:6px;overflow:visible;pointer-events:none;z-index:3}
+.filiations g{pointer-events:auto;cursor:pointer}
+.filiations path{fill:none;stroke:#8a9199;stroke-width:1.1;opacity:.5}
+.filiations path.hit{stroke:transparent;stroke-width:9;opacity:1}
+.filiations path.hd{fill:#8a9199;stroke:none;opacity:.5}
+.filiations circle{fill:#8a9199;opacity:.5}
+.filiations g:hover path,.filiations g.on path{stroke:var(--flag);opacity:1;stroke-width:1.7}
+.filiations g:hover path.hit,.filiations g.on path.hit{stroke:transparent}
+.filiations g:hover path.hd,.filiations g.on path.hd{fill:var(--flag);opacity:1}
+.filiations g:hover circle,.filiations g.on circle{fill:var(--flag);opacity:1}
+.subj{position:absolute;height:17px;box-sizing:border-box;z-index:2;cursor:pointer;border-radius:2px;
+  background:repeating-linear-gradient(45deg,var(--c) 0 1.6px,transparent 1.6px 5px);
+  border-left:2px solid var(--c);border-right:2px solid var(--c);opacity:.8}
+.subj:hover{opacity:1}
+.playhead{position:absolute;top:0;bottom:0;width:1px;background:var(--flag);z-index:6;pointer-events:none}
+.playhead:after{content:"";position:absolute;top:0;left:-4px;border:4px solid transparent;border-top-color:var(--flag);border-bottom:none;height:0}
+.tl-empty{padding:14px;color:var(--muted);font-size:12px}
+
+/* ---------- panneau ---------- */
+.side{grid-area:side;background:var(--surface);display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--line-2);flex:0 0 auto;background:var(--surface-2)}
+.tabs button{
+  flex:1;padding:8px 4px;font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px
+}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--flag);background:var(--surface)}
+.panel{flex:1;overflow:auto;overscroll-behavior:contain}
+.pad{padding:14px}
+.empty{padding:26px 16px;color:var(--muted);font-size:12.5px;text-align:center}
+.empty p{margin:0 0 4px}
+
+.sheet-head{padding:14px 14px 12px;border-bottom:1px solid var(--line)}
+.sheet-head .kind{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.sheet-head h2{font-family:var(--serif);font-size:21px;line-height:1.15;margin:0 0 5px;font-weight:600}
+.dates{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.dates em{font-style:normal;color:var(--muted)}
+.meta{font-size:12px;color:var(--muted);margin-top:3px}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+
+.prose{font-size:13.5px;line-height:1.62;color:#22272b}
+.prose p{margin:0 0 .75em}
+.prose h4{font-family:var(--serif);font-size:14.5px;margin:1.1em 0 .35em}
+.prose ul{margin:.2em 0 .8em;padding-left:17px}
+.prose li{margin:.15em 0}
+.prose a{color:var(--accent)}
+.prose code{font-family:var(--mono);font-size:12px;background:var(--surface-3);padding:0 3px;border-radius:2px}
+.prose blockquote{margin:.4em 0;padding-left:10px;border-left:2px solid var(--line-2);color:var(--ink-2)}
+
+.sect{border-top:1px solid var(--line);padding:12px 14px}
+.sect-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sect-h .eyebrow{flex:1}
+.item{display:flex;gap:8px;align-items:flex-start;padding:5px 6px;margin:0 -6px;border-radius:2px}
+.item:hover{background:var(--surface-2)}
+.item .main{flex:1;min-width:0;text-align:left}
+.item .t{font-size:12.5px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .s{font-family:var(--mono);font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.item .acts{display:flex;gap:3px;opacity:0;flex:0 0 auto}
+.item:hover .acts,.item:focus-within .acts{opacity:1}
+.iconbtn{width:22px;height:20px;display:grid;place-items:center;border-radius:2px;color:var(--muted);border:1px solid transparent}
+.iconbtn:hover{background:var(--surface-3);color:var(--ink);border-color:var(--line-2)}
+.iconbtn.danger:hover{color:var(--flag)}
+.links a{display:block;font-size:12.5px;color:var(--accent);margin:2px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;border:1px solid rgba(0,0,0,.2)}
+.pill{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--line-2);border-radius:2px;padding:1px 5px;color:var(--muted)
+}
+.pill.live{border-color:#cbb0a9;color:var(--flag)}
+.stat{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;padding:3px 0;border-bottom:1px dotted var(--line)}
+.note{font-size:12px;color:var(--muted);margin:8px 0 0}
+
+/* ---------- formulaire / modale ---------- */
+.scrim{position:fixed;inset:0;background:rgba(24,27,30,.34);z-index:100;display:grid;place-items:center;padding:16px}
+.modal{
+  background:var(--surface);border:1px solid var(--line-2);border-radius:4px;width:min(520px,100%);
+  max-height:88dvh;display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(20,25,30,.3)
+}
+.modal header{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.modal header h3{font-family:var(--serif);font-size:16px;margin:0;font-weight:600;flex:1}
+.modal .body{padding:14px 16px;overflow:auto}
+.modal footer{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;background:var(--surface-2)}
+.f{margin-bottom:11px}
+.f>label{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.f input[type=text],.f input[type=number],.f select,.f textarea{
+  width:100%;background:#fff;border:1px solid var(--line-2);border-radius:var(--r);padding:6px 8px;font-size:13px
+}
+.f textarea{min-height:110px;resize:vertical;line-height:1.55}
+.f .help{font-size:11.5px;color:var(--muted);margin-top:3px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.swatches{display:flex;flex-wrap:wrap;gap:5px}
+.swatches button{width:20px;height:20px;border-radius:3px;border:1px solid rgba(0,0,0,.2)}
+.swatches button.on{box-shadow:0 0 0 2px var(--ink)}
+.wiki{display:flex;gap:6px}
+.wiki input{flex:1}
+
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(8px);z-index:200;
+  background:#22282d;color:#f2f2ef;padding:8px 14px;border-radius:var(--r);font-size:12.5px;
+  opacity:0;transition:.16s;pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.28)
+}
+.toast.on{opacity:1;transform:translateX(-50%)}
+
+@media (max-width:1000px){
+  body{overflow:auto}
+  .app{grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "map" "time" "side";height:auto;max-width:100vw}
+  body{overflow-x:hidden}
+  .topbar,.timeline,.side,.mapwrap{min-width:0}
+  .tl-head>.spacer{display:none}
+  .tl-head{justify-content:flex-start}
+  .mapwrap{height:44dvh;border-right:none;border-bottom:1px solid var(--line-2)}
+  .side{border-top:1px solid var(--line-2);max-height:none}
+  .timeline{height:236px}
+  .tl-head{flex-wrap:wrap;row-gap:5px}
+  #tlCount,.save-state{display:none}
+  .legend{display:none}
+  .overlay-tl .tool button{padding:5px 7px;font-size:11.5px}
+  .brand{overflow:hidden}
+  .brand h1{font-size:14.5px;overflow:hidden;text-overflow:ellipsis}
+  .search{width:44px;flex:0 0 auto;transition:width .18s}
+  .search:focus-within{width:190px}
+  .brand .rng{display:none}
+  .modal{width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- v2.0.0 : fond détaillé, comptes, propositions ---------- */
+[hidden]{display:none!important}
+.dland{fill:var(--land);stroke:none}
+.dcoast{fill:none;stroke:var(--land-line);stroke-width:.7px;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.dlake{fill:var(--sea);stroke:none}
+.dshore{fill:none;stroke:#a7b5be;stroke-width:.6px;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+body.ro .ed,body.ro .item .acts{display:none!important}
+.role-chip{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;padding:2px 6px;border-radius:2px;border:1px solid var(--line-2);color:var(--muted);white-space:nowrap}
+.role-chip.r-editor,.role-chip.r-admin{border-color:var(--accent);color:var(--accent)}
+.role-chip.r-local{border-color:#cbb0a9;color:var(--flag)}
+#btnAccount{max-width:170px;overflow:hidden;text-overflow:ellipsis}
+.banner{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:25;background:#22282d;color:#f2f2ef;padding:6px 10px;border-radius:var(--r);font-size:12px;display:flex;gap:10px;align-items:center;box-shadow:0 3px 10px rgba(0,0,0,.25);max-width:min(560px,62%)}
+.banner .btn{background:#f2f2ef;color:#22282d;border-color:#f2f2ef}
+body.previewing .mapwrap{box-shadow:inset 0 0 0 3px var(--flag)}
+.modal.narrow{width:min(420px,100%)}
+.modal.wide{width:min(700px,100%)}
+.modal footer .spacer{flex:1}
+.f input[type=email],.f input[type=password]{width:100%;background:#fff;border:1px solid var(--line-2);border-radius:var(--r);padding:6px 8px;font-size:13px}
+.auth-msg{display:none;font-size:12px;padding:7px 9px;border-radius:var(--r);background:#f6e9e6;color:var(--flag);margin-top:6px}
+.auth-msg.ok{background:var(--accent-soft);color:var(--accent)}
+.auth-links{display:flex;gap:16px;margin-top:12px}
+.linkbtn{color:var(--accent);font-size:12px;text-decoration:underline;text-underline-offset:2px}
+.oplist{max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:var(--r);padding:4px 9px}
+.op{font-size:12px;padding:3px 0;border-bottom:1px dotted var(--line)}
+.op:last-child{border:none}
+.op.delete{color:var(--flag)}
+.pcard{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;margin-bottom:8px;background:var(--surface)}
+.pcard:hover{border-color:var(--accent)}
+.pc-h{display:flex;gap:8px;align-items:baseline;font-size:12.5px}
+.pc-h span:nth-child(2){flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-s{font-size:11.5px;color:var(--ink-2);margin-top:3px}
+.pc-n{font-size:11.5px;color:var(--muted);margin-top:3px;font-style:italic}
+.pc-d{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px}
+.st{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:1px 5px;border-radius:2px;border:1px solid var(--line-2);color:var(--muted);white-space:nowrap}
+.st.ok{border-color:#a9c3a5;color:#3d6b37}
+.st.ko{border-color:#dcc4bf;color:var(--flag)}
+.pnote{font-size:12px;background:var(--surface-2);border-left:2px solid var(--line-2);padding:6px 9px;margin:10px 0;white-space:pre-wrap}
+.pnote.rev{border-left-color:var(--accent)}
+.opcard{border:1px solid var(--line);border-radius:var(--r);padding:7px 9px;margin:8px 0;font-size:12px}
+.opcard.delete{border-color:#dcc4bf}
+.oc-h{display:flex;gap:8px;font-weight:600}
+.oc-h span:first-child{flex:1}
+.warn{color:var(--flag);font-weight:400;font-size:11px;white-space:nowrap}
+.warnnote{color:var(--flag)}
+.dline{font-size:11.5px;margin-top:3px;color:var(--ink-2);overflow-wrap:anywhere}
+.dline b{font-weight:600;color:var(--ink)}
+.dline .old{text-decoration:line-through;color:var(--muted)}
+.dline .new{color:var(--accent)}
+.callout{display:flex;gap:8px;align-items:center;justify-content:space-between;background:var(--accent-soft);padding:7px 9px;border-radius:var(--r);font-size:12px;margin-bottom:10px}
+.tblwrap{overflow:auto;max-height:60vh}
+table.users{border-collapse:collapse;width:100%;font-size:12px}
+table.users th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:4px 6px;border-bottom:1px solid var(--line-2)}
+table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
+@media (max-width:900px){.role-chip{display:none}#btnAccount{max-width:96px}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <h1>Atlas des civilisations</h1>
+      <span class="rng">5000 AV. J.-C. → 1900</span>
+    </div>
+    <div class="search">
+      <span class="ic">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4L14 14"/></svg>
+      </span>
+      <input id="q" type="text" placeholder="Chercher une civilisation, un lieu…" autocomplete="off" spellcheck="false">
+      <div class="results" id="qres"></div>
+    </div>
+    <div class="spacer"></div>
+    <span class="save-state" id="saveState">—</span>
+    <button class="btn prim" id="btnPropose" hidden>Proposer (0)</button>
+    <button class="btn ed" id="btnNewCiv">+ Civilisation</button>
+    <span class="role-chip" id="roleChip" hidden></span>
+    <button class="btn" id="btnAccount" hidden>Se connecter</button>
+    <button class="btn" id="btnHelp" title="Aide et raccourcis">?</button>
+  </header>
+
+  <div class="mapwrap">
+    <svg id="map" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-label="Carte du monde">
+      <defs id="defs"></defs>
+      <g id="gGrid" class="grid"></g>
+      <g id="gLand"></g>
+      <g id="gLake"></g>
+      <g id="gRiver"></g>
+      <g id="gTerr"></g>
+      <g id="gTerrLabels"></g>
+      <g id="gEvent"></g>
+      <g id="gPoi"></g>
+      <g id="gEdit"></g>
+    </svg>
+
+    <div class="overlay-tl">
+      <div class="tool ed" role="toolbar" aria-label="Outils de carte">
+        <button id="tSelect" class="on" title="Sélectionner (Échap)">Sélection</button>
+        <button id="tTerr" title="Tracer un territoire">+ Territoire</button>
+        <button id="tPoi" title="Placer un lieu">+ Lieu</button>
+      </div>
+      <div class="tool">
+        <button id="tLabels" class="on" title="Afficher les noms">Noms</button>
+        <button id="tPois" class="on" title="Afficher les lieux">Lieux</button>
+        <button id="tRiv" class="on" title="Afficher les fleuves et les grands lacs">Fleuves</button>
+        <button id="tGrid" title="Afficher la grille">Grille</button>
+        <button id="tFit" title="Recentrer la carte">Recentrer</button>
+      </div>
+      <div class="hint" id="hint" style="display:none"></div>
+    </div>
+
+    <div class="overlay-br">
+      <div class="legend" id="legend"></div>
+      <div class="scalebar" id="coords">—</div>
+    </div>
+    <div class="tip" id="tip"></div>
+    <div class="banner" id="banner" hidden></div>
+  </div>
+
+  <section class="timeline">
+    <div class="tl-head">
+      <div class="readout">
+        <span class="y" id="yearNum">0</span>
+        <span class="e" id="yearEra">AP. J.-C.</span>
+      </div>
+      <button class="btn sm" id="yBack" title="Reculer (←)">‹</button>
+      <button class="btn sm" id="yFwd" title="Avancer (→)">›</button>
+      <div class="spacer"></div>
+      <span class="eyebrow" id="tlCount"></span>
+      <button class="btn sm on" id="tlLinks" title="Afficher les filiations entre civilisations">Filiations</button>
+      <div class="tl-filter" id="tlFilter">
+        <button data-f="all" class="on">Toutes</button>
+        <button data-f="live">À cette date</button>
+        <button data-f="sel">Sélection</button>
+      </div>
+      <button class="btn sm" id="tlZoomOut" title="Dézoomer la frise">−</button>
+      <button class="btn sm" id="tlZoomIn" title="Zoomer la frise">+</button>
+      <button class="btn sm" id="tlAll" title="Toute la période">⤢</button>
+    </div>
+    <div class="tl-body" id="tlBody">
+      <div class="ruler" id="ruler"></div>
+      <div class="events-band" id="evBand"></div>
+      <div class="lanes" id="lanes"><div class="lane-in" id="laneIn"></div></div>
+      <div class="playhead" id="playhead"></div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <nav class="tabs" role="tablist">
+      <button data-tab="sheet" class="on">Fiche</button>
+      <button data-tab="items">Éléments</button>
+      <button data-tab="data">Données</button>
+      <button data-tab="props" id="tabProps" hidden>Propositions</button>
+    </nav>
+    <div class="panel" id="panel"></div>
+  </aside>
+
+</div>
+
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+
+
+"use strict";
+/* =====================================================================
+   ATLAS DES CIVILISATIONS — v2.0.0
+   Données : base partagée Supabase (lecture publique, écriture par rôle)
+             ou, à défaut, data/atlas.json + brouillon local
+   Fond de carte : data/geo (Natural Earth 1:50M + tuiles 1:10M)
+   ===================================================================== */
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const el = (t, a = {}, kids = []) => {
+  const n = document.createElementNS(a.ns || "http://www.w3.org/1999/xhtml", t);
+  for (const k in a) { if (k === "ns") continue; if (k === "class") n.setAttribute("class", a[k]); else if (k.startsWith("on")) n.addEventListener(k.slice(2), a[k]); else if (a[k] !== null && a[k] !== undefined) n.setAttribute(k, a[k]); }
+  for (const c of [].concat(kids)) if (c !== null && c !== undefined) n.append(c);
+  return n;
+};
+const svgEl = (t, a = {}) => { const n = document.createElementNS("http://www.w3.org/2000/svg", t); for (const k in a) if (a[k] !== null && a[k] !== undefined) n.setAttribute(k, a[k]); return n; };
+const uid = p => p + "-" + Math.random().toString(36).slice(2, 9);
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const Y0 = -5000, Y1 = 1900;
+
+/* --- années --- */
+function fmtYear(y, long) {
+  y = Math.round(y);
+  const a = Math.abs(y) || 1;
+  if (y < 0) return a + (long ? " av. J.-C." : " av.");
+  return a + (long ? " ap. J.-C." : "");
+}
+function fmtSpan(a, b) {
+  const open = (b === null || b === undefined || b >= Y1);
+  return fmtYear(a, true) + " → " + (open && b >= Y1 ? fmtYear(Y1, true) : fmtYear(b, true));
+}
+function parseYear(txt) {
+  if (txt === "" || txt === null || txt === undefined) return null;
+  const s = String(txt).trim().toLowerCase().replace(",", ".");
+  const neg = /av|bc|b\.c|avant/.test(s);
+  const n = parseFloat(s.replace(/[^\d.\-]/g, ""));
+  if (isNaN(n)) return null;
+  return neg ? -Math.abs(n) : n;
+}
+
+/* --- mini-markdown --- */
+function md(src) {
+  if (!src) return "";
+  const blocks = String(src).replace(/\r/g, "").split(/\n{2,}/);
+  const inline = t => esc(t)
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\n/g, "<br>");
+  return blocks.map(b => {
+    b = b.trim(); if (!b) return "";
+    if (/^#{1,4}\s/.test(b)) return "<h4>" + inline(b.replace(/^#{1,4}\s/, "")) + "</h4>";
+    if (/^>\s/.test(b)) return "<blockquote>" + inline(b.replace(/^>\s?/gm, "")) + "</blockquote>";
+    if (/^[-*]\s/m.test(b) && /^[-*]\s/.test(b))
+      return "<ul>" + b.split("\n").map(l => "<li>" + inline(l.replace(/^[-*]\s*/, "")) + "</li>").join("") + "</ul>";
+    return "<p>" + inline(b) + "</p>";
+  }).join("");
+}
+
+/* =====================  ÉTAT  ===================== */
+let db = { civs: [], territories: [], events: [], pois: [], links: [], subjections: [] };
+let sel = null;               // {type:'civ'|'poi'|'event'|'terr', id}
+let year = -500;
+let mode = "select";          // select | drawTerr | placePoi | editGeom
+let draft = null;             // tracé en cours
+let editTerrId = null;
+let tab = "sheet";
+let tlFilter = "all";
+let showLinks = true;
+let show = { labels: true, pois: true, grid: false, rivers: true };
+let editArrow = null;              // {evId, i} — flèche en cours de retouche
+let modeTarget = null;             // objet visé par le mode courant
+let view = { x: -180, y: -90, w: 360, h: 180 };  // viewBox carte
+let tview = { a: -3500, b: 1900 };               // fenêtre frise
+const history = [];
+
+const byId = (arr, id) => arr.find(o => o.id === id);
+const civ = id => byId(db.civs, id);
+const civsOf = () => db.civs;
+const terrOf = cid => db.territories.filter(t => t.civId === cid).sort((a, b) => a.start - b.start);
+const evOf = cid => db.events.filter(e => e.civId === cid).sort((a, b) => a.year - b.year);
+const poisOf = cid => db.pois.filter(p => p.civId === cid).sort((a, b) => a.name.localeCompare(b.name, "fr"));
+/* filiations : une civilisation qui en prolonge, en remplace ou en démembre une autre */
+const linksOut = cid => db.links.filter(l => l.from === cid);
+const linksIn = cid => db.links.filter(l => l.to === cid);
+/* sujétions : périodes où une civilisation subsiste sous le contrôle d'une autre */
+const SUBJ = {
+  tutelle: ["Sous tutelle", "sous la tutelle de"],
+  vassal: ["Vassalité", "vassale de"],
+  province: ["Annexion", "province de"],
+  protectorat: ["Protectorat", "sous protectorat de"],
+  occupation: ["Occupation", "occupée par"],
+  union: ["Union dynastique", "unie à la couronne de"]
+};
+const subjAs = cid => db.subjections.filter(x => x.civId === cid).sort((a, b) => a.start - b.start);
+const subjOver = cid => db.subjections.filter(x => x.overId === cid).sort((a, b) => a.start - b.start);
+const subjAt = (cid, y = year) => db.subjections.find(x => x.civId === cid && x.start <= y && x.end >= y) || null;
+const subjWord = x => x.label || ((SUBJ[x.kind] || SUBJ.tutelle)[1] + " " + (civ(x.overId)?.name || "?"));
+const linkYear = l => {
+  const e = l.eventId ? byId(db.events, l.eventId) : null;
+  if (e) return e.year;
+  const b = civ(l.to);
+  return b ? b.start : null;
+};
+const alive = (o, y = year) => o.start <= y && (o.end === null || o.end === undefined || o.end >= y);
+const selCiv = () => {
+  if (!sel) return null;
+  if (sel.type === "civ") return civ(sel.id);
+  const o = sel.type === "poi" ? byId(db.pois, sel.id) : sel.type === "event" ? byId(db.events, sel.id) : byId(db.territories, sel.id);
+  return o && o.civId ? civ(o.civId) : null;
+};
+
+/* --- événements : durée, hiérarchie, géométrie --- */
+const evEnd = e => (e.end === null || e.end === undefined ? e.year : e.end);
+const evAlive = (e, y = year) => e.year <= y && evEnd(e) >= y;
+const evLong = e => evEnd(e) > e.year;
+const evKids = id => db.events.filter(e => e.parentId === id).sort((a, b) => a.year - b.year);
+const evTop = cid => db.events.filter(e => e.civId === cid && !e.parentId).sort((a, b) => a.year - b.year);
+const evHasGeo = e => (e.lon !== null && e.lon !== undefined) || (e.arrows && e.arrows.length);
+const EVKINDS = { jalon: "Jalon", bataille: "Bataille", siege: "Siège", traite: "Traité", fondation: "Fondation" };
+
+/* =====================  PERSISTANCE & SYNCHRONISATION  ===================== */
+/* Deux modes :
+   - « base partagée » (Supabase configuré dans config.js) : les données publiées
+     sont lues par tous ; les éditeurs publient directement, les contributeurs
+     envoient des propositions soumises à validation ;
+   - « fichier » (pas de configuration) : lecture de data/atlas.json, modifications
+     conservées dans ce navigateur, export pour mise à jour du dépôt. */
+const APP_VERSION = "2.0.0";
+const COLLS = ["civs", "territories", "events", "pois", "links", "subjections"];
+const COLL_LABEL = { civs: "Civilisation", territories: "Territoire", events: "Événement", pois: "Lieu", links: "Filiation", subjections: "Tutelle" };
+const ROLE_LABEL = { viewer: "Visiteur", contributor: "Contributeur", editor: "Éditeur", admin: "Administrateur", local: "Local" };
+const DRAFT_KEY = "atlas-civ:draft:v2";
+const CFG = window.ATLAS_CONFIG || {};
+let SB = null;                 // client Supabase (null en mode fichier)
+let backend = "file";          // "supabase" | "file"
+let remoteState = "ok";        // ok | empty (base vide) | down (injoignable)
+let user = null, profile = null, role = "viewer";
+let base = emptyBase();        // état publié connu : { coll: Map(id -> JSON canonique) }
+let draftOrig = new Map();     // version d'origine des éléments d'un brouillon, pour la relecture
+let syncTimer = null, syncing = false, pendingOps = 0, lastRefresh = 0;
+let preview = null;            // aperçu d'une proposition : { p, saved, savedSel }
+let pendingReview = 0;         // propositions en attente (éditeurs)
+
+const emptyDb = () => ({ civs: [], territories: [], events: [], pois: [], links: [], subjections: [] });
+function emptyBase() { const b = {}; for (const k of COLLS) b[k] = new Map(); return b; }
+function canon(v) {
+  if (Array.isArray(v)) return "[" + v.map(x => x === undefined ? "null" : canon(x)).join(",") + "]";
+  if (v && typeof v === "object")
+    return "{" + Object.keys(v).filter(k => v[k] !== undefined).sort().map(k => JSON.stringify(k) + ":" + canon(v[k])).join(",") + "}";
+  return JSON.stringify(v === undefined ? null : v);
+}
+function normalizeDb(d) { const o = emptyDb(); for (const k of COLLS) o[k] = Array.isArray(d && d[k]) ? d[k].filter(x => x && x.id) : []; return o; }
+function indexDb(d) { const b = emptyBase(); for (const k of COLLS) for (const o of d[k]) b[k].set(o.id, canon(o)); return b; }
+function dbFromBase() { const d = emptyDb(); for (const k of COLLS) for (const j of base[k].values()) d[k].push(JSON.parse(j)); return d; }
+const opKey = op => op.coll + "/" + op.id;
+
+function diffDb(b, cur) {
+  const ops = [];
+  for (const k of COLLS) {
+    const bm = b[k], seen = new Set();
+    for (const o of cur[k]) {
+      seen.add(o.id);
+      const j = canon(o), was = bm.get(o.id);
+      if (was !== j) ops.push({ coll: k, id: o.id, op: "upsert", json: j, base: was === undefined ? null : was });
+    }
+    for (const [id, was] of bm) if (!seen.has(id)) ops.push({ coll: k, id, op: "delete", json: null, base: was });
+  }
+  return ops;
+}
+/* forme transmise au serveur ; "base" n'est utile qu'à la relecture */
+const wireOp = (op, withBase) => {
+  const w = { coll: op.coll, id: op.id, op: op.op };
+  if (op.op === "upsert") w.data = JSON.parse(op.json);
+  if (withBase) { const b = draftOrig.has(opKey(op)) ? draftOrig.get(opKey(op)) : op.base; w.base = b ? JSON.parse(b) : null; }
+  return w;
+};
+function applyOps(d, ops) {
+  for (const op of ops) {
+    const arr = d[op.coll]; if (!arr) continue;
+    const i = arr.findIndex(o => o.id === op.id);
+    if (op.op === "delete") { if (i >= 0) arr.splice(i, 1); continue; }
+    const o = op.data ? JSON.parse(JSON.stringify(op.data)) : JSON.parse(op.json);
+    if (i >= 0) arr[i] = o; else arr.push(o);
+  }
+}
+function applyToBase(ops) { for (const op of ops) op.op === "delete" ? base[op.coll].delete(op.id) : base[op.coll].set(op.id, op.json); }
+
+/* compatibilité avec les fichiers antérieurs */
+function migrate() {
+  db = normalizeDb(db);
+  for (const e of db.events) {
+    if (e.end === undefined) e.end = e.year;
+    if (e.parentId === undefined) e.parentId = null;
+    if (!e.arrows) e.arrows = [];
+    if (e.lon === undefined) { e.lon = null; e.lat = null; }
+    if (!e.kind) e.kind = "jalon";
+  }
+}
+
+const isLogged = () => !!user;
+const canPublish = () => !preview && remoteState === "ok" && (role === "editor" || role === "admin");
+const canEdit = () => !preview && (role === "local" || (remoteState === "ok" && (role === "contributor" || role === "editor" || role === "admin")));
+function requireEdit() {
+  if (canEdit()) return true;
+  if (preview) toast("Quittez d'abord l'aperçu de la proposition");
+  else if (backend === "supabase" && remoteState !== "ok") toast("Base partagée indisponible : modification impossible pour l'instant");
+  else if (backend === "supabase") openAuth("login", "Connectez-vous ou créez un compte pour proposer une modification.");
+  return false;
+}
+const errMsg = e => {
+  const m = String((e && (e.message || e.error_description || e.msg)) || e || "erreur inconnue");
+  const map = [
+    [/invalid login credentials/i, "Adresse ou mot de passe incorrect"],
+    [/email not confirmed/i, "Adresse non confirmée : cliquez le lien reçu par e-mail"],
+    [/already registered|already been registered/i, "Un compte existe déjà avec cette adresse"],
+    [/password should be at least/i, "Mot de passe trop court"],
+    [/rate limit|too many/i, "Trop de tentatives, réessayez dans quelques minutes"],
+    [/failed to fetch|networkerror|load failed/i, "Réseau indisponible"],
+    [/jwt expired/i, "Session expirée, reconnectez-vous"]
+  ];
+  for (const [re, fr] of map) if (re.test(m)) return fr;
+  return m;
+};
+
+/* --- brouillons (contributeurs et mode fichier) --- */
+const draftKey = () => DRAFT_KEY + ":" + (backend === "file" ? "local" : (user ? user.id : "anon"));
+function storeDraft(ops) {
+  try {
+    if (!ops.length) { localStorage.removeItem(draftKey()); draftOrig.clear(); return; }
+    localStorage.setItem(draftKey(), JSON.stringify({ v: 2, app: APP_VERSION, saved: Date.now(), ops: ops.map(op => wireOp(op, true)) }));
+  } catch (e) { setSaveState("brouillon non conservé"); }
+}
+function applyDraft() {
+  draftOrig = new Map();
+  let j = null;
+  try { j = JSON.parse(localStorage.getItem(draftKey()) || "null"); } catch (e) { j = null; }
+  if (!j || !Array.isArray(j.ops) || !j.ops.length) return 0;
+  for (const op of j.ops) draftOrig.set(opKey(op), op.base ? canon(op.base) : null);
+  applyOps(db, j.ops);
+  migrate();
+  return j.ops.length;
+}
+function discardDraft() {
+  try { localStorage.removeItem(draftKey()); } catch (e) { }
+  draftOrig.clear();
+  db = dbFromBase(); history.length = 0;
+  if (sel && !resolveSel()) sel = null;
+  pendingOps = 0; setSaveState("à jour"); updateChrome(); renderAll();
+}
+
+/* --- enregistrement --- */
+function setSaveState(t) { $("#saveState").textContent = t; }
+function snapshot() { history.push(JSON.stringify(db)); if (history.length > 30) history.shift(); }
+function undo() {
+  if (!canEdit()) return;
+  if (!history.length) return toast("Rien à annuler");
+  db = JSON.parse(history.pop());
+  if (sel && !resolveSel()) sel = null;
+  save(); renderAll(); toast("Modification annulée");
+}
+function resolveSel() {
+  if (!sel) return true;
+  const map = { civ: db.civs, poi: db.pois, event: db.events, terr: db.territories, link: db.links, subj: db.subjections };
+  return !!byId(map[sel.type] || [], sel.id);
+}
+function save() {
+  if (preview || !canEdit()) return;
+  setSaveState("modifié…");
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(sync, 600);
+}
+async function sync() {
+  clearTimeout(syncTimer);
+  if (preview) return;
+  const ops = diffDb(base, db);
+  pendingOps = ops.length;
+  if (canPublish()) {
+    if (!ops.length) { setSaveState("publié"); updateChrome(); return; }
+    if (syncing) { syncTimer = setTimeout(sync, 500); return; }
+    syncing = true; setSaveState("publication…");
+    try {
+      const { error } = await SB.rpc("apply_changes", { p_changes: ops.map(op => wireOp(op, false)) });
+      if (error) throw error;
+      applyToBase(ops);
+      pendingOps = diffDb(base, db).length;
+      setSaveState(pendingOps ? "modifié…" : "publié");
+      if (pendingOps) syncTimer = setTimeout(sync, 600);
+    } catch (e) {
+      setSaveState("non publié");
+      toast("Publication impossible : " + errMsg(e));
+    } finally { syncing = false; }
+  } else {
+    storeDraft(ops);
+    setSaveState(ops.length ? `${ops.length} modif. en attente` : "à jour");
+  }
+  updateChrome();
+}
+function mutate(fn) { if (!requireEdit()) return; snapshot(); fn(); save(); }
+
+/* --- chargement --- */
+async function loadFile() {
+  const r = await fetch("data/atlas.json?v=" + Date.now(), { cache: "no-store" });
+  if (!r.ok) throw new Error("data/atlas.json : HTTP " + r.status);
+  const j = await r.json();
+  return normalizeDb(j.db || j);
+}
+async function fetchAllItems() {
+  const out = [], step = 1000;
+  for (let from = 0; ; from += step) {
+    const { data, error } = await SB.from("items").select("coll,id,data").order("coll").order("id").range(from, from + step - 1);
+    if (error) throw error;
+    out.push(...data);
+    if (data.length < step) break;
+  }
+  return out;
+}
+async function loadPublished() {
+  remoteState = "ok";
+  if (SB) {
+    try {
+      const rows = await fetchAllItems();
+      if (rows.length) {
+        const d = emptyDb();
+        for (const r of rows) if (d[r.coll]) d[r.coll].push(r.data);
+        db = d; migrate(); base = indexDb(db); lastRefresh = Date.now();
+        return;
+      }
+      remoteState = "empty";
+    } catch (e) {
+      console.warn("Supabase", e);
+      remoteState = "down";
+    }
+  }
+  try { db = await loadFile(); }
+  catch (e) { console.error(e); db = emptyDb(); toast("Impossible de lire data/atlas.json"); }
+  migrate(); base = indexDb(db); lastRefresh = Date.now();
+}
+/* recharge l'état publié en conservant les modifications non encore publiées */
+async function refreshPublished(quiet) {
+  if (preview) endPreview();
+  const pend = diffDb(base, db);
+  await loadPublished();
+  if (pend.length && canEdit()) { applyOps(db, pend.map(op => ({ ...op, data: op.json ? JSON.parse(op.json) : null }))); migrate(); }
+  history.length = 0;
+  if (sel && !resolveSel()) sel = null;
+  if (pend.length) sync(); else setSaveState(backend === "supabase" && remoteState === "ok" ? "à jour" : "fichier");
+  updateChrome(); renderAll();
+  if (!quiet) toast("Données actualisées");
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && SB && Date.now() - lastRefresh > 10 * 60e3) refreshPublished(true);
+});
+
+/* =====================  COMPTES  ===================== */
+async function initAuth() {
+  const { data } = await SB.auth.getSession();
+  await setUser(data && data.session ? data.session.user : null, true);
+  SB.auth.onAuthStateChange((ev, session) => {
+    /* pas d'appel Supabase dans le rappel lui-même : on diffère */
+    setTimeout(() => {
+      if (ev === "PASSWORD_RECOVERY") openAuth("newpass");
+      if (ev === "SIGNED_IN" || ev === "SIGNED_OUT" || ev === "USER_UPDATED") setUser(session ? session.user : null);
+    }, 0);
+  });
+}
+async function setUser(u, first) {
+  const same = (u ? u.id : null) === (user ? user.id : null);
+  if (same && !first) { if (u) user = u; updateChrome(); return; }
+  /* on range ce qui était en cours sous l'identité précédente */
+  if (!first) {
+    if (preview) endPreview();
+    clearTimeout(syncTimer);
+    if (canPublish()) await sync();
+    else if (canEdit()) storeDraft(diffDb(base, db));
+    db = dbFromBase(); history.length = 0; draftOrig.clear();
+  }
+  user = u; profile = null; role = "viewer";
+  if (u) {
+    try {
+      const { data, error } = await SB.from("profiles").select("display_name,role").eq("id", u.id).maybeSingle();
+      if (error) throw error;
+      profile = data || { display_name: (u.user_metadata && u.user_metadata.display_name) || u.email, role: "contributor" };
+    } catch (e) {
+      console.warn(e);
+      profile = { display_name: (u.user_metadata && u.user_metadata.display_name) || u.email, role: "contributor" };
+    }
+    role = profile.role || "contributor";
+  }
+  if (canEdit() && !canPublish()) {
+    const n = applyDraft();
+    if (n) setTimeout(() => toast(`${n} modification${n > 1 ? "s" : ""} en brouillon retrouvée${n > 1 ? "s" : ""}`), 300);
+  }
+  pendingOps = diffDb(base, db).length;
+  setSaveState(pendingOps ? `${pendingOps} modif. en attente` : remoteState === "ok" ? "à jour" : "lecture seule");
+  if (sel && !resolveSel()) sel = null;
+  if (role === "editor" || role === "admin") refreshReviewCount();
+  if (tab === "props" && !u) tab = "sheet";
+  updateChrome();
+  if (!first) { renderAll(); toast(u ? `Connecté : ${profile.display_name} (${ROLE_LABEL[role]})` : "Déconnecté"); }
+}
+const displayName = () => (profile && profile.display_name) || (user && user.email) || "";
+
+function modalShell(title, bodyKids, footKids, cls) {
+  const body = el("div", { class: "body" }, bodyKids);
+  const scrim = el("div", { class: "scrim", onclick: e => { if (e.target === scrim) close(); } });
+  scrim.append(el("div", { class: "modal" + (cls ? " " + cls : "") }, [
+    el("header", {}, [el("h3", {}, title), el("button", { class: "iconbtn", onclick: () => close(), "aria-label": "Fermer" }, "✕")]),
+    body,
+    el("footer", {}, footKids)
+  ]));
+  $("#modalRoot").append(scrim);
+  setTimeout(() => { const f = body.querySelector("input,textarea,select"); f && f.focus(); }, 20);
+  function close() { scrim.remove(); }
+  return { close, body, scrim };
+}
+const fld = (label, input, help) => el("div", { class: "f" }, [el("label", {}, label), input, help ? el("div", { class: "help" }, help) : null]);
+const msgBox = () => el("div", { class: "auth-msg" });
+function setMsg(box, txt, ok) { box.textContent = txt || ""; box.classList.toggle("ok", !!ok); box.style.display = txt ? "block" : "none"; }
+const pageUrl = () => location.origin + location.pathname;
+
+function openAuth(view = "login", intro) {
+  if (!SB) return toast("Comptes indisponibles : aucune base partagée n'est configurée");
+  $$(".scrim.auth").forEach(s => s.remove());
+  const msg = msgBox();
+  const email = el("input", { type: "email", autocomplete: "email", placeholder: "nom@exemple.fr" });
+  const pass = el("input", { type: "password", autocomplete: view === "signup" || view === "newpass" ? "new-password" : "current-password" });
+  const name = el("input", { type: "text", maxlength: 60, placeholder: "Nom affiché auprès des relecteurs" });
+  const go = el("button", { class: "btn prim" });
+  const kids = [intro ? el("p", { class: "note", style: "margin:0 0 12px" }, intro) : null];
+  const links = el("div", { class: "auth-links" });
+  const sw = (v, t) => el("button", { class: "linkbtn", onclick: () => { m.close(); openAuth(v); } }, t);
+  let title, run;
+  if (view === "signup") {
+    title = "Créer un compte";
+    kids.push(fld("Nom", name), fld("Adresse e-mail", email), fld("Mot de passe", pass, "8 caractères au moins."),
+      el("p", { class: "note" }, "Un compte permet de proposer des modifications. Elles sont publiées après validation par un éditeur."));
+    go.textContent = "Créer le compte";
+    links.append(sw("login", "J'ai déjà un compte"));
+    run = async () => {
+      if (name.value.trim().length < 2) return setMsg(msg, "Indiquez un nom");
+      if (pass.value.length < 8) return setMsg(msg, "Mot de passe trop court (8 caractères au moins)");
+      const { data, error } = await SB.auth.signUp({ email: email.value.trim(), password: pass.value, options: { data: { display_name: name.value.trim() }, emailRedirectTo: pageUrl() } });
+      if (error) return setMsg(msg, errMsg(error));
+      if (data && data.session) { m.close(); return; }
+      setMsg(msg, "Compte créé. Un e-mail de confirmation vient de vous être envoyé : cliquez le lien qu'il contient, puis connectez-vous.", true);
+      go.disabled = true;
+    };
+  } else if (view === "forgot") {
+    title = "Mot de passe oublié";
+    kids.push(fld("Adresse e-mail", email), el("p", { class: "note" }, "Vous recevrez un lien pour choisir un nouveau mot de passe."));
+    go.textContent = "Envoyer le lien";
+    links.append(sw("login", "Retour à la connexion"));
+    run = async () => {
+      const { error } = await SB.auth.resetPasswordForEmail(email.value.trim(), { redirectTo: pageUrl() });
+      if (error) return setMsg(msg, errMsg(error));
+      setMsg(msg, "Si un compte existe pour cette adresse, un e-mail vient d'être envoyé.", true); go.disabled = true;
+    };
+  } else if (view === "newpass") {
+    title = "Nouveau mot de passe";
+    kids.push(fld("Nouveau mot de passe", pass, "8 caractères au moins."));
+    go.textContent = "Enregistrer";
+    run = async () => {
+      if (pass.value.length < 8) return setMsg(msg, "Mot de passe trop court");
+      const { error } = await SB.auth.updateUser({ password: pass.value });
+      if (error) return setMsg(msg, errMsg(error));
+      m.close(); toast("Mot de passe modifié");
+    };
+  } else {
+    title = "Connexion";
+    kids.push(fld("Adresse e-mail", email), fld("Mot de passe", pass));
+    go.textContent = "Se connecter";
+    links.append(sw("signup", "Créer un compte"), sw("forgot", "Mot de passe oublié"));
+    run = async () => {
+      const { error } = await SB.auth.signInWithPassword({ email: email.value.trim(), password: pass.value });
+      if (error) return setMsg(msg, errMsg(error));
+      m.close();
+    };
+  }
+  kids.push(msg, links);
+  go.onclick = async () => { go.disabled = true; setMsg(msg, ""); try { await run(); } catch (e) { setMsg(msg, errMsg(e)); } finally { if (!msg.classList.contains("ok")) go.disabled = false; } };
+  const m = modalShell(title, kids, [el("button", { class: "btn", onclick: () => m.close() }, "Annuler"), go], "narrow");
+  m.scrim.classList.add("auth");
+  m.body.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.tagName === "INPUT") go.click(); });
+  setMsg(msg, "");
+}
+
+function openAccount() {
+  if (!user) return openAuth("login");
+  const name = el("input", { type: "text", maxlength: 60, value: displayName() });
+  const msg = msgBox();
+  const rights = {
+    contributor: "Vous pouvez modifier l'atlas : vos changements restent des brouillons dans ce navigateur jusqu'à ce que vous les proposiez. Un éditeur les valide ou les refuse.",
+    editor: "Vos modifications sont publiées immédiatement. Vous validez les propositions des contributeurs.",
+    admin: "Vous publiez, validez les propositions et gérez les rôles des comptes."
+  }[role] || "";
+  const m = modalShell("Mon compte", [
+    el("div", { class: "stat" }, [el("span", {}, "Adresse"), el("span", {}, user.email || "")]),
+    el("div", { class: "stat" }, [el("span", {}, "Rôle"), el("span", {}, ROLE_LABEL[role])]),
+    el("p", { class: "note" }, rights),
+    el("div", { style: "height:10px" }),
+    fld("Nom affiché", name),
+    msg
+  ], [
+    el("button", { class: "btn danger", onclick: async () => { m.close(); await SB.auth.signOut(); } }, "Se déconnecter"),
+    el("div", { class: "spacer" }),
+    el("button", { class: "btn", onclick: () => m.close() }, "Fermer"),
+    el("button", {
+      class: "btn prim", onclick: async () => {
+        const v = name.value.trim(); if (v.length < 2) return setMsg(msg, "Nom trop court");
+        const { error } = await SB.from("profiles").update({ display_name: v }).eq("id", user.id);
+        if (error) return setMsg(msg, errMsg(error));
+        profile.display_name = v; updateChrome(); m.close(); toast("Nom enregistré");
+      }
+    }, "Enregistrer")
+  ], "narrow");
+}
+
+/* =====================  PROPOSITIONS  ===================== */
+const civName = id => (id && civ(id) ? civ(id).name : id ? "?" : "—");
+function objName(coll, o) {
+  if (!o) return "?";
+  if (coll === "civs") return o.name || o.id;
+  if (coll === "territories") return (o.label ? o.label + " · " : "") + civName(o.civId);
+  if (coll === "events") return o.title || o.id;
+  if (coll === "pois") return o.name || o.id;
+  if (coll === "links") return civName(o.from) + " → " + civName(o.to);
+  if (coll === "subjections") return civName(o.civId) + " ⤓ " + civName(o.overId);
+  return o.id;
+}
+function opWire(op) { /* op serveur ou local → objets */
+  const data = op.data !== undefined ? op.data : op.json ? JSON.parse(op.json) : null;
+  const b = op.base !== undefined && typeof op.base !== "string" ? op.base : op.base ? JSON.parse(op.base) : null;
+  return { coll: op.coll, id: op.id, op: op.op, data, base: b };
+}
+const opVerb = w => w.op === "delete" ? "Suppression" : w.base ? "Modification" : "Ajout";
+function opLine(w) { return `${opVerb(w)} · ${COLL_LABEL[w.coll] || w.coll} « ${objName(w.coll, w.data || w.base)} »`; }
+function summarize(ws) {
+  const head = ws.slice(0, 12).map(opLine).join("\n");
+  return (ws.length > 12 ? head + `\n… et ${ws.length - 12} autre(s)` : head).slice(0, 3900);
+}
+const FIELD_LABEL = { name: "nom", title: "titre", label: "intitulé", start: "début", end: "fin", year: "année", color: "couleur", region: "aire", description: "description", links: "liens", rings: "tracé", arrows: "mouvements", civId: "civilisation", overId: "puissance dominante", kind: "type", lon: "longitude", lat: "latitude", parentId: "épisode parent", from: "de", to: "vers", eventId: "événement de transition" };
+function fmtVal(k, v) {
+  if (v === null || v === undefined || v === "") return "—";
+  if (k === "start" || k === "end" || k === "year") return fmtYear(v, true);
+  if (k === "civId" || k === "overId" || k === "from" || k === "to") return civName(v);
+  if (k === "parentId" || k === "eventId") { const e = byId(db.events, v); return e ? e.title : v; }
+  if (k === "rings") return `${v.length} partie${v.length > 1 ? "s" : ""}, ${v.reduce((n, r) => n + r.length, 0)} sommets`;
+  if (k === "arrows") return `${v.length} flèche${v.length > 1 ? "s" : ""}`;
+  if (k === "links") return `${v.length} lien${v.length > 1 ? "s" : ""}`;
+  const s = typeof v === "object" ? JSON.stringify(v) : String(v);
+  return s.length > 160 ? s.slice(0, 157) + "…" : s;
+}
+const NEW_KEYS = ["name", "title", "label", "kind", "civId", "overId", "from", "to", "start", "end", "year", "region", "lon", "lat", "rings", "arrows", "description"];
+function fieldDiff(w) {
+  if (w.op === "delete") return [];
+  if (!w.base) return NEW_KEYS.filter(k => w.data && w.data[k] !== undefined && w.data[k] !== null && w.data[k] !== "")
+    .map(k => el("div", { class: "dline" }, [el("b", {}, (FIELD_LABEL[k] || k) + " "), el("span", { class: "new" }, fmtVal(k, w.data[k]))]));
+  const keys = new Set([...Object.keys(w.base), ...Object.keys(w.data || {})]);
+  const out = [];
+  for (const k of keys) {
+    if (k === "id") continue;
+    if (canon(w.base[k]) === canon(w.data[k])) continue;
+    out.push(el("div", { class: "dline" }, [el("b", {}, (FIELD_LABEL[k] || k) + " "), el("span", { class: "old" }, fmtVal(k, w.base[k])), " → ", el("span", { class: "new" }, fmtVal(k, w.data[k]))]));
+  }
+  return out;
+}
+function conflictOf(w) {
+  const cur = base[w.coll] ? base[w.coll].get(w.id) : undefined;
+  if (w.base) { if (cur === undefined) return "supprimé depuis"; if (cur !== canon(w.base)) return "modifié depuis"; }
+  else if (w.op === "upsert" && cur !== undefined) return "existe déjà";
+  return null;
+}
+
+/* --- envoi (contributeurs) --- */
+function openPropose() {
+  if (!canEdit() || canPublish()) return;
+  if (!user) return openAuth("login");
+  const ops = diffDb(base, db);
+  if (!ops.length) return toast("Aucune modification en attente");
+  const ws = ops.map(op => opWire(wireOp(op, true)));
+  const note = el("textarea", { rows: 4, maxlength: 4000, placeholder: "Sources, justification, contexte… (facultatif mais apprécié)" });
+  const msg = msgBox();
+  const list = el("div", { class: "oplist" }, ws.map(w => el("div", { class: "op " + w.op + (w.base ? "" : " new") }, opLine(w))));
+  const send = el("button", { class: "btn prim" }, `Envoyer la proposition (${ws.length})`);
+  const m = modalShell("Proposer mes modifications", [
+    el("p", { class: "note", style: "margin:0 0 10px" }, "Un éditeur relira ces changements avant publication. Vous pouvez suivre leur sort dans l'onglet Propositions."),
+    list, el("div", { style: "height:10px" }), fld("Note pour le relecteur", note), msg
+  ], [
+    el("button", { class: "btn danger", onclick: () => { if (confirm("Abandonner toutes vos modifications non envoyées ?")) { m.close(); discardDraft(); toast("Brouillon abandonné"); } } }, "Abandonner le brouillon"),
+    el("div", { class: "spacer" }),
+    el("button", { class: "btn", onclick: () => m.close() }, "Plus tard"), send
+  ], "wide");
+  send.onclick = async () => {
+    send.disabled = true; setMsg(msg, "");
+    const { error } = await SB.from("proposals").insert({ note: note.value.trim(), summary: summarize(ws), changes: ws });
+    if (error) { send.disabled = false; return setMsg(msg, errMsg(error)); }
+    m.close(); discardDraft();
+    toast("Proposition envoyée — elle sera publiée après validation");
+    if (tab === "props") renderPanel();
+  };
+}
+
+/* --- relecture (éditeurs) --- */
+let propList = "pending", propDetail = null, propCache = [];
+async function refreshReviewCount() {
+  if (!SB || !(role === "editor" || role === "admin")) { pendingReview = 0; return; }
+  const { count, error } = await SB.from("proposals").select("id", { count: "exact", head: true }).eq("status", "pending");
+  if (!error) { pendingReview = count || 0; updateChrome(); }
+}
+async function loadProposals() {
+  const cols = "id,author_id,author_name,created_at,note,summary,status,reviewer_name,reviewed_at,review_comment";
+  let q = SB.from("proposals").select(cols);
+  if (propList === "pending") q = q.eq("status", "pending").order("created_at", { ascending: true }).limit(200);
+  else if (propList === "done") q = q.neq("status", "pending").order("reviewed_at", { ascending: false }).limit(60);
+  else q = q.eq("author_id", user.id).order("created_at", { ascending: false }).limit(60);
+  const { data, error } = await q;
+  if (error) throw error;
+  return data;
+}
+const STATUS = { pending: ["en attente", ""], approved: ["publiée", "ok"], rejected: ["refusée", "ko"] };
+const fmtDate = s => s ? new Date(s).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : "";
+
+function renderProps() {
+  const pad = el("div", { class: "pad" });
+  panel.append(pad);
+  if (!user || !SB) { pad.append(el("p", { class: "note" }, "Connectez-vous pour suivre vos propositions.")); return; }
+  if (propDetail) return renderPropDetail(pad);
+  const reviewer = role === "editor" || role === "admin";
+  if (!reviewer) propList = "mine";
+  else if (propList === "mine") propList = "pending";
+  const head = el("div", { class: "sect-h" }, [el("span", { class: "eyebrow" }, reviewer ? "Propositions à relire" : "Mes propositions")]);
+  if (reviewer) {
+    const f = el("div", { class: "tl-filter" }, [["pending", `En attente${pendingReview ? " · " + pendingReview : ""}`], ["done", "Traitées"]].map(([k, t]) =>
+      el("button", { class: propList === k ? "on" : "", onclick: () => { propList = k; renderPanel(); } }, t)));
+    head.append(f);
+  }
+  head.append(el("button", { class: "btn sm", title: "Actualiser", onclick: () => { refreshReviewCount(); renderPanel(); } }, "↻"));
+  pad.append(head);
+  if (!reviewer && pendingOps) pad.append(el("div", { class: "callout" }, [
+    el("span", {}, `${pendingOps} modification${pendingOps > 1 ? "s" : ""} pas encore envoyée${pendingOps > 1 ? "s" : ""}.`),
+    el("button", { class: "btn sm prim", onclick: openPropose }, "Proposer…")
+  ]));
+  const box = el("div", {}, el("p", { class: "note" }, "Chargement…"));
+  pad.append(box);
+  loadProposals().then(list => {
+    propCache = list; box.textContent = "";
+    if (!list.length) { box.append(el("p", { class: "note" }, propList === "pending" ? "Aucune proposition en attente." : "Rien pour l'instant.")); return; }
+    for (const p of list) {
+      const [st, cls] = STATUS[p.status] || [p.status, ""];
+      box.append(el("button", { class: "pcard", onclick: () => { propDetail = p; renderPanel(); } }, [
+        el("div", { class: "pc-h" }, [el("b", {}, `#${p.id}`), el("span", {}, reviewer ? p.author_name : fmtDate(p.created_at)), el("span", { class: "st " + cls }, st)]),
+        el("div", { class: "pc-s" }, (p.summary || "").split("\n").slice(0, 3).join(" · ")),
+        p.note ? el("div", { class: "pc-n" }, "« " + p.note.slice(0, 180) + (p.note.length > 180 ? "…" : "") + " »") : null,
+        p.review_comment ? el("div", { class: "pc-n" }, `${p.reviewer_name || "Relecteur"} : ${p.review_comment}`) : null,
+        el("div", { class: "pc-d" }, reviewer ? fmtDate(p.created_at) : (p.reviewed_at ? "traitée le " + fmtDate(p.reviewed_at) : ""))
+      ]));
+    }
+  }).catch(e => { box.textContent = ""; box.append(el("p", { class: "note" }, "Lecture impossible : " + errMsg(e))); });
+}
+
+async function renderPropDetail(pad) {
+  const p = propDetail, reviewer = role === "editor" || role === "admin";
+  pad.append(el("div", { class: "sect-h" }, [
+    el("button", { class: "btn sm", onclick: () => { propDetail = null; if (preview) endPreview(); renderPanel(); } }, "‹ Retour"),
+    el("span", { class: "eyebrow" }, `Proposition #${p.id}`)
+  ]));
+  const [st, cls] = STATUS[p.status] || [p.status, ""];
+  pad.append(el("div", { class: "meta" }, [`${p.author_name} · ${fmtDate(p.created_at)} · `, el("span", { class: "st " + cls }, st)]));
+  if (p.note) pad.append(el("div", { class: "pnote" }, p.note));
+  if (p.review_comment) pad.append(el("div", { class: "pnote rev" }, `${p.reviewer_name || "Relecteur"} : ${p.review_comment}`));
+  const box = el("div", {}, el("p", { class: "note" }, "Chargement des changements…"));
+  pad.append(box);
+  const { data, error } = await SB.from("proposals").select("changes").eq("id", p.id).single();
+  box.textContent = "";
+  if (error) { box.append(el("p", { class: "note" }, errMsg(error))); return; }
+  p.changes = data.changes;
+  const ws = data.changes.map(opWire);
+  let conflicts = 0;
+  for (const w of ws) {
+    const c = p.status === "pending" ? conflictOf(w) : null; if (c) conflicts++;
+    box.append(el("div", { class: "opcard " + w.op }, [
+      el("div", { class: "oc-h" }, [el("span", {}, opLine(w)), c ? el("span", { class: "warn", title: "L'élément publié a changé depuis que le contributeur a commencé sa modification" }, "⚠ " + c) : null]),
+      ...fieldDiff(w)
+    ]));
+  }
+  if (conflicts) box.prepend(el("p", { class: "note warnnote" }, `${conflicts} élément${conflicts > 1 ? "s ont" : " a"} changé depuis la rédaction de la proposition : l'approbation remplacera la version publiée par celle du contributeur.`));
+  const acts = el("div", { class: "row", style: "margin-top:12px;flex-wrap:wrap" });
+  acts.append(el("button", { class: "btn", onclick: () => preview && preview.p.id === p.id ? endPreview() : startPreview(p) }, preview && preview.p.id === p.id ? "Quitter l'aperçu" : "Aperçu sur la carte"));
+  if (p.status === "pending" && reviewer) {
+    const comment = el("textarea", { rows: 2, maxlength: 2000, placeholder: "Commentaire pour le contributeur (facultatif)" });
+    pad.append(box); pad.append(el("div", { style: "height:10px" }), fld("Commentaire", comment));
+    const decide = async ok => {
+      if (!ok && !comment.value.trim() && !confirm("Refuser sans commentaire ?")) return;
+      acts.querySelectorAll("button").forEach(b => b.disabled = true);
+      const { error } = await SB.rpc("review_proposal", { p_id: p.id, p_approve: ok, p_comment: comment.value.trim() || null });
+      if (error) { acts.querySelectorAll("button").forEach(b => b.disabled = false); return toast(errMsg(error)); }
+      if (preview) endPreview();
+      propDetail = null; await refreshReviewCount();
+      if (ok) await refreshPublished(true);
+      renderAll(); toast(ok ? `Proposition #${p.id} publiée` : `Proposition #${p.id} refusée`);
+    };
+    acts.append(el("button", { class: "btn danger", onclick: () => decide(false) }, "Refuser"));
+    acts.append(el("button", { class: "btn prim", onclick: () => decide(true) }, "Approuver et publier"));
+  } else if (p.status === "pending" && p.author_id === user.id) {
+    acts.append(el("button", {
+      class: "btn danger", onclick: async () => {
+        if (!confirm("Retirer cette proposition ?")) return;
+        const { error } = await SB.from("proposals").delete().eq("id", p.id);
+        if (error) return toast(errMsg(error));
+        if (preview) endPreview(); propDetail = null; renderPanel(); toast("Proposition retirée");
+      }
+    }, "Retirer la proposition"));
+  }
+  pad.append(acts);
+}
+
+/* --- aperçu d'une proposition sur la carte --- */
+function startPreview(p) {
+  if (!p.changes) return;
+  if (preview) endPreview(true);
+  clearTimeout(syncTimer);
+  preview = { p, saved: db, savedSel: sel, savedYear: year };
+  db = dbFromBase(); applyOps(db, p.changes.map(opWire)); migrate();
+  if (sel && !resolveSel()) sel = null;
+  /* cadrage sur le premier élément localisable */
+  for (const w of p.changes.map(opWire)) {
+    const o = w.data || w.base; if (!o) continue;
+    if (w.coll === "territories" && o.rings && o.rings.length) { setYear(clamp(Math.round((o.start + (o.end ?? o.start)) / 2), Y0, Y1), true); fitTo(o.rings); break; }
+    if (w.coll === "pois" && o.lon !== null && o.lon !== undefined) { setYear(clamp(o.start, Y0, Y1), true); fitTo([[[o.lon - 5, o.lat - 4], [o.lon + 5, o.lat + 4]]]); break; }
+    if (w.coll === "events" && o.lon !== null && o.lon !== undefined) { setYear(clamp(o.year, Y0, Y1), true); fitTo([[[o.lon - 5, o.lat - 4], [o.lon + 5, o.lat + 4]]]); break; }
+  }
+  updateChrome(); renderMap(); renderTimeline(); renderPanel();
+}
+function endPreview(silent) {
+  if (!preview) return;
+  db = preview.saved; sel = preview.savedSel; preview = null;
+  if (sel && !resolveSel()) sel = null;
+  updateChrome();
+  if (!silent) { renderMap(); renderTimeline(); renderPanel(); }
+}
+
+/* --- administration --- */
+async function openUsers() {
+  const box = el("div", {}, el("p", { class: "note" }, "Chargement…"));
+  const m = modalShell("Comptes et rôles", [
+    el("p", { class: "note", style: "margin:0 0 10px" }, "Contributeur : propose. Éditeur : publie et valide. Administrateur : idem, et gère les rôles."),
+    box
+  ], [el("button", { class: "btn prim", onclick: () => m.close() }, "Fermer")], "wide");
+  const { data, error } = await SB.rpc("list_users");
+  box.textContent = "";
+  if (error) return box.append(el("p", { class: "note" }, errMsg(error)));
+  const t = el("table", { class: "users" }, el("tr", {}, ["Nom", "Adresse", "Dernière connexion", "Rôle"].map(h => el("th", {}, h))));
+  for (const u of data) {
+    const s = el("select", {}, ["contributor", "editor", "admin"].map(r => el("option", { value: r }, ROLE_LABEL[r])));
+    s.value = u.role;
+    if (user && u.id === user.id) s.disabled = true;
+    s.onchange = async () => {
+      const { error } = await SB.rpc("set_role", { p_user: u.id, p_role: s.value });
+      if (error) { toast(errMsg(error)); s.value = u.role; return; }
+      u.role = s.value; toast(`${u.display_name} : ${ROLE_LABEL[s.value]}`);
+    };
+    t.append(el("tr", {}, [el("td", {}, u.display_name), el("td", {}, u.email), el("td", {}, fmtDate(u.last_sign_in_at)), el("td", {}, s)]));
+  }
+  box.append(el("div", { class: "tblwrap" }, t));
+}
+async function initRemoteFromFile() {
+  if (role !== "admin") return;
+  const warn = remoteState === "empty" ? "Charger le contenu de data/atlas.json dans la base partagée ?"
+    : "Remplacer TOUT le contenu publié par celui de data/atlas.json ?\n\nL'historique des versions remplacées est conservé dans la table item_history.";
+  if (!confirm(warn)) return;
+  try {
+    const d = await loadFile();
+    setSaveState("initialisation…");
+    const { data, error } = await SB.rpc("replace_all", { p_db: d });
+    if (error) throw error;
+    try { localStorage.removeItem(draftKey()); } catch (e) { }
+    await refreshPublished(true);
+    toast(`${data} éléments chargés dans la base partagée`);
+  } catch (e) { setSaveState("erreur"); toast("Échec : " + errMsg(e)); }
+}
+
+/* --- habillage selon le rôle --- */
+function updateChrome() {
+  document.body.classList.toggle("ro", !canEdit());
+  document.body.classList.toggle("previewing", !!preview);
+  const acc = $("#btnAccount");
+  if (backend !== "supabase") acc.hidden = true;
+  else {
+    acc.hidden = false;
+    acc.textContent = user ? displayName() : "Se connecter";
+    acc.title = user ? `${user.email} · ${ROLE_LABEL[role]}` : "Se connecter ou créer un compte";
+    acc.classList.toggle("logged", !!user);
+  }
+  const chip = $("#roleChip");
+  chip.hidden = !(user || backend === "file");
+  chip.textContent = backend === "file" ? "mode fichier" : ROLE_LABEL[role].toLowerCase();
+  chip.className = "role-chip r-" + (backend === "file" ? "local" : role);
+  const pb = $("#btnPropose");
+  pb.hidden = !(canEdit() && !canPublish() && backend === "supabase" && pendingOps > 0);
+  pb.textContent = `Proposer (${pendingOps})`;
+  const tp = $("#tabProps");
+  tp.hidden = !user;
+  tp.textContent = (role === "editor" || role === "admin") ? (pendingReview ? `Valider · ${pendingReview}` : "Validation") : "Propositions";
+  const bn = $("#banner");
+  if (preview) {
+    bn.hidden = false; bn.textContent = "";
+    bn.append(el("span", {}, `Aperçu de la proposition #${preview.p.id} de ${preview.p.author_name} — rien n'est encore publié`),
+      el("button", { class: "btn sm", onclick: () => endPreview() }, "Quitter l'aperçu"));
+  } else if (backend === "supabase" && remoteState === "down") {
+    bn.hidden = false; bn.textContent = "Base partagée injoignable : affichage de la dernière version publiée dans le dépôt, en lecture seule.";
+  } else if (backend === "supabase" && remoteState === "empty") {
+    bn.hidden = false; bn.textContent = role === "admin" ? "La base partagée est vide : initialisez-la depuis l'onglet Données." : "Atlas en cours d'initialisation : lecture seule.";
+  } else bn.hidden = true;
+}
+
+/* =====================  PROJECTION / CARTE  ===================== */
+const map = $("#map");
+const gGrid = $("#gGrid"), gLand = $("#gLand"), gLake = $("#gLake"), gRiver = $("#gRiver"),
+      gTerr = $("#gTerr"), gLab = $("#gTerrLabels"), gEvent = $("#gEvent"),
+      gPoi = $("#gPoi"), gEdit = $("#gEdit"), defs = $("#defs");
+
+const px = () => view.w / (map.clientWidth || 1);   // degrés par pixel
+function applyView() {
+  const r = map.clientHeight / (map.clientWidth || 1);
+  view.h = view.w * r;
+  view.x = clamp(view.x, -180 - view.w * .25, 180 - view.w * .75);
+  /* si la carte tient en hauteur, on la centre au lieu de la laisser flotter */
+  view.y = view.h >= 176 ? -view.h / 2 - 6 : clamp(view.y, -95, 95 - view.h * .5);
+  map.setAttribute("viewBox", `${view.x} ${view.y} ${view.w} ${view.h}`);
+  updateDetail();
+}
+const toXY = ([lon, lat]) => [lon, -lat];
+function ringD(ring) {
+  if (!ring || ring.length < 2) return "";
+  return "M" + ring.map(p => { const [x, y] = toXY(p); return +x.toFixed(3) + "," + +y.toFixed(3); }).join("L") + "Z";
+}
+const pathD = rings => (rings || []).map(ringD).join(" ");
+function centroid(rings) {
+  let bx = 0, by = 0, ba = 0;
+  for (const r of rings || []) {
+    let a = 0, cx = 0, cy = 0;
+    for (let i = 0; i < r.length; i++) {
+      const [x1, y1] = r[i], [x2, y2] = r[(i + 1) % r.length];
+      const f = x1 * y2 - x2 * y1; a += f; cx += (x1 + x2) * f; cy += (y1 + y2) * f;
+    }
+    a = a / 2; if (!a) continue;
+    if (Math.abs(a) > Math.abs(ba)) { ba = a; bx = cx / (6 * a); by = cy / (6 * a); }
+  }
+  return [bx, by, Math.abs(ba)];
+}
+function clientToGeo(ev) {
+  const p = map.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY;
+  const q = p.matrixTransform(map.getScreenCTM().inverse());
+  return [Math.round(q.x * 1000) / 1000, Math.round(-q.y * 1000) / 1000];
+}
+
+/* fond de carte : Natural Earth 1:50M en vue d'ensemble, tuiles 1:10M au zoom */
+const GEO = { base: null, T: 10, tiles: new Set(), nodes: new Map(), loading: new Set(), failed: new Map(), want: new Set(), baseShown: true };
+const DETAIL_W = 48;   // largeur de vue (degrés) sous laquelle les tuiles détaillées se chargent
+const lineStr = pts => "M" + pts.map(p => p[0] + "," + (-p[1])).join("L");
+const ringsStr = rings => rings.map(r => lineStr(r) + "Z").join("");
+/* traits de côte d'une tuile : contours sans les segments posés sur le bord de la tuile */
+function tileEdges(rings, x0, y0, T) {
+  const x1 = x0 + T, y1 = y0 + T, out = [];
+  const onEdge = (a, b) => (a[0] === b[0] && (a[0] === x0 || a[0] === x1)) || (a[1] === b[1] && (a[1] === y0 || a[1] === y1));
+  for (const r of rings) {
+    let cur = [r[0]];
+    for (let i = 1; i < r.length; i++) {
+      if (onEdge(r[i - 1], r[i])) { if (cur.length > 1) out.push(cur); cur = [r[i]]; }
+      else cur.push(r[i]);
+    }
+    if (cur.length > 1) out.push(cur);
+  }
+  return out;
+}
+const gDLand = svgEl("g"), gDLake = svgEl("g"), gDRiver = svgEl("g");
+let gBLand = null, gBLake = null, gBRiver = null;
+async function loadGeo() {
+  try {
+    const r = await fetch("data/geo/base.json?v=" + APP_VERSION);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    GEO.base = j; GEO.T = j.tile || 10; GEO.tiles = new Set(j.tiles || []);
+    drawLand(); updateDetail();
+  } catch (e) { console.error(e); toast("Fond de carte introuvable (data/geo/base.json)"); }
+}
+function drawLand() {
+  gLand.textContent = ""; gLake.textContent = ""; gRiver.textContent = "";
+  if (!GEO.base) return;
+  gBLand = svgEl("path", { class: "land", d: ringsStr(GEO.base.land), "fill-rule": "evenodd" });
+  gBLake = svgEl("path", { class: "lake", d: ringsStr(GEO.base.lakes), "fill-rule": "evenodd" });
+  gBRiver = svgEl("path", { class: "river", d: GEO.base.rivers.map(lineStr).join("") });
+  gLand.append(gBLand, gDLand); gLake.append(gBLake, gDLake); gRiver.append(gBRiver, gDRiver);
+  drawRivers();
+}
+function drawRivers() { gRiver.style.display = show.rivers ? "" : "none"; }
+function neededTiles() {
+  const T = GEO.T, out = new Set();
+  if (!GEO.base || view.w > DETAIL_W) return out;
+  const lon0 = Math.floor((view.x - T * .5) / T) * T, lon1 = view.x + view.w + T * .5;
+  const lat1 = -view.y + T * .5, lat0 = Math.floor((-(view.y + view.h) - T * .5) / T) * T;
+  for (let x = Math.max(lon0, -180); x < Math.min(lon1, 180); x += T)
+    for (let y = Math.max(lat0, -90); y < Math.min(lat1, 90); y += T) {
+      const k = x + "_" + y;
+      if (GEO.tiles.has(k)) out.add(k);
+    }
+  return out;
+}
+function updateDetail() {
+  if (!GEO.base) return;
+  const need = neededTiles();
+  GEO.want = need;
+  for (const [k, n] of GEO.nodes) {
+    const on = need.has(k) ? "" : "none";
+    if (n.l.style.display !== on) { n.l.style.display = on; n.k.style.display = on; n.r.style.display = on; }
+  }
+  let missing = 0;
+  for (const k of need) {
+    if (GEO.nodes.has(k) || Date.now() - (GEO.failed.get(k) || 0) < 30e3) continue;
+    missing++;
+    if (!GEO.loading.has(k)) loadTile(k);
+  }
+  /* le fond 1:50M reste visible tant qu'une tuile utile manque */
+  const showBase = !need.size || missing > 0;
+  if (showBase !== GEO.baseShown) {
+    GEO.baseShown = showBase;
+    const d = showBase ? "" : "none";
+    gBLand.style.display = d; gBLake.style.display = d; gBRiver.style.display = d;
+  }
+}
+async function loadTile(k) {
+  GEO.loading.add(k);
+  try {
+    const r = await fetch(`data/geo/t/${k}.json?v=${APP_VERSION}`);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const t = await r.json();
+    const [x0, y0] = k.split("_").map(Number), T = GEO.T;
+    const n = { l: svgEl("g"), k: svgEl("g"), r: svgEl("g") };
+    if (t.l) {
+      n.l.append(svgEl("path", { class: "dland", d: ringsStr(t.l), "fill-rule": "evenodd" }));
+      n.l.append(svgEl("path", { class: "dcoast", d: tileEdges(t.l, x0, y0, T).map(lineStr).join("") }));
+    }
+    if (t.k) {
+      n.k.append(svgEl("path", { class: "dlake", d: ringsStr(t.k), "fill-rule": "evenodd" }));
+      n.k.append(svgEl("path", { class: "dshore", d: tileEdges(t.k, x0, y0, T).map(lineStr).join("") }));
+    }
+    if (t.r) n.r.append(svgEl("path", { class: "river", d: t.r.map(lineStr).join("") }));
+    gDLand.append(n.l); gDLake.append(n.k); gDRiver.append(n.r);
+    GEO.nodes.set(k, n);
+  } catch (e) { console.warn("tuile", k, e); GEO.failed.set(k, Date.now()); }
+  finally { GEO.loading.delete(k); updateDetail(); }
+}
+function drawGrid() {
+  gGrid.textContent = "";
+  if (!show.grid) return;
+  for (let lon = -180; lon <= 180; lon += 20) gGrid.append(svgEl("line", { x1: lon, y1: -90, x2: lon, y2: 90 }));
+  for (let lat = -80; lat <= 80; lat += 20) gGrid.append(svgEl("line", { x1: -180, y1: -lat, x2: 180, y2: -lat }));
+}
+
+/* hachures : une trame par civilisation, dans l'esprit des planches d'atlas gravées */
+function syncPatterns() {
+  const k = px() * 7;
+  for (const c of db.civs) for (const inv of [0, 1]) {
+    const id = (inv ? "x" : "h") + c.id;
+    let p = defs.querySelector("#" + CSS.escape(id));
+    if (!p) {
+      p = svgEl("pattern", { id, patternUnits: "userSpaceOnUse", patternTransform: "rotate(" + (inv ? -45 : 45) + ")" });
+      p.append(svgEl("rect", { width: 100, height: 100, x: -50, y: -50 }));
+      p.append(svgEl("line", { y1: -50, y2: 50, "stroke-linecap": "square" }));
+      defs.append(p);
+    }
+    p.setAttribute("width", k); p.setAttribute("height", k);
+    const [rect, line] = p.children;
+    rect.setAttribute("fill", c.color); rect.setAttribute("opacity", inv ? 0 : .14);
+    line.setAttribute("x1", 0); line.setAttribute("x2", 0);
+    line.setAttribute("stroke", c.color); line.setAttribute("stroke-width", k * (inv ? .26 : .3));
+    line.setAttribute("opacity", inv ? .62 : .5);
+  }
+}
+
+function activeTerrs() {
+  const out = [];
+  for (const t of db.territories) {
+    if (!alive(t)) continue;
+    const c = civ(t.civId); if (!c) continue;
+    out.push({ t, c, area: centroid(t.rings)[2] });
+  }
+  return out.sort((a, b) => b.area - a.area);
+}
+
+function renderMap() {
+  applyView(); syncPatterns();
+  const s = px(), selId = selCiv()?.id;
+  gTerr.textContent = ""; gLab.textContent = ""; gPoi.textContent = ""; gEvent.textContent = "";
+
+  for (const { t, c } of activeTerrs()) {
+    const on = c.id === selId;
+    const sj = subjAt(c.id), ov = sj ? civ(sj.overId) : null;
+    const g = svgEl("g", { class: "terr" });
+    g.dataset.civ = c.id; g.dataset.terr = t.id;
+    g.append(svgEl("path", {
+      d: pathD(t.rings), fill: `url(#h${c.id})`, "fill-opacity": on ? 1 : .8,
+      stroke: c.color, "stroke-width": on ? 2 : 1, "stroke-opacity": on ? 1 : .65
+    }));
+    /* sous domination : la trame de la puissance dominante se surimpose en croisillon */
+    if (ov) g.append(svgEl("path", {
+      d: pathD(t.rings), fill: `url(#x${ov.id})`, "fill-opacity": on ? 1 : .85,
+      stroke: ov.color, "stroke-width": 1.6, "stroke-opacity": .8, "stroke-dasharray": "5 3"
+    }));
+    g.addEventListener("click", e => { e.stopPropagation(); if (mode !== "select") return; select("civ", c.id); });
+    g.addEventListener("pointerenter", e => showTip(e, `<b>${esc(c.name)}</b>${ov ? ` <span class="yr">· ${esc(subjWord(sj))}</span>` : ""}<br><span class="yr">${esc(t.label || fmtSpan(t.start, t.end))}</span>`));
+    g.addEventListener("pointermove", moveTip);
+    g.addEventListener("pointerleave", hideTip);
+    gTerr.append(g);
+
+    if (show.labels) {
+      const [cx, cy, a] = centroid(t.rings);
+      if (a / (s * s) > 2600) {
+        const size = clamp(Math.sqrt(a) / (s * 26), 8, 15) * s;
+        gLab.append(Object.assign(svgEl("text", {
+          class: "terr-label", x: cx, y: -cy, "font-size": size, "stroke-width": size * .28,
+          fill: on ? "#14181b" : "#2f363c", opacity: on ? 1 : .82
+        }), { textContent: c.name.toUpperCase() }));
+        if (ov) gLab.append(Object.assign(svgEl("text", {
+          class: "terr-label", x: cx, y: -cy + size * 1.15, "font-size": size * .74, "stroke-width": size * .22,
+          fill: ov.color, opacity: on ? 1 : .85, "font-style": "italic", "letter-spacing": 0
+        }), { textContent: subjWord(sj) }));
+      }
+    }
+  }
+
+  if (show.pois) {
+    const r = 3.6 * s, fs = 10.5 * s;
+    for (const p of db.pois) {
+      if (!alive(p)) continue;
+      const c = p.civId ? civ(p.civId) : null;
+      const on = c && c.id === selId, isSel = sel && sel.type === "poi" && sel.id === p.id;
+      const g = svgEl("g", { class: "poi" });
+      const col = isSel ? "#9d3d2d" : "#181b1e";
+      if (p.kind === "ville" || p.kind === "capitale") {
+        g.append(svgEl("circle", { cx: p.lon, cy: -p.lat, r: p.kind === "capitale" ? r * 1.15 : r * .8, fill: p.kind === "capitale" ? col : "#f7f7f5", stroke: col, "stroke-width": 1.3 * s }));
+        if (p.kind === "capitale") g.append(svgEl("circle", { cx: p.lon, cy: -p.lat, r: r * 2.2, fill: "none", stroke: col, "stroke-width": .9 * s, "stroke-opacity": .55 }));
+      } else if (p.kind === "bataille") {
+        const d = r * 1.25;
+        g.append(svgEl("path", { d: `M${p.lon - d},${-p.lat - d}L${p.lon + d},${-p.lat + d}M${p.lon + d},${-p.lat - d}L${p.lon - d},${-p.lat + d}`, stroke: col, "stroke-width": 1.6 * s, fill: "none" }));
+      } else {
+        const d = r;
+        g.append(svgEl("path", { d: `M${p.lon},${-p.lat - d}L${p.lon + d},${-p.lat}L${p.lon},${-p.lat + d}L${p.lon - d},${-p.lat}Z`, fill: "#f7f7f5", stroke: col, "stroke-width": 1.3 * s }));
+      }
+      g.append(svgEl("circle", { cx: p.lon, cy: -p.lat, r: r * 3, fill: "transparent" }));
+      const showLbl = show.labels && (s < .09 || on || isSel);
+      if (showLbl) g.append(Object.assign(svgEl("text", {
+        class: "poi-label", x: p.lon + r * 1.9, y: -p.lat + fs * .34, "font-size": fs, "stroke-width": fs * .3,
+        fill: col, "font-weight": isSel || on ? 600 : 400
+      }), { textContent: p.name }));
+      g.addEventListener("click", e => { e.stopPropagation(); if (mode !== "select") return; select("poi", p.id); });
+      g.addEventListener("pointerenter", e => showTip(e, `<b>${esc(p.name)}</b><br><span class="yr">${esc(c ? c.name : p.kind)}</span>`));
+      g.addEventListener("pointermove", moveTip);
+      g.addEventListener("pointerleave", hideTip);
+      gPoi.append(g);
+    }
+  }
+  renderEvents();
+  drawEditLayer();
+  renderLegend();
+}
+
+/* --- mouvements : courbe lissée et pointe de flèche --- */
+function smoothD(pts) {
+  const P = pts.map(q => [q[0], -q[1]]);
+  if (P.length < 3) return "M" + P.map(q => q.join(",")).join("L");
+  let d = "M" + P[0].join(",");
+  for (let i = 0; i < P.length - 1; i++) {
+    const p0 = P[i - 1] || P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] || P[i + 1];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += `C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${p2[0]},${p2[1]}`;
+  }
+  return d;
+}
+function headD(pts, size) {
+  const a = pts[pts.length - 2], b = pts[pts.length - 1];
+  const ang = Math.atan2(-(b[1] - a[1]), b[0] - a[0]);
+  const t = [b[0], -b[1]];
+  const l = [t[0] - size * Math.cos(ang - .42), t[1] - size * Math.sin(ang - .42)];
+  const r = [t[0] - size * Math.cos(ang + .42), t[1] - size * Math.sin(ang + .42)];
+  return `M${t[0]},${t[1]}L${l[0]},${l[1]}L${r[0]},${r[1]}Z`;
+}
+/* Un événement cartographié s'affiche à sa date ; sélectionné, il entraîne
+   avec lui ses étapes, son épisode parent et ses étapes sœurs. */
+function visibleEvents() {
+  const id = sel && sel.type === "event" ? sel.id : null;
+  const cur = id ? byId(db.events, id) : null;
+  const out = [];
+  for (const e of db.events) {
+    if (!evHasGeo(e)) continue;
+    const kin = !!cur && (e.id === id || e.parentId === id || e.id === cur.parentId ||
+      (cur.parentId && e.parentId === cur.parentId));
+    if (kin || evAlive(e)) out.push({ e, on: kin });
+  }
+  return out;
+}
+function renderEvents() {
+  const s = px(), fs = 10.5 * s;
+  for (const { e, on } of visibleEvents()) {
+    const c = e.civId ? civ(e.civId) : null;
+    const col = on ? "#9d3d2d" : "#6b4a42";
+    const pick = ev => { ev.stopPropagation(); if (mode === "select") select("event", e.id); };
+    for (const a of e.arrows || []) {
+      if (!a.pts || a.pts.length < 2) continue;
+      const g = svgEl("g", { class: "mvt" });
+      g.append(svgEl("path", {
+        d: smoothD(a.pts), fill: "none", stroke: col, "stroke-width": (on ? 2.4 : 1.8) * s,
+        "stroke-linecap": "round", "stroke-opacity": on ? .95 : .6,
+        "stroke-dasharray": a.dash ? `${7 * s} ${5 * s}` : null
+      }));
+      g.append(svgEl("path", { d: headD(a.pts, 9 * s), fill: col, "fill-opacity": on ? .95 : .6 }));
+      g.append(svgEl("path", { d: smoothD(a.pts), fill: "none", stroke: "transparent", "stroke-width": 10 * s }));
+      if (a.label && show.labels && on) {
+        const m = a.pts[Math.floor(a.pts.length / 2)];
+        g.append(Object.assign(svgEl("text", {
+          class: "mvt-label", x: m[0], y: -m[1] - fs, "font-size": fs, "stroke-width": fs * .3, fill: col
+        }), { textContent: a.label }));
+      }
+      g.addEventListener("click", pick);
+      g.addEventListener("pointerenter", ev => showTip(ev, `<b>${esc(a.label || "Mouvement")}</b><br><span class="yr">${esc(e.title)}</span>`));
+      g.addEventListener("pointermove", moveTip);
+      g.addEventListener("pointerleave", hideTip);
+      gEvent.append(g);
+    }
+    if (e.lon !== null && e.lon !== undefined) {
+      const g = svgEl("g", { class: "evm" }), r = 4 * s;
+      if (e.kind === "bataille" || e.kind === "siege") {
+        g.append(svgEl("path", {
+          d: `M${e.lon - r},${-e.lat - r}L${e.lon + r},${-e.lat + r}M${e.lon + r},${-e.lat - r}L${e.lon - r},${-e.lat + r}`,
+          stroke: col, "stroke-width": 2 * s, fill: "none"
+        }));
+        if (e.kind === "siege") g.append(svgEl("circle", { cx: e.lon, cy: -e.lat, r: r * 1.8, fill: "none", stroke: col, "stroke-width": 1.1 * s }));
+      } else {
+        g.append(svgEl("path", {
+          d: `M${e.lon},${-e.lat - r}L${e.lon + r},${-e.lat}L${e.lon},${-e.lat + r}L${e.lon - r},${-e.lat}Z`,
+          fill: col, "fill-opacity": .85, stroke: "#f7f7f5", "stroke-width": s
+        }));
+      }
+      g.append(svgEl("circle", { cx: e.lon, cy: -e.lat, r: r * 2.6, fill: "transparent" }));
+      if (show.labels && (on || s < .06)) g.append(Object.assign(svgEl("text", {
+        class: "poi-label", x: e.lon + r * 1.8, y: -e.lat - r * 1.1, "font-size": fs,
+        "stroke-width": fs * .3, fill: col, "font-weight": on ? 600 : 400
+      }), { textContent: e.title }));
+      g.addEventListener("click", pick);
+      g.addEventListener("pointerenter", ev => showTip(ev, `<b>${esc(e.title)}</b><br><span class="yr">${evLong(e) ? fmtSpan(e.year, evEnd(e)) : fmtYear(e.year, true)}${c ? " · " + esc(c.name) : ""}</span>`));
+      g.addEventListener("pointermove", moveTip);
+      g.addEventListener("pointerleave", hideTip);
+      gEvent.append(g);
+    }
+  }
+}
+
+/* couche d'édition : tracé en cours + poignées de sommets */
+function drawEditLayer() {
+  gEdit.textContent = "";
+  const s = px();
+  if (draft && draft.pts.length) {
+    const arrow = draft.kind === "arrow";
+    const d = draft.pts.length > 1 ? (arrow ? smoothD(draft.pts) : ringD(draft.pts)) : "";
+    if (d) gEdit.append(svgEl("path", { class: "draft", d, fill: arrow ? "none" : null }));
+    draft.pts.forEach((p, i) => gEdit.append(svgEl("circle", { class: "vtx", cx: p[0], cy: -p[1], r: 3.4 * s })));
+  }
+  if (mode === "editGeom" && editArrow) {
+    const ev0 = byId(db.events, editArrow.evId), a = ev0 && (ev0.arrows || [])[editArrow.i];
+    if (!a) return;
+    gEdit.append(svgEl("path", { class: "draft", d: smoothD(a.pts), fill: "none" }));
+    a.pts.forEach((p, i) => {
+      const c = svgEl("circle", { class: "vtx", cx: p[0], cy: -p[1], r: 4.2 * s });
+      c.addEventListener("pointerdown", e2 => {
+        e2.stopPropagation();
+        if (e2.altKey) { if (a.pts.length > 2) { mutate(() => a.pts.splice(i, 1)); renderMap(); } return; }
+        c.setPointerCapture(e2.pointerId); snapshot();
+        const mv = m => { const g2 = clientToGeo(m); a.pts[i] = g2; c.setAttribute("cx", g2[0]); c.setAttribute("cy", -g2[1]); gEdit.querySelector("path.draft").setAttribute("d", smoothD(a.pts)); };
+        const up = () => { c.removeEventListener("pointermove", mv); c.removeEventListener("pointerup", up); save(); renderMap(); };
+        c.addEventListener("pointermove", mv); c.addEventListener("pointerup", up);
+      });
+      gEdit.append(c);
+      if (i < a.pts.length - 1) {
+        const q = a.pts[i + 1];
+        const m = svgEl("circle", { class: "vtx mid", cx: (p[0] + q[0]) / 2, cy: -(p[1] + q[1]) / 2, r: 2.8 * s });
+        m.addEventListener("pointerdown", e2 => { e2.stopPropagation(); mutate(() => a.pts.splice(i + 1, 0, [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2])); renderMap(); });
+        gEdit.append(m);
+      }
+    });
+    return;
+  }
+  if (mode === "editGeom" && editTerrId) {
+    const t = byId(db.territories, editTerrId); if (!t) return;
+    t.rings.forEach((ring, ri) => {
+      gEdit.append(svgEl("path", { class: "draft", d: ringD(ring) }));
+      ring.forEach((p, i) => {
+        const q = ring[(i + 1) % ring.length];
+        const m = svgEl("circle", { class: "vtx mid", cx: (p[0] + q[0]) / 2, cy: -(p[1] + q[1]) / 2, r: 2.6 * s });
+        m.addEventListener("pointerdown", e => {
+          e.stopPropagation();
+          mutate(() => ring.splice(i + 1, 0, [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]));
+          renderMap();
+        });
+        gEdit.append(m);
+        const c = svgEl("circle", { class: "vtx", cx: p[0], cy: -p[1], r: 4 * s });
+        c.addEventListener("pointerdown", e => {
+          e.stopPropagation();
+          if (e.altKey) { if (ring.length > 3) { mutate(() => ring.splice(i, 1)); renderMap(); } return; }
+          c.setPointerCapture(e.pointerId);
+          const mv = ev => { const g2 = clientToGeo(ev); ring[i] = g2; c.setAttribute("cx", g2[0]); c.setAttribute("cy", -g2[1]); redrawEditPaths(t); };
+          const up = () => { c.removeEventListener("pointermove", mv); c.removeEventListener("pointerup", up); save(); renderMap(); };
+          snapshot();
+          c.addEventListener("pointermove", mv); c.addEventListener("pointerup", up);
+        });
+        gEdit.append(c);
+      });
+    });
+  }
+}
+function redrawEditPaths(t) {
+  const paths = [...gEdit.querySelectorAll("path.draft")];
+  t.rings.forEach((r, i) => paths[i] && paths[i].setAttribute("d", ringD(r)));
+  const tp = gTerr.querySelector(`g[data-terr="${t.id}"] path`);
+  if (tp) tp.setAttribute("d", pathD(t.rings));
+}
+
+function renderLegend() {
+  const box = $("#legend"); box.textContent = "";
+  const list = activeTerrs();
+  const seen = new Map();
+  for (const { c } of list) if (!seen.has(c.id)) seen.set(c.id, c);
+  box.append(el("div", { class: "eyebrow" }, `En ${fmtYear(year, true)} · ${seen.size}`));
+  if (!seen.size) { box.append(el("div", { class: "meta" }, "Aucun territoire cartographié à cette date.")); return; }
+  const selId = selCiv()?.id;
+  [...seen.values()].sort((a, b) => a.name.localeCompare(b.name, "fr")).forEach(c => {
+    const sj = subjAt(c.id);
+    box.append(el("button", { onclick: () => select("civ", c.id), style: selId === c.id ? "font-weight:600" : "" }, [
+      el("span", { class: "sw", style: `background:${c.color}` }),
+      el("span", {}, sj ? c.name + " · " + subjWord(sj) : c.name)
+    ]));
+  });
+}
+
+/* infobulle */
+const tip = $("#tip");
+function showTip(e, html) { tip.innerHTML = html; tip.classList.add("on"); moveTip(e); }
+function moveTip(e) {
+  const r = $(".mapwrap").getBoundingClientRect();
+  tip.style.left = clamp(e.clientX - r.left + 12, 4, r.width - tip.offsetWidth - 4) + "px";
+  tip.style.top = clamp(e.clientY - r.top + 14, 4, r.height - tip.offsetHeight - 4) + "px";
+}
+function hideTip() { tip.classList.remove("on"); }
+/* =====================  INTERACTIONS CARTE  ===================== */
+/* Le déplacement de la carte s'écoute sur la fenêtre : capturer le pointeur sur
+   le SVG redirigerait vers lui tous les clics, et plus rien ne serait cliquable. */
+let panning = null, moved = 0;
+function panMove(e) {
+  if (!panning) return;
+  const s = px(), dx = (e.clientX - panning.x) * s, dy = (e.clientY - panning.y) * s;
+  moved = Math.max(moved, Math.abs(dx) + Math.abs(dy));
+  view.x = panning.vx - dx; view.y = panning.vy - dy; applyView();
+}
+function panEnd() {
+  window.removeEventListener("pointermove", panMove);
+  window.removeEventListener("pointerup", panEnd);
+  window.removeEventListener("pointercancel", panEnd);
+  map.classList.remove("grabbing");
+  setTimeout(() => { panning = null; }, 0);   // laisse passer le clic qui suit
+}
+map.addEventListener("pointerdown", e => {
+  if (mode === "drawTerr" || mode === "drawArrow" || mode === "placePoi" || mode === "placeEvPt") return;
+  if (e.target.closest(".vtx")) return;
+  panning = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y }; moved = 0;
+  map.classList.add("grabbing");
+  window.addEventListener("pointermove", panMove);
+  window.addEventListener("pointerup", panEnd);
+  window.addEventListener("pointercancel", panEnd);
+});
+map.addEventListener("pointermove", e => {
+  const g = clientToGeo(e);
+  const nd = view.w < 12 ? 3 : view.w < 60 ? 2 : 1;
+  $("#coords").textContent = `${Math.abs(g[1]).toFixed(nd)}°${g[1] >= 0 ? "N" : "S"}  ${Math.abs(g[0]).toFixed(nd)}°${g[0] >= 0 ? "E" : "O"}`;
+});
+map.addEventListener("pointerup", e => {
+  if (moved * (1 / px()) > 4) return;                // c'était un déplacement, pas un clic
+  if (mode === "drawTerr" || mode === "drawArrow") { addDraftPoint(clientToGeo(e)); return; }
+  if (mode === "placePoi") { const g = clientToGeo(e); setMode("select"); openPoiForm(null, { lon: g[0], lat: g[1] }); return; }
+  if (mode === "placeEvPt") {
+    const g = clientToGeo(e), id = modeTarget, ev = byId(db.events, id);
+    setMode("select");
+    if (ev) { mutate(() => { ev.lon = g[0]; ev.lat = g[1]; }); select("event", id, { keepYear: true }); toast("Lieu placé"); }
+    return;
+  }
+  if (mode === "select" && !e.target.closest(".terr,.poi,.evm,.mvt")) select(null);
+});
+map.addEventListener("pointerleave", () => { hideTip(); $("#coords").textContent = "—"; });
+map.addEventListener("dblclick", e => { if (mode === "drawTerr" || mode === "drawArrow") { e.preventDefault(); finishDraft(); } });
+map.addEventListener("wheel", e => {
+  e.preventDefault();
+  const g = clientToGeo(e), f = Math.exp(e.deltaY * 0.0016);
+  const nw = clamp(view.w * f, 0.8, 400);
+  const rx = (g[0] - view.x) / view.w, ry = (-g[1] - view.y) / view.h;
+  view.x = g[0] - rx * nw; view.w = nw;
+  const nh = nw * (map.clientHeight / map.clientWidth);
+  view.y = -g[1] - ry * nh;
+  applyView(); scheduleMap();
+}, { passive: false });
+
+let mapRAF = null;
+function scheduleMap() { if (mapRAF) return; mapRAF = requestAnimationFrame(() => { mapRAF = null; renderMap(); }); }
+window.addEventListener("resize", () => { applyView(); scheduleMap(); renderTimeline(); });
+
+function fitTo(rings) {
+  const pts = [].concat(...(rings || []));
+  if (!pts.length) return;
+  let x0 = 180, x1 = -180, y0 = 90, y1 = -90;
+  for (const [lo, la] of pts) { x0 = Math.min(x0, lo); x1 = Math.max(x1, lo); y0 = Math.min(y0, la); y1 = Math.max(y1, la); }
+  const w = Math.max(x1 - x0, 6) * 1.5;
+  view.w = clamp(w, 6, 400);
+  view.x = (x0 + x1) / 2 - view.w / 2;
+  applyView();
+  view.y = -(y0 + y1) / 2 - view.h / 2;
+  applyView(); scheduleMap();
+}
+function fitWorld() {
+  view = { x: -180, y: -90, w: 360, h: 180 };
+  applyView();
+  view.y = -12 - view.h / 2;   /* recentré sur les terres émergées, non sur l'équateur */
+  applyView(); scheduleMap();
+}
+
+/* --- tracé de territoire --- */
+function setMode(m, opts = {}) {
+  if (m !== "select" && !requireEdit()) return;
+  mode = m; draft = null; modeTarget = opts.target || null;
+  if (m !== "editGeom") { editTerrId = null; editArrow = null; }
+  map.classList.toggle("drawing", m === "drawTerr" || m === "drawArrow" || m === "placePoi" || m === "placeEvPt");
+  $("#tSelect").classList.toggle("on", m === "select");
+  $("#tTerr").classList.toggle("on", m === "drawTerr");
+  $("#tPoi").classList.toggle("on", m === "placePoi");
+  const h = $("#hint");
+  if (m === "drawTerr") {
+    draft = { kind: "terr", pts: [], civId: opts.civId || selCiv()?.id || null, appendTo: opts.appendTo || null };
+    h.style.display = "flex";
+    h.innerHTML = `Cliquez pour poser les sommets. <kbd>Entrée</kbd> ferme · <kbd>⌫</kbd> annule le dernier · <kbd>Échap</kbd> abandonne`;
+    h.append(el("button", { class: "btn sm prim", onclick: finishDraft }, "Terminer"));
+  } else if (m === "drawArrow") {
+    draft = { kind: "arrow", pts: [], evId: opts.target };
+    h.style.display = "flex";
+    h.innerHTML = `Cliquez les étapes du mouvement, du départ vers l'arrivée. <kbd>Entrée</kbd> termine · <kbd>⌫</kbd> annule le dernier point`;
+    h.append(el("button", { class: "btn sm prim", onclick: finishDraft }, "Terminer"));
+  } else if (m === "placePoi") {
+    h.style.display = "flex"; h.innerHTML = `Cliquez à l'emplacement du lieu. <kbd>Échap</kbd> annule`;
+  } else if (m === "placeEvPt") {
+    h.style.display = "flex"; h.innerHTML = `Cliquez là où se déroule l'événement. <kbd>Échap</kbd> annule`;
+  } else if (m === "editGeom") {
+    h.style.display = "flex";
+    h.innerHTML = `Glissez les sommets · points pâles = ajouter · <kbd>Alt</kbd>+clic = supprimer`;
+    if (editTerrId) h.append(el("button", { class: "btn sm", onclick: () => { setMode("drawTerr", { appendTo: editTerrId }); } }, "+ Partie"));
+    h.append(el("button", { class: "btn sm prim", onclick: () => setMode("select") }, "Terminer"));
+  } else { h.style.display = "none"; h.innerHTML = ""; }
+  renderMap();
+}
+function addDraftPoint(g) { draft.pts.push(g); drawEditLayer(); }
+function finishDraft() {
+  if (draft && draft.kind === "arrow") {
+    if (draft.pts.length < 2) { toast("Il faut au moins deux étapes"); return; }
+    const pts = draft.pts.slice(), ev = byId(db.events, draft.evId);
+    setMode("select");
+    if (ev) openArrowForm(ev, null, pts);
+    return;
+  }
+  if (!draft || draft.pts.length < 3) { toast("Il faut au moins trois sommets"); return; }
+  const ring = draft.pts.slice(), target = draft.appendTo;
+  if (target) {
+    const t = byId(db.territories, target);
+    mutate(() => t.rings.push(ring));
+    editTerrId = target; setMode("editGeom"); toast("Partie ajoutée");
+    return;
+  }
+  const cid = draft.civId;
+  setMode("select");
+  openTerrForm(null, { civId: cid, rings: [ring] });
+}
+
+/* =====================  SÉLECTION  ===================== */
+function select(type, id, opts = {}) {
+  sel = type ? { type, id } : null;
+  if (sel && sel.type === "civ" && !opts.keepYear) {
+    const c = civ(id);
+    if (c && !alive(c)) setYear(clamp(year, c.start, c.end ?? Y1), true);
+  }
+  if (sel && sel.type === "event") { const e = byId(db.events, id); if (e) setYear(e.year, true); }
+  if (sel && sel.type === "terr") { const t = byId(db.territories, id); if (t) { setYear(clamp(year, t.start, t.end ?? Y1), true); if (opts.fit !== false) fitTo(t.rings); } }
+  if (sel && sel.type === "poi" && opts.fit) { const p = byId(db.pois, sel.id); if (p) fitTo([[[p.lon - 6, p.lat - 5], [p.lon + 6, p.lat + 5]]]); }
+  if (tab === "data") tab = "sheet";
+  renderAll();
+  $(".panel").scrollTop = 0;
+}
+function setYear(y, silent) {
+  year = clamp(Math.round(y), Y0, Y1);
+  $("#yearNum").textContent = Math.abs(year) || 1;
+  $("#yearEra").textContent = year < 0 ? "AV. J.-C." : "AP. J.-C.";
+  positionPlayhead();
+  scheduleMap();
+  if (!silent) { updateBarsLive(); renderPanel(); }
+}
+
+/* =====================  FRISE  ===================== */
+const tlBody = $("#tlBody"), ruler = $("#ruler"), evBand = $("#evBand"), laneIn = $("#laneIn"), playhead = $("#playhead");
+const tlW = () => tlBody.clientWidth || 1;
+const yToX = y => (y - tview.a) / (tview.b - tview.a) * tlW();
+const xToY = x => tview.a + x / tlW() * (tview.b - tview.a);
+
+function tlVisibleCivs() {
+  let list = db.civs.slice();
+  if (tlFilter === "live") list = list.filter(c => alive(c));
+  if (tlFilter === "sel") { const c = selCiv(); list = c ? [c] : []; }
+  return list.sort((a, b) => a.start - b.start || (a.end ?? Y1) - (b.end ?? Y1));
+}
+function renderTimeline() {
+  /* règle graduée */
+  ruler.textContent = "";
+  const span = tview.b - tview.a, w = tlW();
+  const steps = [2000, 1000, 500, 250, 100, 50, 25, 10, 5, 1];
+  let step = steps[0];
+  for (const st of steps) if (st / span * w >= 74) step = st;
+  const start = Math.ceil(tview.a / step) * step;
+  for (let y = start; y <= tview.b; y += step) {
+    const x = yToX(y); if (x < -40 || x > w + 40) continue;
+    const t = el("div", { class: "tk", style: `left:${x}px` }, el("span", {}, fmtYear(y, false)));
+    ruler.append(t);
+  }
+  const sub = step / (step % 4 === 0 ? 4 : step % 5 === 0 ? 5 : 2);
+  if (sub / span * w > 9) for (let y = Math.ceil(tview.a / sub) * sub; y <= tview.b; y += sub) {
+    if (Math.abs(y % step) < 1e-6) continue;
+    ruler.append(el("div", { class: "tk minor", style: `left:${yToX(y)}px` }));
+  }
+
+  /* bande d'événements : épisodes longs en barres, jalons en repères, étapes au second rang */
+  evBand.textContent = "";
+  const c = selCiv();
+  const evs = c ? evOf(c.id) : db.events;
+  evBand.append(el("span", { class: "eyebrow lbl" }, c ? `Événements · ${c.name}` : `Événements · tous (${evs.length})`));
+  const selEv = sel && sel.type === "event" ? sel.id : null;
+  for (const e of evs) {
+    const row = e.parentId ? " r1" : "";
+    const x0 = yToX(e.year), x1 = yToX(evEnd(e));
+    if (x1 < -80 || x0 > w + 80) continue;
+    const n = (evLong(e) && x1 - x0 > 3)
+      ? el("div", { class: "evs" + row + (selEv === e.id ? " sel" : ""), style: `left:${x0}px;width:${x1 - x0}px` },
+        x1 - x0 > 46 ? el("span", {}, e.title) : null)
+      : el("div", { class: "ev" + row + (selEv === e.id ? " sel" : ""), style: `left:${x0}px` }, [el("i"), el("b")]);
+    n.addEventListener("click", ev => { ev.stopPropagation(); select("event", e.id); });
+    n.addEventListener("pointerenter", ev => showTipTL(ev, `<b>${esc(e.title)}</b><br><span class="yr">${evLong(e) ? fmtSpan(e.year, evEnd(e)) : fmtYear(e.year, true)}</span>`));
+    n.addEventListener("pointerleave", hideTip);
+    evBand.append(n);
+  }
+
+  /* Bandes de civilisations. L'empilement suit les filiations : une civilisation
+     issue d'une autre reprend si possible sa ligne, à la suite ; sinon la ligne
+     libre la plus proche. Les autres comblent les trous à partir du haut. */
+  laneIn.textContent = "";
+  const list = tlVisibleCivs(), pos = new Map(), selId = c?.id;
+  const geo = new Map();
+  for (const cv of list) {
+    const x0 = yToX(cv.start), x1 = Math.max(yToX(cv.end ?? Y1), x0 + 3);
+    if (x1 < -200 || x0 > w + 200) continue;
+    geo.set(cv.id, { cv, x0, x1: x0 + Math.max(x1 - x0, 3) });
+  }
+  const heirs = new Map();
+  for (const l of db.links) {
+    if (!geo.has(l.from) || !geo.has(l.to)) continue;
+    if (!heirs.has(l.from)) heirs.set(l.from, []);
+    heirs.get(l.from).push(l.to);
+  }
+  const lanes = [], place = new Map();
+  /* gap négatif : on tolère le chevauchement d'un ou deux pixels pour qu'une
+     succession exacte — un empire qui commence l'année où l'autre finit —
+     reste sur la même ligne, bord à bord. */
+  const fits = (li, g, gap) => !lanes[li].some(iv => g.x0 < iv[1] + gap && iv[0] < g.x1 + gap);
+  function findLane(g, pref) {
+    const has = pref !== null && pref !== undefined;
+    if (has && pref < lanes.length && fits(pref, g, -2)) return pref;
+    if (has) for (let d = 1; d <= lanes.length; d++) {
+      if (pref + d < lanes.length && fits(pref + d, g, 6)) return pref + d;
+      if (pref - d >= 0 && fits(pref - d, g, 6)) return pref - d;
+    }
+    for (let k = 0; k < lanes.length; k++) if (fits(k, g, 6)) return k;
+    lanes.push([]); return lanes.length - 1;
+  }
+  function assign(id, pref) {
+    if (place.has(id)) return;
+    const g = geo.get(id); if (!g) return;
+    const li = findLane(g, pref);
+    lanes[li].push([g.x0, g.x1]); place.set(id, li);
+    (heirs.get(id) || []).filter(k => !place.has(k))
+      .sort((p, q) => geo.get(p).x0 - geo.get(q).x0)
+      .forEach(k => assign(k, li));
+  }
+  for (const cv of list) if (geo.has(cv.id)) assign(cv.id, null);
+
+  for (const cv of list) {
+    const g = geo.get(cv.id); if (!g) continue;
+    const li = place.get(cv.id);
+    /* le nom reste lisible même quand la bande déborde de la fenêtre */
+    const vx = Math.max(g.x0, -1), vw = Math.max(Math.min(g.x1, w + 1) - vx, 3);
+    const bar = el("div", {
+      class: "bar" + (selId === cv.id ? " sel" : "") + (alive(cv) ? "" : " off"),
+      style: `left:${vx}px;width:${vw}px;top:${li * 21}px;background:${cv.color}44;border-color:${cv.color}`,
+      title: `${cv.name} · ${fmtSpan(cv.start, cv.end)}`,
+      onclick: () => select("civ", cv.id)
+    }, el("span", {}, cv.name));
+    bar.dataset.civ = cv.id;
+    pos.set(cv.id, { x0: g.x0, x1: g.x1, y: li * 21 + 8.5 });
+    bar.addEventListener("pointerenter", ev => showTipTL(ev, `<b>${esc(cv.name)}</b><br><span class="yr">${fmtSpan(cv.start, cv.end)}</span>`));
+    bar.addEventListener("pointerleave", hideTip);
+    laneIn.append(bar);
+  }
+  /* période de sujétion : la trame de la puissance dominante barre la bande */
+  for (const x of db.subjections) {
+    const p = pos.get(x.civId), ov = civ(x.overId);
+    if (!p || !ov) continue;
+    const a = Math.max(yToX(x.start), p.x0), b2 = Math.min(yToX(x.end), p.x1);
+    if (b2 - a < 1 || b2 < -40 || a > w + 40) continue;
+    const d = el("div", {
+      class: "subj", style: `left:${a}px;width:${b2 - a}px;top:${p.y - 8.5}px;--c:${ov.color}`,
+      title: `${civ(x.civId)?.name} · ${subjWord(x)} · ${fmtSpan(x.start, x.end)}`,
+      onclick: e => { e.stopPropagation(); select("civ", x.overId); }
+    });
+    d.addEventListener("pointerenter", ev => showTipTL(ev, `<b>${esc(civ(x.civId)?.name)}</b> — ${esc(subjWord(x))}<br><span class="yr">${fmtSpan(x.start, x.end)}</span>`));
+    d.addEventListener("pointerleave", hideTip);
+    laneIn.append(d);
+  }
+  laneIn.style.height = Math.max(lanes.length * 21 + 12, 40) + "px";
+  drawLinks(pos, lanes.length, w);
+  if (!laneIn.children.length) laneIn.append(el("div", { class: "tl-empty" }, tlFilter === "sel" ? "Sélectionnez une civilisation." : "Aucune civilisation dans cette fenêtre."));
+  $("#tlCount").textContent = `${list.length} civilisation${list.length > 1 ? "s" : ""}`;
+  positionPlayhead();
+}
+/* Les filiations relient la fin d'une civilisation au début de celle qui en
+   procède : un trait fin, mis en évidence quand l'une des deux est choisie. */
+function drawLinks(pos, laneCount, w) {
+  const old = laneIn.querySelector("svg.filiations"); if (old) old.remove();
+  if (!showLinks || !db.links.length) return;
+  const h = Math.max(laneCount * 21 + 12, 40);
+  const svg = svgEl("svg", { class: "filiations", width: "100%", height: h, viewBox: `0 0 ${Math.max(w, 1)} ${h}`, preserveAspectRatio: "none" });
+  const selId = selCiv()?.id;
+  let drawn = 0;
+  for (const l of db.links) {
+    const a = pos.get(l.from), b = pos.get(l.to);
+    if (!a || !b) continue;
+    const ty = linkYear(l);
+    const x1 = ty !== null ? clamp(yToX(ty), a.x0, a.x1) : a.x1;
+    const x2 = ty !== null ? clamp(yToX(ty), b.x0, b.x1) : b.x0;
+    if (Math.max(x1, x2) < -60 || Math.min(x1, x2) > w + 60) continue;
+    const on = selId === l.from || selId === l.to;
+    const dx = clamp(Math.abs(x2 - x1) / 2, 8, 26);
+    const g = svgEl("g", { class: "lk" + (on ? " on" : "") });
+    const d = `M${x1},${a.y} C${x1 + dx},${a.y} ${x2 - dx},${b.y} ${x2},${b.y}`;
+    g.append(svgEl("path", { d }));
+    g.append(svgEl("path", { class: "hit", d }));
+    g.append(svgEl("circle", { cx: x1, cy: a.y, r: 2.2, class: "src" }));
+    const dir = x2 >= x1 ? 1 : -1;
+    g.append(svgEl("path", { class: "hd", d: `M${x2},${b.y}L${x2 - 5 * dir},${b.y - 3}L${x2 - 5 * dir},${b.y + 3}Z` }));
+    const t = svgEl("title");
+    t.textContent = `${civ(l.from)?.name} → ${civ(l.to)?.name}${l.label ? " · " + l.label : ""}${ty !== null ? " · " + fmtYear(ty, true) : ""}`;
+    g.append(t);
+    g.addEventListener("click", e => {
+      e.stopPropagation();
+      if (l.eventId && byId(db.events, l.eventId)) select("event", l.eventId);
+      else select("civ", selId === l.to ? l.from : l.to);
+    });
+    svg.append(g); drawn++;
+  }
+  if (drawn) laneIn.append(svg);
+}
+
+function showTipTL(e, html) {
+  const r = $(".mapwrap").getBoundingClientRect();
+  tip.innerHTML = html; tip.classList.add("on");
+  tip.style.left = clamp(e.clientX - r.left - 60, 4, r.width - 200) + "px";
+  tip.style.top = (r.height - 46) + "px";
+}
+function positionPlayhead() {
+  const x = yToX(year);
+  playhead.style.display = (x < -2 || x > tlW() + 2) ? "none" : "block";
+  playhead.style.left = x + "px";
+}
+function updateBarsLive() {
+  for (const b of laneIn.children) {
+    const cv = civ(b.dataset?.civ); if (!cv) continue;
+    b.classList.toggle("off", !alive(cv));
+  }
+  renderLegend();
+}
+
+/* interactions frise */
+let tldrag = false;
+function tlSetFromEvent(e) {
+  const r = tlBody.getBoundingClientRect();
+  setYear(xToY(e.clientX - r.left));
+}
+tlBody.addEventListener("pointerdown", e => {
+  if (e.target.closest(".bar,.ev,.evs") || e.target.closest("svg.filiations")) return;
+  tldrag = true; tlBody.setPointerCapture(e.pointerId); tlSetFromEvent(e);
+});
+tlBody.addEventListener("pointermove", e => { if (tldrag) tlSetFromEvent(e); });
+tlBody.addEventListener("pointerup", () => { tldrag = false; });
+tlBody.addEventListener("wheel", e => {
+  e.preventDefault();
+  const r = tlBody.getBoundingClientRect(), px0 = e.clientX - r.left;
+  if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+    const d = (e.deltaX || e.deltaY) / tlW() * (tview.b - tview.a);
+    tview.a += d; tview.b += d;
+  } else {
+    const y = xToY(px0), f = Math.exp(e.deltaY * .0016);
+    let a = y - (y - tview.a) * f, b = y + (tview.b - y) * f;
+    if (b - a < 25) { const m = (a + b) / 2; a = m - 12.5; b = m + 12.5; }
+    if (b - a > (Y1 - Y0) * 1.05) { a = Y0; b = Y1; }
+    tview.a = a; tview.b = b;
+  }
+  clampTView(); renderTimeline();
+}, { passive: false });
+function clampTView() {
+  const span = tview.b - tview.a;
+  if (tview.a < Y0 - span * .05) { tview.a = Y0 - span * .05; tview.b = tview.a + span; }
+  if (tview.b > Y1 + span * .05) { tview.b = Y1 + span * .05; tview.a = tview.b - span; }
+}
+function tlZoom(f) {
+  const m = year >= tview.a && year <= tview.b ? year : (tview.a + tview.b) / 2;
+  let a = m - (m - tview.a) * f, b = m + (tview.b - m) * f;
+  if (b - a < 25) { a = m - 12.5; b = m + 12.5; }
+  tview.a = a; tview.b = b; clampTView(); renderTimeline();
+}
+function tlFocus(a, b) {
+  const pad = Math.max((b - a) * .25, 40);
+  tview.a = a - pad; tview.b = b + pad; clampTView(); renderTimeline();
+}
+/* =====================  PANNEAU LATÉRAL  ===================== */
+const panel = $("#panel");
+const KINDS = { capitale: "Capitale", ville: "Ville", site: "Site", bataille: "Bataille", autre: "Autre" };
+
+function icon(name) {
+  const p = {
+    pen: '<path d="M11.2 2.6l2.2 2.2-8 8-2.9.7.7-2.9z"/>',
+    trash: '<path d="M3.5 4.5h9M6.5 4.5V3h3v1.5M5 4.5l.6 8.5h4.8l.6-8.5"/>',
+    plus: '<path d="M8 3.5v9M3.5 8h9"/>',
+    target: '<circle cx="8" cy="8" r="4.6"/><path d="M8 1v2.2M8 12.8V15M1 8h2.2M12.8 8H15"/>',
+    up: '<path d="M4 10l4-4 4 4"/>',
+    copy: '<rect x="5.5" y="5.5" width="8" height="8" rx="1"/><path d="M10.5 5.5V3.5a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h2"/>',
+    link: '<path d="M6.5 9.5l3-3M6.8 4.4l1.3-1.3a2.4 2.4 0 013.4 3.4L10.2 7.8M9.2 11.6l-1.3 1.3a2.4 2.4 0 01-3.4-3.4L5.8 8.2"/>'
+  }[name];
+  const s = svgEl("svg", { width: 15, height: 15, viewBox: "0 0 16 16", fill: "none", stroke: "currentColor", "stroke-width": 1.4, "stroke-linecap": "round", "stroke-linejoin": "round" });
+  s.innerHTML = p; return s;
+}
+const iconBtn = (name, title, fn, cls = "") => el("button", { class: "iconbtn " + cls, title, "aria-label": title, onclick: e => { e.stopPropagation(); fn(); } }, icon(name));
+
+function renderPanel() {
+  $$(".tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
+  panel.textContent = "";
+  if (tab === "data") return renderData();
+  if (tab === "props") return renderProps();
+  if (tab === "items") return renderItems();
+  return renderSheet();
+}
+
+/* ---- onglet Fiche ---- */
+function renderSheet() {
+  if (!sel) {
+    panel.append(el("div", { class: "empty" }, [
+      el("p", {}, "Rien de sélectionné."),
+      el("p", {}, "Cliquez sur un territoire, un lieu ou une bande de la frise."),
+      el("div", { class: "row", style: "justify-content:center;margin-top:14px" }, [
+        el("button", { class: "btn ed", onclick: () => openCivForm() }, "+ Civilisation"),
+        el("button", { class: "btn", onclick: () => { tab = "items"; renderPanel(); } }, "Tout parcourir")
+      ])
+    ]));
+    return;
+  }
+  if (sel.type === "poi") return sheetPoi(byId(db.pois, sel.id));
+  if (sel.type === "event") return sheetEvent(byId(db.events, sel.id));
+  const c = selCiv(); if (!c) { sel = null; return renderSheet(); }
+  sheetCiv(c);
+}
+
+function head(kindLabel, color, title, sub, meta) {
+  const h = el("div", { class: "sheet-head" });
+  h.append(el("div", { class: "kind" }, [
+    color ? el("span", { class: "dot", style: `background:${color}` }) : null,
+    el("span", { class: "eyebrow" }, kindLabel)
+  ]));
+  h.append(el("h2", {}, title));
+  if (sub) h.append(el("div", { class: "dates" }, sub));
+  if (meta) h.append(el("div", { class: "meta" }, meta));
+  return h;
+}
+function proseBlock(text, links) {
+  const wrap = el("div", { class: "sect" });
+  const p = el("div", { class: "prose" });
+  p.innerHTML = text ? md(text) : canEdit()
+    ? `<p style="color:var(--muted)">Aucune description. Cliquez sur <em>Modifier</em> pour en ajouter une, ou importez le résumé d'une page Wikipédia.</p>`
+    : `<p style="color:var(--muted)">Aucune description pour l'instant.</p>`;
+  wrap.append(p);
+  if (links && links.length) {
+    const L = el("div", { class: "links", style: "margin-top:10px" });
+    L.append(el("div", { class: "eyebrow", style: "margin-bottom:4px" }, "Liens"));
+    links.forEach(l => L.append(el("a", { href: l.url, target: "_blank", rel: "noopener" }, l.label || l.url)));
+    wrap.append(L);
+  }
+  return wrap;
+}
+
+function sheetCiv(c) {
+  const ts = terrOf(c.id), evs = evOf(c.id), ps = poisOf(c.id);
+  const h = head("Civilisation", c.color, c.name, fmtSpan(c.start, c.end), c.region);
+  if (alive(c)) h.querySelector(".kind").append(el("span", { class: "pill live" }, "en " + fmtYear(year, false)));
+  const nowSubj = subjAt(c.id);
+  if (nowSubj) h.querySelector(".kind").append(el("span", {
+    class: "pill", style: `border-color:${civ(nowSubj.overId)?.color};color:${civ(nowSubj.overId)?.color}`
+  }, subjWord(nowSubj)));
+  h.append(el("div", { class: "row" }, [
+    el("button", { class: "btn ed", onclick: () => openCivForm(c) }, "Modifier"),
+    el("button", { class: "btn", onclick: () => { const t = ts.find(t => alive(t)) || ts[0]; t ? fitTo(t.rings) : toast("Aucun territoire tracé"); } }, "Cadrer"),
+    el("button", { class: "btn", onclick: () => tlFocus(c.start, c.end ?? Y1) }, "Cadrer la frise"),
+    el("button", { class: "btn danger ed", onclick: () => delCiv(c) }, "Supprimer")
+  ]));
+  panel.append(h);
+  panel.append(proseBlock(c.description, c.links));
+
+  const asSub = subjAs(c.id), asOver = subjOver(c.id);
+  panel.append(listSection(`Tutelles · ${asSub.length + asOver.length}`, "Ajouter", () => openSubjForm(null, { civId: c.id }),
+    asSub.map(x => ({
+      t: "⤓ " + (civ(x.overId)?.name || "?"),
+      s: (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end) + (subjAt(c.id) === x ? " · en cours" : ""),
+      on: () => { setYear(clamp(year, x.start, x.end)); select("civ", c.id, { keepYear: true }); },
+      edit: () => openSubjForm(x, { civId: c.id }),
+      del: () => { mutate(() => db.subjections = db.subjections.filter(y => y.id !== x.id)); renderAll(); }
+    })).concat(asOver.map(x => ({
+      t: "⤒ " + (civ(x.civId)?.name || "?"),
+      s: (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end),
+      on: () => select("civ", x.civId),
+      edit: () => openSubjForm(x, { civId: c.id }),
+      del: () => { mutate(() => db.subjections = db.subjections.filter(y => y.id !== x.id)); renderAll(); }
+    }))),
+    "Une civilisation qui subsiste mais passe sous le contrôle d'une autre : ⤓ elle subit, ⤒ elle domine. La carte et la frise le montrent sur la période."));
+
+  const ins = linksIn(c.id), outs = linksOut(c.id);
+  panel.append(listSection(`Filiation · ${ins.length + outs.length}`, "Ajouter", () => openLinkForm(null, { from: c.id }),
+    ins.map(l => ({
+      t: "← " + (civ(l.from)?.name || "?"),
+      s: (l.label || "dont elle procède") + (linkYear(l) !== null ? " · " + fmtYear(linkYear(l), true) : ""),
+      on: () => select("civ", l.from),
+      edit: () => openLinkForm(l, { from: c.id }),
+      del: () => { mutate(() => db.links = db.links.filter(x => x.id !== l.id)); renderAll(); }
+    })).concat(outs.map(l => ({
+      t: "→ " + (civ(l.to)?.name || "?"),
+      s: (l.label || "à laquelle elle donne naissance") + (linkYear(l) !== null ? " · " + fmtYear(linkYear(l), true) : ""),
+      on: () => select("civ", l.to),
+      edit: () => openLinkForm(l, { from: c.id }),
+      del: () => { mutate(() => db.links = db.links.filter(x => x.id !== l.id)); renderAll(); }
+    }))),
+    "Reliez cette civilisation à celle dont elle procède, ou à celles qui lui succèdent. Le lien se dessine sur la frise."));
+
+  panel.append(listSection(`Territoires · ${ts.length}`, "Ajouter",
+    () => (db.territories.some(t => t.rings && t.rings.length) ? openTerrCopy(c.id) : setMode("drawTerr", { civId: c.id })),
+    ts.map(t => ({
+      t: t.label || fmtSpan(t.start, t.end),
+      s: fmtSpan(t.start, t.end) + (alive(t) ? " · affiché" : ""),
+      live: alive(t),
+      on: () => select("terr", t.id),
+      copy: () => openTerrCopy(c.id, t.id),
+      edit: () => openTerrForm(t),
+      geom: () => { editTerrId = t.id; fitTo(t.rings); setMode("editGeom"); },
+      del: () => { if (confirm(`Supprimer le territoire « ${t.label || fmtSpan(t.start, t.end)} » ?`)) { mutate(() => db.territories = db.territories.filter(x => x.id !== t.id)); renderAll(); } }
+    })), "Un territoire = une emprise valable entre deux dates. Créez-en un par phase d'expansion."));
+
+  panel.append(listSection(`Événements · ${evs.length}`, "Ajouter", () => openEventForm(null, { civId: c.id, year }),
+    evTop(c.id).map(e => {
+      const k = evKids(e.id).length;
+      return {
+        t: e.title,
+        s: (evLong(e) ? fmtSpan(e.year, evEnd(e)) : fmtYear(e.year, true))
+          + (k ? ` · ${k} étape${k > 1 ? "s" : ""}` : "") + (evHasGeo(e) ? " · cartographié" : ""),
+        on: () => select("event", e.id),
+        edit: () => openEventForm(e),
+        del: () => delEvent(e)
+      };
+    })));
+
+  panel.append(listSection(`Lieux · ${ps.length}`, "Placer", () => { select("civ", c.id, { keepYear: true }); setMode("placePoi"); },
+    ps.map(p => ({
+      t: p.name, s: KINDS[p.kind] + " · " + fmtSpan(p.start, p.end),
+      on: () => select("poi", p.id, { fit: true }),
+      edit: () => openPoiForm(p),
+      del: () => { mutate(() => db.pois = db.pois.filter(x => x.id !== p.id)); renderAll(); }
+    }))));
+}
+
+function sheetPoi(p) {
+  if (!p) { sel = null; return renderSheet(); }
+  const c = p.civId ? civ(p.civId) : null;
+  const h = head(KINDS[p.kind] || "Lieu", c?.color, p.name, fmtSpan(p.start, p.end),
+    `${Math.abs(p.lat).toFixed(2)}°${p.lat >= 0 ? "N" : "S"} · ${Math.abs(p.lon).toFixed(2)}°${p.lon >= 0 ? "E" : "O"}`);
+  if (c) h.append(el("div", { class: "meta" }, [el("button", { class: "btn sm", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name)]));
+  h.append(el("div", { class: "row" }, [
+    el("button", { class: "btn ed", onclick: () => openPoiForm(p) }, "Modifier"),
+    el("button", { class: "btn", onclick: () => fitTo([[[p.lon - 5, p.lat - 4], [p.lon + 5, p.lat + 4]]]) }, "Cadrer"),
+    el("button", { class: "btn danger ed", onclick: () => { if (confirm(`Supprimer « ${p.name} » ?`)) { mutate(() => db.pois = db.pois.filter(x => x.id !== p.id)); sel = null; renderAll(); } } }, "Supprimer")
+  ]));
+  panel.append(h);
+  panel.append(proseBlock(p.description, p.links));
+}
+
+function delEvent(e) {
+  if (!requireEdit()) return;
+  const k = evKids(e.id);
+  if (!confirm(k.length ? `Supprimer « ${e.title} » et ses ${k.length} étapes ?` : `Supprimer « ${e.title} » ?`)) return;
+  mutate(() => { db.events = db.events.filter(x => x.id !== e.id && x.parentId !== e.id); });
+  sel = e.parentId ? { type: "event", id: e.parentId } : null;
+  renderAll();
+}
+function evPts(e) {
+  const pts = (e.arrows || []).flatMap(a => a.pts);
+  if (e.lon !== null && e.lon !== undefined) pts.push([e.lon, e.lat]);
+  for (const k of evKids(e.id)) {
+    pts.push(...(k.arrows || []).flatMap(a => a.pts));
+    if (k.lon !== null && k.lon !== undefined) pts.push([k.lon, k.lat]);
+  }
+  return pts;
+}
+
+function sheetEvent(e) {
+  if (!e) { sel = null; return renderSheet(); }
+  const c = e.civId ? civ(e.civId) : null;
+  const parent = e.parentId ? byId(db.events, e.parentId) : null;
+  const kids = evKids(e.id);
+  const long = evLong(e);
+  const h = head(parent ? "Étape" : long ? "Épisode" : "Événement", c?.color, e.title,
+    long ? fmtSpan(e.year, evEnd(e)) : fmtYear(e.year, true),
+    [e.kind && e.kind !== "jalon" ? EVKINDS[e.kind] : null, c?.name].filter(Boolean).join(" · "));
+  if (evAlive(e) && long) h.querySelector(".kind").append(el("span", { class: "pill live" }, "en cours"));
+  h.append(el("div", { class: "row" }, [
+    el("button", { class: "btn ed", onclick: () => openEventForm(e) }, "Modifier"),
+    evPts(e).length ? el("button", { class: "btn", onclick: () => fitTo([evPts(e)]) }, "Cadrer") : null,
+    parent ? el("button", { class: "btn", onclick: () => select("event", parent.id) }, "↑ " + parent.title) : null,
+    c && !parent ? el("button", { class: "btn", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name) : null,
+    el("button", { class: "btn danger ed", onclick: () => delEvent(e) }, "Supprimer")
+  ]));
+  panel.append(h);
+  panel.append(proseBlock(e.description, e.links));
+
+  /* lieu */
+  const loc = el("div", { class: "sect" });
+  const placed = e.lon !== null && e.lon !== undefined;
+  loc.append(el("div", { class: "sect-h" }, [
+    el("span", { class: "eyebrow" }, "Lieu"),
+    el("button", { class: "btn sm ed", onclick: () => { select("event", e.id, { keepYear: true }); setMode("placeEvPt", { target: e.id }); } },
+      placed ? "Déplacer" : "+ Placer")
+  ]));
+  if (!placed) loc.append(el("div", { class: "meta" }, "Aucun point sur la carte. Utile pour une bataille, un siège, la signature d'un traité."));
+  else loc.append(el("div", { class: "item" }, [
+    el("button", { class: "main", onclick: () => fitTo([[[e.lon - 5, e.lat - 4], [e.lon + 5, e.lat + 4]]]) }, [
+      el("span", { class: "t" }, EVKINDS[e.kind] || "Point"),
+      el("span", { class: "s" }, `${Math.abs(e.lat).toFixed(2)}°${e.lat >= 0 ? "N" : "S"} · ${Math.abs(e.lon).toFixed(2)}°${e.lon >= 0 ? "E" : "O"}`)
+    ]),
+    el("div", { class: "acts" }, iconBtn("trash", "Retirer le point", () => { mutate(() => { e.lon = null; e.lat = null; }); renderAll(); }, "danger"))
+  ]));
+  panel.append(loc);
+
+  /* mouvements */
+  const arrows = e.arrows || [];
+  panel.append(listSection(`Mouvements · ${arrows.length}`, "Tracer",
+    () => { select("event", e.id, { keepYear: true }); setMode("drawArrow", { target: e.id }); },
+    arrows.map((a, i) => ({
+      t: a.label || "Mouvement " + (i + 1),
+      s: `${a.pts.length} points${a.dash ? " · trait discontinu" : ""}`,
+      on: () => fitTo([a.pts]),
+      geom: () => { editArrow = { evId: e.id, i }; editTerrId = null; fitTo([a.pts]); setMode("editGeom"); },
+      edit: () => openArrowForm(e, i),
+      del: () => { mutate(() => e.arrows.splice(i, 1)); renderAll(); }
+    })),
+    "Une flèche par déplacement d'armée, migration ou expédition : cliquez les étapes sur la carte, du départ vers l'arrivée."));
+
+  /* étapes */
+  if (!parent) panel.append(listSection(`Étapes · ${kids.length}`, "Ajouter",
+    () => openEventForm(null, { civId: e.civId, year: e.year, parentId: e.id }),
+    kids.map(k => ({
+      t: k.title,
+      s: (evLong(k) ? fmtSpan(k.year, evEnd(k)) : fmtYear(k.year, true)) + (evHasGeo(k) ? " · cartographié" : ""),
+      on: () => select("event", k.id),
+      edit: () => openEventForm(k),
+      del: () => delEvent(k)
+    })),
+    "Découpez un épisode long en batailles, sièges ou traités successifs."));
+  else {
+    const sib = evKids(parent.id).filter(k => k.id !== e.id);
+    if (sib.length) panel.append(listSection(`Autres étapes · ${sib.length}`, "Ajouter",
+      () => openEventForm(null, { civId: e.civId, year: e.year, parentId: parent.id }),
+      sib.map(k => ({
+        t: k.title, s: fmtYear(k.year, true),
+        on: () => select("event", k.id), edit: () => openEventForm(k), del: () => delEvent(k)
+      }))));
+  }
+}
+
+function listSection(title, addLabel, addFn, rows, help) {
+  const s = el("div", { class: "sect" });
+  s.append(el("div", { class: "sect-h" }, [
+    el("span", { class: "eyebrow" }, title),
+    el("button", { class: "btn sm ed", onclick: addFn }, "+ " + addLabel)
+  ]));
+  if (!rows.length) s.append(el("div", { class: "meta" }, help || "Rien pour l'instant."));
+  rows.forEach(r => {
+    const it = el("div", { class: "item" });
+    it.append(el("button", { class: "main", onclick: r.on }, [
+      el("span", { class: "t" }, r.t),
+      el("span", { class: "s" }, r.s)
+    ]));
+    const acts = el("div", { class: "acts" });
+    if (r.copy) acts.append(iconBtn("copy", "Reprendre ce tracé pour une autre période", r.copy));
+    if (r.geom) acts.append(iconBtn("target", "Modifier le tracé", r.geom));
+    acts.append(iconBtn("pen", "Modifier", r.edit));
+    acts.append(iconBtn("trash", "Supprimer", r.del, "danger"));
+    it.append(acts);
+    s.append(it);
+  });
+  return s;
+}
+
+/* ---- onglet Éléments ---- */
+let itemsSort = "date";
+function renderItems() {
+  const pad = el("div", { class: "pad" });
+  pad.append(el("div", { class: "sect-h" }, [
+    el("span", { class: "eyebrow" }, `Civilisations · ${db.civs.length}`),
+    el("button", { class: "btn sm", onclick: () => { itemsSort = itemsSort === "date" ? "nom" : "date"; renderPanel(); } }, itemsSort === "date" ? "Par date" : "Par nom"),
+    el("button", { class: "btn sm prim ed", onclick: () => openCivForm() }, "+")
+  ]));
+  const list = db.civs.slice().sort(itemsSort === "date"
+    ? (a, b) => a.start - b.start
+    : (a, b) => a.name.localeCompare(b.name, "fr"));
+  for (const c of list) {
+    const it = el("div", { class: "item" });
+    it.append(el("button", { class: "main", onclick: () => select("civ", c.id) }, [
+      el("span", { class: "t" }, [el("span", { class: "dot", style: `background:${c.color};display:inline-block;margin-right:6px` }), c.name]),
+      el("span", { class: "s" }, `${fmtSpan(c.start, c.end)} · ${terrOf(c.id).length} terr. · ${evOf(c.id).length} év. · ${poisOf(c.id).length} lieux`)
+    ]));
+    const acts = el("div", { class: "acts" });
+    acts.append(iconBtn("pen", "Modifier", () => openCivForm(c)));
+    acts.append(iconBtn("trash", "Supprimer", () => delCiv(c), "danger"));
+    it.append(acts); pad.append(it);
+  }
+  panel.append(pad);
+}
+
+/* ---- onglet Données ---- */
+function renderData() {
+  const pad = el("div", { class: "pad" });
+  pad.append(el("div", { class: "eyebrow", style: "margin-bottom:8px" }, "Contenu"));
+  const st = [["Civilisations", db.civs.length], ["Territoires", db.territories.length],
+  ["Événements", db.events.filter(e => !e.parentId).length], ["dont épisodes", db.events.filter(e => !e.parentId && evLong(e)).length],
+  ["Étapes", db.events.filter(e => e.parentId).length],
+  ["Mouvements", db.events.reduce((n, e) => n + (e.arrows ? e.arrows.length : 0), 0)],
+  ["Lieux", db.pois.length], ["Filiations", db.links.length], ["Tutelles", db.subjections.length]];
+  st.forEach(([k, v]) => pad.append(el("div", { class: "stat" }, [el("span", {}, k), el("span", {}, String(v))])));
+
+  const sect = t => pad.append(el("div", { class: "eyebrow", style: "margin:18px 0 8px" }, t));
+  const note = t => pad.append(el("p", { class: "note", style: "margin-top:0" }, t));
+  const row = kids => pad.append(el("div", { class: "row", style: "margin-top:6px;flex-wrap:wrap" }, kids));
+
+  sect("Publication");
+  if (preview) note("Aperçu d'une proposition en cours : quittez-le pour retrouver l'état publié.");
+  else if (backend === "file") {
+    note("Mode fichier : l'atlas est lu depuis data/atlas.json. Vos modifications restent dans ce navigateur ; pour les publier, exportez le fichier et remplacez data/atlas.json dans le dépôt.");
+    if (pendingOps) row([el("span", { class: "meta" }, `${pendingOps} modification${pendingOps > 1 ? "s" : ""} locale${pendingOps > 1 ? "s" : ""}`),
+      el("button", { class: "btn danger sm", onclick: () => { if (confirm("Revenir au fichier publié et abandonner vos modifications locales ?")) discardDraft(); } }, "Abandonner")]);
+  } else if (remoteState === "down") note("Base partagée injoignable : affichage de la copie publiée dans le dépôt (data/atlas.json), en lecture seule.");
+  else if (remoteState === "empty") {
+    note("La base partagée est vide. Seul un administrateur peut l'initialiser à partir de data/atlas.json.");
+    if (role === "admin") row([el("button", { class: "btn prim", onclick: initRemoteFromFile }, "Initialiser la base depuis data/atlas.json")]);
+  } else if (!user) note("Les données sont chargées automatiquement depuis la base partagée, pour tous les visiteurs. Créez un compte pour proposer des corrections : elles seront publiées après relecture.");
+  else if (canPublish()) note("Vos modifications sont publiées immédiatement pour tous les visiteurs. Chaque version remplacée est conservée dans l'historique de la base.");
+  else {
+    note("Vos modifications restent des brouillons dans ce navigateur jusqu'à leur envoi. Un éditeur les relit avant publication.");
+    row([el("button", { class: "btn prim", disabled: pendingOps ? null : "", onclick: openPropose }, `Proposer (${pendingOps})`),
+      pendingOps ? el("button", { class: "btn danger", onclick: () => { if (confirm("Abandonner toutes vos modifications non envoyées ?")) discardDraft(); } }, "Abandonner le brouillon") : null]);
+  }
+  if (backend === "supabase") row([el("button", { class: "btn", onclick: () => refreshPublished() }, "Actualiser les données")]);
+
+  sect("Fichier");
+  note(role === "admin" || backend === "file"
+    ? "L'export produit un fichier au format de data/atlas.json : déposez-le dans le dépôt pour mettre à jour la copie de secours lue quand la base est injoignable."
+    : "Téléchargez le contenu affiché au format JSON.");
+  row([
+    el("button", { class: "btn prim", onclick: doExport }, "Exporter (.json)"),
+    (backend === "file" || canPublish()) ? el("button", { class: "btn", onclick: doImport }, "Importer…") : null
+  ]);
+
+  if (role === "admin" && remoteState !== "down") {
+    sect("Administration");
+    row([
+      el("button", { class: "btn", onclick: openUsers }, "Comptes et rôles…"),
+      remoteState === "ok" ? el("button", { class: "btn danger", onclick: initRemoteFromFile }, "Recharger la base depuis data/atlas.json") : null
+    ]);
+    note("Le rechargement remplace tout le contenu publié par celui du fichier du dépôt.");
+  }
+  if (backend === "file") {
+    sect("Réinitialisation");
+    row([el("button", {
+      class: "btn danger", onclick: () => { if (confirm("Effacer la totalité du contenu (localement) ?")) { mutate(() => db = emptyDb()); sel = null; renderAll(); } }
+    }, "Tout effacer")]);
+  }
+
+  sect("Repères");
+  note("Les tracés sont des approximations destinées à la lecture d'ensemble : bornes floues, frontières mouvantes, sources divergentes. Ils sont faits pour être corrigés.");
+  note("Fond de carte : Natural Earth (domaine public), 1:50 000 000 en vue d'ensemble et 1:10 000 000 au zoom. Réservoirs modernes retirés ; mer d'Aral et lac Tchad dans leur emprise historique. Version " + APP_VERSION + ".");
+  panel.append(pad);
+}
+
+function delCiv(c) {
+  if (!requireEdit()) return;
+  const n = terrOf(c.id).length + evOf(c.id).length + poisOf(c.id).length;
+  if (!confirm(`Supprimer « ${c.name} » et ses ${n} éléments rattachés ?`)) return;
+  mutate(() => {
+    db.civs = db.civs.filter(x => x.id !== c.id);
+    db.territories = db.territories.filter(x => x.civId !== c.id);
+    db.events = db.events.filter(x => x.civId !== c.id);
+    db.pois = db.pois.filter(x => x.civId !== c.id);
+    db.links = db.links.filter(x => x.from !== c.id && x.to !== c.id);
+    db.subjections = db.subjections.filter(x => x.civId !== c.id && x.overId !== c.id);
+  });
+  sel = null; renderAll();
+}
+
+/* =====================  FORMULAIRES  ===================== */
+const PALETTE = ["#8c3b2e", "#2c4a63", "#4a6b45", "#7a5a2e", "#5b4a72", "#2f6b6b", "#a06a2c", "#6b2f45", "#3f5a8a", "#6e7a3a", "#8a5b6b", "#455055"];
+
+function openForm(title, fields, values, onSave, extra) {
+  if (!requireEdit()) return { close() { }, state: {}, controls: {} };
+  const root = $("#modalRoot");
+  const state = Object.assign({}, values);
+  const body = el("div", { class: "body" });
+  const controls = {};
+  for (const f of fields) {
+    if (f.type === "row") {
+      const g = el("div", { class: "grid2" });
+      f.fields.forEach(sub => g.append(field(sub)));
+      body.append(g); continue;
+    }
+    body.append(field(f));
+  }
+  function field(f) {
+    const w = el("div", { class: "f" });
+    w.append(el("label", { for: "f-" + f.key }, f.label));
+    let c;
+    if (f.type === "textarea") c = el("textarea", { id: "f-" + f.key, rows: f.rows || 6 });
+    else if (f.type === "select") {
+      c = el("select", { id: "f-" + f.key });
+      f.options.forEach(o => c.append(el("option", { value: o[0] }, o[1])));
+    } else if (f.type === "color") {
+      c = el("div", { class: "swatches" });
+      PALETTE.forEach(col => c.append(el("button", {
+        type: "button", style: `background:${col}`, class: state[f.key] === col ? "on" : "",
+        onclick: e => { state[f.key] = col; [...c.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); }
+      })));
+      w.append(c); return w;
+    } else c = el("input", { id: "f-" + f.key, type: f.type === "number" ? "text" : "text", inputmode: f.type === "number" ? "text" : null, placeholder: f.ph || "" });
+    if (c.tagName !== "DIV") c.value = state[f.key] ?? "";
+    controls[f.key] = c;
+    w.append(c);
+    if (f.help) w.append(el("div", { class: "help" }, f.help));
+    if (f.after) w.append(f.after(c, state));
+    return w;
+  }
+  const modal = el("div", { class: "modal" }, [
+    el("header", {}, [el("h3", {}, title), el("button", { class: "iconbtn", onclick: close, "aria-label": "Fermer" }, "✕")]),
+    body,
+    el("footer", {}, [
+      extra || null,
+      el("button", { class: "btn", onclick: close }, "Annuler"),
+      el("button", { class: "btn prim", onclick: commit }, "Enregistrer")
+    ])
+  ]);
+  const scrim = el("div", { class: "scrim", onclick: e => { if (e.target === scrim) close(); } }, modal);
+  root.append(scrim);
+  setTimeout(() => { const first = body.querySelector("input,textarea,select"); first && first.focus(); }, 20);
+  function close() { scrim.remove(); document.removeEventListener("keydown", key, true); }
+  function key(e) { if (e.key === "Escape") { e.stopPropagation(); close(); } if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) commit(); }
+  document.addEventListener("keydown", key, true);
+  function commit() {
+    const out = Object.assign({}, state);
+    for (const k in controls) out[k] = controls[k].value;
+    for (const f of flat(fields)) if (f.type === "number") out[f.key] = parseYear(out[f.key]);
+    if (onSave(out) !== false) close();
+  }
+  function flat(fs) { return fs.flatMap(f => f.type === "row" ? f.fields : [f]); }
+  return { close, state, controls };
+}
+const linksToText = ls => (ls || []).map(l => (l.label ? l.label + " | " : "") + l.url).join("\n");
+const textToLinks = t => String(t || "").split("\n").map(s => s.trim()).filter(Boolean).map(s => {
+  const i = s.lastIndexOf("|");
+  if (i > 0) return { label: s.slice(0, i).trim(), url: s.slice(i + 1).trim() };
+  return { label: s.replace(/^https?:\/\/(www\.)?/, "").slice(0, 42), url: s };
+});
+
+function wikiField() {
+  return (descCtrl, state) => {
+    const inp = el("input", { type: "text", placeholder: "https://fr.wikipedia.org/wiki/Empire_romain" });
+    const btn = el("button", { class: "btn", type: "button" }, "Importer");
+    btn.addEventListener("click", async () => {
+      const v = inp.value.trim(); if (!v) return;
+      btn.textContent = "…"; btn.disabled = true;
+      try {
+        const m = v.match(/\/wiki\/([^#?]+)/);
+        const t = decodeURIComponent(m ? m[1] : v).replace(/ /g, "_");
+        const lang = (v.match(/https?:\/\/(\w{2})\.wikipedia/) || [, "fr"])[1];
+        const r = await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(t)}`);
+        if (!r.ok) throw 0;
+        const j = await r.json();
+        descCtrl.value = (descCtrl.value ? descCtrl.value + "\n\n" : "") + j.extract;
+        const lk = document.querySelector("#f-linksText");
+        const url = j.content_urls?.desktop?.page || v;
+        if (lk && !lk.value.includes(url)) lk.value = (lk.value ? lk.value + "\n" : "") + "Wikipédia — " + j.title + " | " + url;
+        toast("Résumé importé");
+      } catch (e) { toast("Wikipédia injoignable — collez le texte à la main"); }
+      btn.textContent = "Importer"; btn.disabled = false;
+    });
+    return el("div", { class: "wiki", style: "margin-top:6px" }, [inp, btn]);
+  };
+}
+
+function openCivForm(c) {
+  const isNew = !c;
+  openForm(isNew ? "Nouvelle civilisation" : "Modifier la civilisation", [
+    { key: "name", label: "Nom", ph: "Empire romain" },
+    {
+      type: "row", fields: [
+        { key: "start", label: "Début", type: "number", ph: "-509", help: "Négatif = av. J.-C." },
+        { key: "end", label: "Fin", type: "number", ph: "476" }]
+    },
+    { key: "region", label: "Aire", ph: "Méditerranée · Europe" },
+    { key: "color", label: "Couleur", type: "color" },
+    { key: "description", label: "Description", type: "textarea", help: "Mise en forme simple : **gras**, *italique*, - liste, ## titre, [texte](url)", after: wikiField() },
+    { key: "linksText", label: "Liens (un par ligne : Libellé | URL)", type: "textarea", rows: 3 }
+  ], {
+    name: c?.name || "", start: c ? c.start : year, end: c ? c.end : year + 200,
+    region: c?.region || "", color: c?.color || PALETTE[db.civs.length % PALETTE.length],
+    description: c?.description || "", linksText: linksToText(c?.links)
+  }, v => {
+    if (!v.name.trim()) { toast("Le nom est obligatoire"); return false; }
+    if (v.start === null) { toast("Date de début manquante"); return false; }
+    mutate(() => {
+      const o = c || { id: uid("civ") };
+      Object.assign(o, {
+        name: v.name.trim(), start: v.start, end: v.end === null ? Y1 : v.end,
+        region: v.region.trim(), color: v.color, description: v.description, links: textToLinks(v.linksText)
+      });
+      if (isNew) db.civs.push(o);
+      sel = { type: "civ", id: o.id };
+    });
+    renderAll();
+    if (isNew) toast("Civilisation créée — tracez maintenant un territoire");
+  });
+}
+
+/* Reprendre un contour existant plutôt que tout retracer : celui de la période
+   précédente, ou celui d'une autre civilisation dont on hérite du territoire. */
+function openTerrCopy(civId, presetId) {
+  const c = civ(civId);
+  if (!db.territories.some(t => t.rings && t.rings.length)) return setMode("drawTerr", { civId });
+  const own = terrOf(civId);
+  const preset = presetId ? byId(db.territories, presetId)
+    : (own.filter(t => t.start <= year).pop() || own[own.length - 1] || null);
+  let srcId = preset ? preset.id : null;
+
+  const body = el("div", { class: "body" });
+  const civSel = el("select"), terrSel = el("select");
+  const label = el("input", { type: "text", placeholder: "Après les conquêtes de …" });
+  const fStart = el("input", { type: "text" }), fEnd = el("input", { type: "text" });
+
+  db.civs.filter(x => db.territories.some(t => t.civId === x.id))
+    .sort((a, b) => a.name.localeCompare(b.name, "fr"))
+    .forEach(x => civSel.append(el("option", { value: x.id }, x.name)));
+  civSel.value = preset ? preset.civId : (civSel.querySelector(`option[value="${civId}"]`) ? civId : civSel.options[0].value);
+
+  function fillTerr() {
+    terrSel.textContent = "";
+    terrOf(civSel.value).forEach(t => terrSel.append(el("option", { value: t.id }, (t.label || "Sans intitulé") + " · " + fmtSpan(t.start, t.end))));
+    if (srcId && terrSel.querySelector(`option[value="${srcId}"]`)) terrSel.value = srcId;
+    syncDates();
+  }
+  function syncDates() {
+    const t = byId(db.territories, terrSel.value); if (!t) return;
+    fStart.value = String(clamp(t.end + 1, c.start, c.end ?? Y1));
+    fEnd.value = String(c.end ?? Y1);
+  }
+  civSel.addEventListener("change", () => { srcId = null; fillTerr(); });
+  terrSel.addEventListener("change", () => { srcId = terrSel.value; syncDates(); });
+
+  const f = (lab, ctrl, help) => el("div", { class: "f" }, [el("label", {}, lab), ctrl, help ? el("div", { class: "help" }, help) : null]);
+  body.append(f("Reprendre le tracé de", civSel, "Une autre civilisation si celle-ci hérite de son territoire."));
+  body.append(f("Période source", terrSel));
+  body.append(f("Intitulé de la nouvelle phase", label));
+  body.append(el("div", { class: "grid2" }, [f("Valable à partir de", fStart), f("Jusqu'à", fEnd)]));
+  body.append(el("p", { class: "note" }, "Le contour est copié tel quel : vous pourrez ensuite déplacer, ajouter ou retirer ses sommets."));
+
+  const scrim = el("div", { class: "scrim", onclick: e => { if (e.target === scrim) close(); } },
+    el("div", { class: "modal" }, [
+      el("header", {}, [el("h3", {}, "Reprendre un tracé — " + c.name), el("button", { class: "iconbtn", onclick: () => close() }, "✕")]),
+      body,
+      el("footer", {}, [
+        el("button", { class: "btn", style: "margin-right:auto", onclick: () => { close(); setMode("drawTerr", { civId }); } }, "Tracer à la place"),
+        el("button", { class: "btn", onclick: () => close() }, "Annuler"),
+        el("button", { class: "btn prim", onclick: commit }, "Reprendre")
+      ])
+    ]));
+  function close() { scrim.remove(); document.removeEventListener("keydown", key, true); }
+  function key(e) { if (e.key === "Escape") { e.stopPropagation(); close(); } }
+  document.addEventListener("keydown", key, true);
+  $("#modalRoot").append(scrim);
+  fillTerr();
+  setTimeout(() => label.focus(), 20);
+
+  function commit() {
+    const src = byId(db.territories, terrSel.value);
+    const st = parseYear(fStart.value), en = parseYear(fEnd.value);
+    if (!src) return;
+    if (st === null || en === null) { toast("Dates incomplètes"); return; }
+    let id;
+    mutate(() => {
+      const o = {
+        id: uid("ter"), civId,
+        label: label.value.trim() || ("D'après « " + (src.label || "un tracé existant") + " »"),
+        start: st, end: Math.max(en, st), rings: JSON.parse(JSON.stringify(src.rings))
+      };
+      db.territories.push(o); id = o.id;
+      sel = { type: "civ", id: civId };
+    });
+    close();
+    setYear(st, true);
+    editTerrId = id; editArrow = null;
+    fitTo(byId(db.territories, id).rings);
+    setMode("editGeom");
+    renderAll();
+    toast("Tracé repris — ajustez les sommets");
+  }
+}
+
+function openTerrForm(t, init) {
+  const isNew = !t;
+  const rings = t ? t.rings : init.rings;
+  openForm(isNew ? "Nouveau territoire" : "Modifier le territoire", [
+    { key: "civId", label: "Civilisation", type: "select", options: db.civs.slice().sort((a, b) => a.name.localeCompare(b.name, "fr")).map(c => [c.id, c.name]) },
+    { key: "label", label: "Intitulé de la phase", ph: "Apogée sous Trajan", help: "Ex. : « Après les conquêtes de Cyrus », « Empire d'Occident »." },
+    {
+      type: "row", fields: [
+        { key: "start", label: "Valable à partir de", type: "number" },
+        { key: "end", label: "Jusqu'à", type: "number" }]
+    }
+  ], {
+    civId: t?.civId || init?.civId || db.civs[0]?.id, label: t?.label || "",
+    start: t ? t.start : year, end: t ? t.end : year + 100
+  }, v => {
+    if (!v.civId) { toast("Créez d'abord une civilisation"); return false; }
+    if (v.start === null || v.end === null) { toast("Dates incomplètes"); return false; }
+    mutate(() => {
+      const o = t || { id: uid("ter"), rings };
+      Object.assign(o, { civId: v.civId, label: v.label.trim(), start: v.start, end: Math.max(v.end, v.start) });
+      if (isNew) db.territories.push(o);
+      sel = { type: "civ", id: o.civId };
+      if (year < o.start || year > o.end) year = o.start;
+    });
+    setYear(year, true); renderAll();
+    if (isNew) toast("Territoire enregistré");
+  }, isNew ? null : el("div", { class: "row", style: "margin:0;flex:1;gap:6px" }, [
+    el("button", { class: "btn", onclick: () => { editTerrId = t.id; editArrow = null; fitTo(t.rings); setMode("editGeom"); $(".scrim")?.remove(); } }, "Modifier le tracé"),
+    el("button", { class: "btn", onclick: () => { $(".scrim")?.remove(); openTerrCopy(t.civId, t.id); } }, "Reprendre")
+  ]));
+}
+
+function openSubjForm(x, init) {
+  const isNew = !x;
+  const me = init.civId;
+  const others = db.civs.filter(c => c.id !== me).sort((a, b) => a.name.localeCompare(b.name, "fr")).map(c => [c.id, c.name]);
+  if (!others.length) { toast("Il faut au moins deux civilisations"); return; }
+  const c = civ(me);
+  openForm(isNew ? "Nouvelle tutelle" : "Modifier la tutelle", [
+    {
+      key: "dir", label: "Sens", type: "select", options: [
+        ["sub", c.name + " passe sous contrôle"],
+        ["over", c.name + " exerce le contrôle"]]
+    },
+    { key: "other", label: "Autre civilisation", type: "select", options: others },
+    { key: "kind", label: "Nature", type: "select", options: Object.entries(SUBJ).map(([k, v]) => [k, v[0]]) },
+    {
+      type: "row", fields: [
+        { key: "start", label: "De", type: "number" },
+        { key: "end", label: "À", type: "number" }]
+    },
+    { key: "label", label: "Intitulé (facultatif)", ph: "première domination perse", help: "Remplace le libellé automatique sur la carte." }
+  ], {
+    dir: x ? (x.civId === me ? "sub" : "over") : "sub",
+    other: x ? (x.civId === me ? x.overId : x.civId) : others[0][0],
+    kind: x?.kind || "tutelle",
+    start: x ? x.start : year, end: x ? x.end : year + 50,
+    label: x?.label || ""
+  }, v => {
+    if (v.start === null || v.end === null) { toast("Dates incomplètes"); return false; }
+    if (v.other === me) { toast("Choisissez une autre civilisation"); return false; }
+    mutate(() => {
+      const o = x || { id: uid("sub") };
+      o.civId = v.dir === "sub" ? me : v.other;
+      o.overId = v.dir === "sub" ? v.other : me;
+      o.kind = v.kind; o.start = v.start; o.end = Math.max(v.end, v.start);
+      o.label = v.label.trim();
+      if (isNew) db.subjections.push(o);
+    });
+    renderAll();
+    if (isNew) toast("Tutelle enregistrée");
+  });
+}
+
+function openLinkForm(l, init) {
+  const isNew = !l;
+  const me = init && init.from ? init.from : l.from;
+  const others = db.civs.filter(c => c.id !== me).sort((a, b) => a.name.localeCompare(b.name, "fr")).map(c => [c.id, c.name]);
+  if (!others.length) { toast("Il faut au moins deux civilisations"); return; }
+  const evs = db.events.filter(e => !e.parentId).sort((a, b) => a.year - b.year)
+    .map(e => [e.id, `${fmtYear(e.year, false)} · ${e.title}`]);
+  openForm(isNew ? "Nouvelle filiation" : "Modifier la filiation", [
+    {
+      key: "dir", label: "Sens", type: "select", options: [
+        ["out", civ(me).name + " → l'autre"],
+        ["in", "L'autre → " + civ(me).name]]
+    },
+    { key: "other", label: "Autre civilisation", type: "select", options: others },
+    { key: "label", label: "Nature du lien", ph: "Continuation orientale de l'empire", help: "Ex. : « héritière de », « issue du partage de », « conquise par »." },
+    { key: "eventId", label: "Événement de transition", type: "select", options: [["", "— aucun —"]].concat(evs), help: "Fixe la date du lien sur la frise." }
+  ], {
+    dir: l ? (l.from === me ? "out" : "in") : "out",
+    other: l ? (l.from === me ? l.to : l.from) : others[0][0],
+    label: l?.label || "", eventId: l?.eventId || ""
+  }, v => {
+    if (v.other === me) { toast("Choisissez une autre civilisation"); return false; }
+    mutate(() => {
+      const o = l || { id: uid("lnk") };
+      o.from = v.dir === "out" ? me : v.other;
+      o.to = v.dir === "out" ? v.other : me;
+      o.label = v.label.trim();
+      o.eventId = v.eventId || null;
+      if (isNew) db.links.push(o);
+    });
+    renderAll();
+    if (isNew) toast("Filiation enregistrée");
+  });
+}
+
+function openEventForm(e, init) {
+  const isNew = !e;
+  openForm(isNew ? "Nouvel événement" : "Modifier l'événement", [
+    { key: "title", label: "Intitulé", ph: "Bataille d'Actium" },
+    {
+      type: "row", fields: [
+        { key: "year", label: "Année", type: "number" },
+        { key: "end", label: "Fin (facultatif)", type: "number", help: "Vide = fait ponctuel" }]
+    },
+    {
+      type: "row", fields: [
+        { key: "kind", label: "Nature", type: "select", options: Object.entries(EVKINDS) },
+        { key: "civId", label: "Civilisation", type: "select", options: [["", "— aucune —"]].concat(db.civs.slice().sort((a, b) => a.name.localeCompare(b.name, "fr")).map(c => [c.id, c.name])) }]
+    },
+    { key: "description", label: "Description", type: "textarea", rows: 5, after: wikiField() },
+    { key: "linksText", label: "Liens (un par ligne : Libellé | URL)", type: "textarea", rows: 2 }
+  ], {
+    title: e?.title || "", year: e ? e.year : (init?.year ?? year),
+    end: e && evLong(e) ? e.end : "", kind: e?.kind || (init?.parentId ? "bataille" : "jalon"),
+    civId: e?.civId || init?.civId || "",
+    description: e?.description || "", linksText: linksToText(e?.links)
+  }, v => {
+    if (!v.title.trim() || v.year === null) { toast("Intitulé et année sont requis"); return false; }
+    if (v.end !== null && v.end < v.year) { toast("La fin précède le début"); return false; }
+    mutate(() => {
+      const o = e || { id: uid("evt"), parentId: init?.parentId || null, arrows: [], lon: null, lat: null };
+      Object.assign(o, {
+        title: v.title.trim(), year: v.year, end: v.end === null ? v.year : v.end, kind: v.kind,
+        civId: v.civId || null, description: v.description, links: textToLinks(v.linksText)
+      });
+      if (isNew) db.events.push(o);
+      sel = { type: "event", id: o.id };
+    });
+    setYear(v.year, true); renderAll();
+  });
+}
+
+function openArrowForm(ev, i, pts) {
+  const isNew = i === null || i === undefined;
+  const a = isNew ? { label: "", dash: false, pts } : ev.arrows[i];
+  openForm(isNew ? "Nouveau mouvement" : "Modifier le mouvement", [
+    { key: "label", label: "Intitulé", ph: "Marche d'Hannibal vers l'Italie" },
+    { key: "dash", label: "Trait", type: "select", options: [["0", "Plein — avancée, campagne"], ["1", "Discontinu — retraite, retour"]] }
+  ], { label: a.label || "", dash: a.dash ? "1" : "0" }, v => {
+    mutate(() => {
+      if (isNew) { ev.arrows = ev.arrows || []; ev.arrows.push({ label: v.label.trim(), dash: v.dash === "1", pts: a.pts }); }
+      else { a.label = v.label.trim(); a.dash = v.dash === "1"; }
+      sel = { type: "event", id: ev.id };
+    });
+    renderAll();
+    if (isNew) toast("Mouvement enregistré");
+  });
+}
+
+function openPoiForm(p, init) {
+  const isNew = !p;
+  openForm(isNew ? "Nouveau lieu" : "Modifier le lieu", [
+    { key: "name", label: "Nom", ph: "Persépolis" },
+    {
+      type: "row", fields: [
+        { key: "kind", label: "Type", type: "select", options: Object.entries(KINDS) },
+        { key: "civId", label: "Civilisation", type: "select", options: [["", "— aucune —"]].concat(db.civs.slice().sort((a, b) => a.name.localeCompare(b.name, "fr")).map(c => [c.id, c.name])) }]
+    },
+    {
+      type: "row", fields: [
+        { key: "lat", label: "Latitude", type: "number" },
+        { key: "lon", label: "Longitude", type: "number" }]
+    },
+    {
+      type: "row", fields: [
+        { key: "start", label: "Visible à partir de", type: "number" },
+        { key: "end", label: "Jusqu'à", type: "number" }]
+    },
+    { key: "description", label: "Description", type: "textarea", rows: 5, after: wikiField() },
+    { key: "linksText", label: "Liens (un par ligne : Libellé | URL)", type: "textarea", rows: 2 }
+  ], {
+    name: p?.name || "", kind: p?.kind || "ville", civId: p?.civId || init?.civId || selCiv()?.id || "",
+    lat: p ? p.lat : init?.lat, lon: p ? p.lon : init?.lon,
+    start: p ? p.start : year, end: p ? p.end : Y1,
+    description: p?.description || "", linksText: linksToText(p?.links)
+  }, v => {
+    if (!v.name.trim()) { toast("Le nom est obligatoire"); return false; }
+    if (v.lat === null || v.lon === null) { toast("Coordonnées manquantes"); return false; }
+    mutate(() => {
+      const o = p || { id: uid("poi") };
+      Object.assign(o, {
+        name: v.name.trim(), kind: v.kind, civId: v.civId || null,
+        lat: clamp(v.lat, -85, 85), lon: clamp(v.lon, -180, 180),
+        start: v.start ?? Y0, end: v.end ?? Y1, description: v.description, links: textToLinks(v.linksText)
+      });
+      if (isNew) db.pois.push(o);
+      sel = { type: "poi", id: o.id };
+    });
+    renderAll();
+  });
+}
+/* =====================  RECHERCHE  ===================== */
+const qIn = $("#q"), qRes = $("#qres");
+let qIdx = -1, qItems = [];
+function runSearch() {
+  const v = qIn.value.trim().toLowerCase();
+  qRes.textContent = ""; qItems = []; qIdx = -1;
+  if (v.length < 2) { qRes.classList.remove("on"); return; }
+  const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const n = norm(v);
+  const add = (label, arr, fmt, act) => {
+    const hits = arr.filter(o => norm(fmt.text(o)).includes(n)).slice(0, 6);
+    if (!hits.length) return;
+    qRes.append(el("b", {}, label));
+    hits.forEach(o => {
+      const b = el("button", { onclick: () => { act(o); qRes.classList.remove("on"); qIn.value = ""; } }, [
+        fmt.dot ? el("span", { class: "dot", style: `background:${fmt.dot(o)}` }) : null,
+        el("span", {}, fmt.text(o)), el("span", { class: "yr" }, fmt.year(o))
+      ]);
+      qItems.push(b); qRes.append(b);
+    });
+  };
+  add("Civilisations", db.civs, { text: c => c.name, year: c => fmtSpan(c.start, c.end), dot: c => c.color }, c => select("civ", c.id));
+  add("Lieux", db.pois, { text: p => p.name, year: p => (p.civId ? civ(p.civId)?.name : KINDS[p.kind]) || "" }, p => select("poi", p.id, { fit: true }));
+  add("Événements", db.events, { text: e => e.title, year: e => fmtYear(e.year, true) }, e => select("event", e.id));
+  if (!qItems.length) qRes.append(el("b", {}, "Aucun résultat"));
+  qRes.classList.add("on");
+}
+qIn.addEventListener("input", runSearch);
+qIn.addEventListener("focus", () => { if (qIn.value.trim().length > 1) qRes.classList.add("on"); });
+qIn.addEventListener("keydown", e => {
+  if (e.key === "Escape") { qIn.value = ""; qRes.classList.remove("on"); qIn.blur(); }
+  if (!qItems.length) return;
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    qItems[qIdx]?.classList.remove("cur");
+    qIdx = (qIdx + (e.key === "ArrowDown" ? 1 : -1) + qItems.length) % qItems.length;
+    qItems[qIdx].classList.add("cur"); qItems[qIdx].scrollIntoView({ block: "nearest" });
+  }
+  if (e.key === "Enter") { e.preventDefault(); (qItems[qIdx] || qItems[0]).click(); }
+});
+document.addEventListener("click", e => { if (!e.target.closest(".search")) qRes.classList.remove("on"); });
+
+/* =====================  IMPORT / EXPORT  ===================== */
+function doExport() {
+  const blob = new Blob([JSON.stringify({ v: 1, app: APP_VERSION, exported: new Date().toISOString(), db: normalizeDb(db) }, null, 1)], { type: "application/json" });
+  const a = el("a", { href: URL.createObjectURL(blob), download: `atlas-civilisations-${new Date().toISOString().slice(0, 10)}.json` });
+  document.body.append(a); a.click(); a.remove();
+  toast("Fichier exporté");
+}
+function doImport() {
+  if (!requireEdit()) return;
+  const inp = el("input", { type: "file", accept: ".json,application/json" });
+  inp.addEventListener("change", async () => {
+    const f = inp.files[0]; if (!f) return;
+    try {
+      const j = JSON.parse(await f.text());
+      const d = j.db || j;
+      if (!d.civs) throw 0;
+      const merge = db.civs.length && confirm("Fusionner avec le contenu actuel ?\n\nOK = fusionner · Annuler = remplacer");
+      mutate(() => {
+        if (!merge) db = emptyDb();
+        const ids = new Set(db.civs.map(c => c.id));
+        for (const k of COLLS) (d[k] || []).forEach(o => {
+          if (!o || !o.id || (merge && db[k].some(x => x.id === o.id))) return;
+          db[k].push(o);
+        });
+      });
+      migrate(); sel = null; renderAll(); toast("Contenu importé");
+    } catch (e) { toast("Fichier illisible"); }
+  });
+  inp.click();
+}
+/* =====================  DIVERS  ===================== */
+let toastT;
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("on");
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2200);
+}
+function helpModal() {
+  const root = $("#modalRoot");
+  const body = el("div", { class: "body prose" });
+  body.innerHTML = md(`## Ce que fait cet atlas
+La frise commande la carte : à l'année où se trouve le curseur, la carte affiche les territoires, les villes et les lieux actifs. Cliquez sur un territoire, un lieu ou une bande de la frise pour ouvrir sa fiche.
+
+## Enrichir le contenu
+- **+ Civilisation** crée une entrée avec ses dates et sa couleur.
+- **+ Territoire** trace une emprise : cliquez les sommets sur la carte, *Entrée* referme le contour, puis indiquez entre quelles dates elle vaut. Un empire qui bouge = plusieurs territoires successifs.
+- **+ Lieu** pose une ville, un site ou une bataille.
+- Chaque fiche accepte une description (mise en forme simple), des liens, et l'import du résumé d'une page Wikipédia.
+
+## Épisodes, étapes et mouvements
+Donnez une date de fin à un événement et il devient un **épisode** : une barre sur la frise plutôt qu'un repère. Sa fiche accepte alors des **étapes** — batailles, sièges, traités — qui se rangent sur une seconde ligne sous lui.
+
+Chaque événement accepte aussi un **lieu** posé sur la carte et des **mouvements** : des flèches tracées au clic, trait plein pour une avancée, discontinu pour un retour. Sélectionner un épisode affiche d'un coup ses étapes et ses flèches, quelle que soit l'année exacte du curseur.
+
+## Reprendre un tracé
+Sur la fiche d'une civilisation, *+ Ajouter* un territoire propose d'abord de **repartir d'un contour existant** : celui de la période précédente, ou celui d'une autre civilisation dont celle-ci hérite. Le contour est copié, puis s'ouvre directement en édition de sommets. L'icône de copie en face de chaque territoire fait la même chose à partir de cette période précise.
+
+## Filiations
+Une civilisation procède souvent d'une autre. La section *Filiation* relie les deux dans un sens ou dans l'autre, avec un intitulé et, si vous le souhaitez, l'**événement de transition** qui fixe la date du passage. La frise dessine alors un trait entre les deux bandes ; il s'allume quand l'une des deux est sélectionnée, et le clic ouvre l'événement de transition. Le bouton *Filiations*, dans l'en-tête de la frise, masque ces traits.
+
+L'empilement des bandes suit ces liens : une civilisation issue d'une autre **reprend sa ligne, à la suite**, quand la chronologie le permet — la République romaine, l'Empire, l'Occident puis les Carolingiens se lisent ainsi d'un seul trait. Si les deux périodes se chevauchent, l'héritière se place sur la ligne libre la plus proche, ce qui rapproche les branches d'une même souche.
+
+## Tutelles et vassalité
+Une civilisation ne disparaît pas toujours quand elle est conquise : elle continue, sous contrôle étranger, puis recouvre parfois son indépendance. La section *Tutelles* enregistre ces périodes dans un sens (⤓ elle subit) ou dans l'autre (⤒ elle domine), avec leur nature — vassalité, province, protectorat, occupation, union dynastique.
+
+Sur la carte, le territoire garde sa propre trame mais reçoit par-dessus, en croisillon, celle de la puissance dominante, un liseré discontinu et une mention en italique. Sur la frise, la bande est barrée des mêmes hachures pendant la seule durée de la tutelle. L'Égypte pharaonique en donne l'exemple : koushite, assyrienne, perse à deux reprises, puis macédonienne, sans jamais quitter la carte.
+
+## Retoucher un tracé
+Sur la fiche d'une civilisation — ou en face d'un mouvement, sur la fiche d'un événement — l'icône cible ouvre l'édition des sommets : glissez-les, cliquez un point pâle pour en insérer un, *Alt*+clic pour en retirer un. *+ Partie* ajoute une portion détachée (île, province isolée).
+
+## Raccourcis
+- **←** / **→** : reculer ou avancer d'un pas · **Maj** ×10 · **Alt** ×100
+- **Échap** : quitter le mode en cours · **Entrée** : fermer le tracé
+- **Ctrl/Cmd + Z** : annuler la dernière modification
+- **/** : rechercher · molette : zoom (carte et frise)
+
+## Comptes et contributions
+Tout le monde consulte l'atlas sans compte. **Créer un compte** (bouton en haut à droite) permet de modifier : vos changements restent alors des **brouillons** dans votre navigateur, signalés par le bouton *Proposer*. Ajoutez une note (vos sources, par exemple) et envoyez : un éditeur relit la proposition, l'examine sur la carte, puis la publie ou la refuse avec un commentaire. L'onglet *Propositions* suit leur sort.
+
+Les **éditeurs** publient directement et valident les propositions depuis l'onglet *Validation*. Les **administrateurs** attribuent les rôles.
+
+## Prudence avec les tracés
+Les emprises fournies sont des approximations de lecture. Les frontières anciennes sont souvent des zones d'influence graduées plutôt que des lignes ; corrigez-les selon vos sources.`);
+  const scrim = el("div", { class: "scrim", onclick: e => { if (e.target === scrim) scrim.remove(); } },
+    el("div", { class: "modal" }, [
+      el("header", {}, [el("h3", {}, "Mode d'emploi"), el("button", { class: "iconbtn", onclick: () => scrim.remove() }, "✕")]),
+      body,
+      el("footer", {}, el("button", { class: "btn prim", onclick: () => scrim.remove() }, "Fermer"))
+    ]));
+  root.append(scrim);
+}
+
+/* =====================  CLAVIER  ===================== */
+document.addEventListener("keydown", e => {
+  const typing = /input|textarea|select/i.test(e.target.tagName);
+  if (e.key === "/" && !typing) { e.preventDefault(); qIn.focus(); return; }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z" && !typing) { e.preventDefault(); undo(); return; }
+  if (typing) return;
+  if (e.key === "Escape") {
+    const scrims = $$(".scrim");
+    if (scrims.length) { scrims[scrims.length - 1].remove(); return; }
+    if (mode !== "select") setMode("select"); else select(null);
+  }
+  if (e.key === "Enter" && (mode === "drawTerr" || mode === "drawArrow")) finishDraft();
+  if (e.key === "Backspace" && draft && draft.pts.length) { e.preventDefault(); draft.pts.pop(); drawEditLayer(); }
+  if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+    const step = e.altKey ? 100 : e.shiftKey ? 10 : 1;
+    setYear(year + (e.key === "ArrowRight" ? step : -step));
+  }
+});
+
+/* =====================  BRANCHEMENTS  ===================== */
+$("#tSelect").onclick = () => setMode("select");
+$("#tTerr").onclick = () => {
+  if (!db.civs.length) return toast("Créez d'abord une civilisation");
+  if (!selCiv()) return toast("Sélectionnez la civilisation concernée");
+  setMode(mode === "drawTerr" ? "select" : "drawTerr");
+};
+$("#tPoi").onclick = () => setMode(mode === "placePoi" ? "select" : "placePoi");
+$("#tLabels").onclick = e => { show.labels = !show.labels; e.currentTarget.classList.toggle("on", show.labels); renderMap(); };
+$("#tPois").onclick = e => { show.pois = !show.pois; e.currentTarget.classList.toggle("on", show.pois); renderMap(); };
+$("#tRiv").onclick = e => { show.rivers = !show.rivers; e.currentTarget.classList.toggle("on", show.rivers); drawRivers(); };
+$("#tGrid").onclick = e => { show.grid = !show.grid; e.currentTarget.classList.toggle("on", show.grid); drawGrid(); };
+$("#tFit").onclick = fitWorld;
+$("#btnNewCiv").onclick = () => openCivForm();
+$("#btnHelp").onclick = helpModal;
+$("#btnAccount").onclick = () => (user ? openAccount() : openAuth("login"));
+$("#btnPropose").onclick = openPropose;
+$("#yBack").onclick = () => setYear(year - 25);
+$("#yFwd").onclick = () => setYear(year + 25);
+$("#tlLinks").onclick = e => { showLinks = !showLinks; e.currentTarget.classList.toggle("on", showLinks); renderTimeline(); };
+$("#tlZoomIn").onclick = () => tlZoom(.6);
+$("#tlZoomOut").onclick = () => tlZoom(1.7);
+$("#tlAll").onclick = () => { tview = { a: Y0, b: Y1 }; renderTimeline(); };
+$("#tlFilter").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  tlFilter = b.dataset.f;
+  $$("#tlFilter button").forEach(x => x.classList.toggle("on", x === b));
+  renderTimeline();
+});
+$$(".tabs button").forEach(b => b.onclick = () => { if (b.dataset.tab === "props") propDetail = null; tab = b.dataset.tab; renderPanel(); });
+
+function renderAll() { renderMap(); renderTimeline(); renderPanel(); }
+
+/* =====================  DÉMARRAGE  ===================== */
+(async function init() {
+  setSaveState("chargement…");
+  if (CFG.supabaseUrl && CFG.supabaseAnonKey) {
+    backend = "supabase";
+    if (window.supabase && window.supabase.createClient)
+      SB = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, { auth: { persistSession: true, detectSessionInUrl: true } });
+    else console.error("supabase-js non chargé");
+  }
+  drawGrid(); applyView(); loadGeo();
+  await loadPublished();
+  if (backend === "supabase" && !SB) remoteState = "down";
+  if (backend === "file") {
+    role = "local";
+    applyDraft();
+    pendingOps = diffDb(base, db).length;
+    setSaveState(pendingOps ? `${pendingOps} modif. en attente` : "fichier");
+  } else if (SB) {
+    setSaveState(remoteState === "ok" ? "à jour" : "lecture seule");
+    try { await initAuth(); } catch (e) { console.error(e); }
+  } else setSaveState("lecture seule");
+  setYear(year, true);
+  updateChrome(); renderAll();
+  if (backend === "file" && pendingOps) setTimeout(() => toast(`${pendingOps} modification${pendingOps > 1 ? "s" : ""} locale${pendingOps > 1 ? "s" : ""} retrouvée${pendingOps > 1 ? "s" : ""}`), 400);
+})();
+</script>
+
+
+</body>
+</html>

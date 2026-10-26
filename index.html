@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- Atlas des civilisations — v2.3.0 -->
+<!-- Atlas des civilisations — v2.3.1 -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="generator" content="Atlas des civilisations 2.3.0">
+<meta name="generator" content="Atlas des civilisations 2.3.1">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Atlas des civilisations · 5000 av. J.-C. → 1900</title>
 <style>
@@ -570,7 +570,7 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
 
 "use strict";
 /* =====================================================================
-   ATLAS DES CIVILISATIONS — v2.3.0
+   ATLAS DES CIVILISATIONS — v2.3.1
    Données : base partagée Supabase (lecture publique, écriture par rôle)
              ou, à défaut, data/atlas.json + brouillon local
    Fond de carte : data/geo (Natural Earth 1:50M + tuiles 1:10M, relief ombré)
@@ -700,7 +700,7 @@ const EVKINDS = { jalon: "Jalon", bataille: "Bataille", siege: "Siège", traite:
      envoient des propositions soumises à validation ;
    - « fichier » (pas de configuration) : lecture de data/atlas.json, modifications
      conservées dans ce navigateur, export pour mise à jour du dépôt. */
-const APP_VERSION = "2.3.0";
+const APP_VERSION = "2.3.1";
 const COLLS = ["civs", "territories", "events", "pois", "links", "subjections"];
 const COLL_LABEL = { civs: "Civilisation", territories: "Territoire", events: "Événement", pois: "Lieu", links: "Filiation", subjections: "Tutelle" };
 const ROLE_LABEL = { viewer: "Visiteur", contributor: "Contributeur", editor: "Éditeur", admin: "Administrateur", local: "Local" };
@@ -1860,7 +1860,7 @@ let panning = null, moved = 0;
 function panMove(e) {
   if (!panning) return;
   const s = px(), dx = (e.clientX - panning.x) * s, dy = (e.clientY - panning.y) * s;
-  moved = Math.max(moved, Math.abs(dx) + Math.abs(dy));
+  moved = Math.max(moved, Math.abs(e.clientX - panning.x) + Math.abs(e.clientY - panning.y));   // en pixels
   view.x = panning.vx - dx; view.y = panning.vy - dy; applyView();
 }
 function panEnd() {
@@ -1872,9 +1872,10 @@ function panEnd() {
 }
 map.addEventListener("pointerdown", e => {
   if (touches.size > 1) return;
-  if (mode === "drawTerr" || mode === "drawArrow" || mode === "placePoi" || mode === "placeEvPt") return;
+  moved = 0;                                   // chaque appui repart de zéro, y compris en mode tracé ou placement
   if (e.target.closest(".vtx")) return;
-  panning = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y }; moved = 0;
+  /* la carte se fait glisser dans tous les modes ; un appui sans déplacement reste un clic */
+  panning = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y };
   map.classList.add("grabbing");
   window.addEventListener("pointermove", panMove);
   window.addEventListener("pointerup", panEnd);
@@ -1886,7 +1887,7 @@ map.addEventListener("pointermove", e => {
   $("#coords").textContent = `${Math.abs(g[1]).toFixed(nd)}°${g[1] >= 0 ? "N" : "S"}  ${Math.abs(g[0]).toFixed(nd)}°${g[0] >= 0 ? "E" : "O"}`;
 });
 map.addEventListener("pointerup", e => {
-  if (moved * (1 / px()) > 4) return;                // c'était un déplacement, pas un clic
+  if (moved > (e.pointerType === "touch" ? 10 : 5)) return;   // c'était un déplacement, pas un clic
   if (mode === "drawTerr" || mode === "drawArrow") { addDraftPoint(clientToGeo(e)); return; }
   if (mode === "placePoi") { const g = clientToGeo(e); setMode("select"); openPoiForm(null, { lon: g[0], lat: g[1] }); return; }
   if (mode === "placeEvPt") {

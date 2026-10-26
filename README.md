@@ -1,4 +1,4 @@
-# Atlas des civilisations — v2.2.0
+# Atlas des civilisations — v2.3.0
 
 Atlas historique interactif (5000 av. J.-C. → 1900) : carte et frise synchronisées, territoires, lieux, événements, filiations, tutelles.
 
@@ -63,6 +63,7 @@ L'enrichissement v2.1.0 (civilisations supplémentaires, emprises datées) est d
 - Sans sélection, la fiche liste les civilisations présentes à l'année du curseur.
 - **Panneau latéral et frise** repliables (bouton *Panneau*, flèche ▾ de la frise, touches **P**, **F**, **C** pour la carte seule) et redimensionnables en glissant leur bord (double-clic : taille d'origine). Réglages conservés dans le navigateur.
 - Sélectionner un élément rouvre le panneau et centre la frise sur sa période, en ramenant sa bande au milieu.
+- **Téléphone et tablette en portrait** (largeur ≤ 900 px) : carte plein écran, pincement à deux doigts pour zoomer et se déplacer ; la fiche s'ouvre en volet depuis le bas (poignée : vers le haut pour l'agrandir, vers le bas pour la réduire puis la fermer, ✕ pour la fermer) ; la frise se réduit à un curseur d'années, dépliable par ▴ ; le bouton *Calques* regroupe les affichages ; les fenêtres passent en plein écran.
 - Carte : boutons **+ / −**, touches **+ / −**, double-clic pour zoomer (Maj + double-clic pour dézoomer). La légende des civilisations affichées est supprimée au profit de la carte.
 - Les images sont de simples adresses `https://` (Wikimedia Commons de préférence) ; rien n'est stocké dans la base.
 
@@ -88,6 +89,7 @@ python3 tools/build_relief_v2.1.0.py shadedrelief.jpg ./ne/ne_50m_land.geojson .
 
 ## Historique
 
+- **2.3.0** — adaptation au téléphone : volet de fiche glissant, curseur d'années, pincement, menu Calques, fenêtres plein écran, infobulles désactivées au doigt.
 - **2.2.0** — légende supprimée ; panneau et frise repliables et redimensionnables ; frise centrée sur la sélection ; zoom par boutons, clavier et double-clic ; imports JSON et enrichissement retirés de l'interface.
 - **2.1.0** — relief ombré ; fiche Description et onglet Technique (édition sur place), images ; onglet Éléments retiré ; enrichissement non destructif (32 civilisations, 577 emprises datées) ; publication par lots.
 - **2.0.0** — base partagée Supabase avec comptes, rôles et validation des propositions ; chargement automatique des données ; fond de carte multi-échelle 1:50M / 1:10M ; zoom ×5 ; coordonnées au millième de degré.

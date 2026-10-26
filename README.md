@@ -1,4 +1,4 @@
-# Atlas des civilisations — v2.3.0
+# Atlas des civilisations — v2.3.1
 
 Atlas historique interactif (5000 av. J.-C. → 1900) : carte et frise synchronisées, territoires, lieux, événements, filiations, tutelles.
 
@@ -89,6 +89,7 @@ python3 tools/build_relief_v2.1.0.py shadedrelief.jpg ./ne/ne_50m_land.geojson .
 
 ## Historique
 
+- **2.3.1** — correctif : après un déplacement de la carte, les clics de placement (lieu, point d'événement) et de tracé étaient ignorés ; la carte se fait désormais glisser dans tous les modes.
 - **2.3.0** — adaptation au téléphone : volet de fiche glissant, curseur d'années, pincement, menu Calques, fenêtres plein écran, infobulles désactivées au doigt.
 - **2.2.0** — légende supprimée ; panneau et frise repliables et redimensionnables ; frise centrée sur la sélection ; zoom par boutons, clavier et double-clic ; imports JSON et enrichissement retirés de l'interface.
 - **2.1.0** — relief ombré ; fiche Description et onglet Technique (édition sur place), images ; onglet Éléments retiré ; enrichissement non destructif (32 civilisations, 577 emprises datées) ; publication par lots.

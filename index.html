@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- Atlas des civilisations — v2.0.0 -->
+<!-- Atlas des civilisations — v2.1.0 -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="generator" content="Atlas des civilisations 2.0.0">
+<meta name="generator" content="Atlas des civilisations 2.1.0">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Atlas des civilisations · 5000 av. J.-C. → 1900</title>
 <style>
@@ -362,6 +362,33 @@ table.users{border-collapse:collapse;width:100%;font-size:12px}
 table.users th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:4px 6px;border-bottom:1px solid var(--line-2)}
 table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
 @media (max-width:900px){.role-chip{display:none}#btnAccount{max-width:96px}}
+
+/* ---------- v2.1.0 : relief, fiche descriptive, onglet Technique, enrichissement ---------- */
+#gRelief{mix-blend-mode:multiply;opacity:.9;pointer-events:none}
+#gRelief image{image-rendering:auto}
+.subtabs{display:flex;gap:0;margin:10px 14px 0;border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden;width:max-content}
+.subtabs button{padding:4px 12px;font-size:11.5px;color:var(--ink-2);border-right:1px solid var(--line)}
+.subtabs button:last-child{border:none}
+.subtabs button.on{background:var(--accent);color:#fff}
+.figwrap{padding-top:10px;padding-bottom:10px}
+.fig{margin:0}
+.fig img{display:block;width:100%;max-height:300px;object-fit:cover;border-radius:var(--r);border:1px solid var(--line);background:var(--surface-2)}
+.fig figcaption{font-size:11.5px;color:var(--ink-2);margin-top:5px;line-height:1.4}
+.fig .cr{color:var(--muted)}
+.roitem{display:block;width:100%;text-align:left;margin:0;padding:5px 6px;border-radius:2px}
+.roitem:hover{background:var(--surface-2)}
+.roitem .t{display:block}
+.more{margin:4px 0 0 6px}
+.iform .body{padding:0}
+.iform textarea{min-height:90px}
+.iform-acts{justify-content:flex-end;margin-top:4px}
+.idline{font-family:var(--mono);font-size:10px;margin-top:10px;overflow-wrap:anywhere}
+.enr-sect{margin-bottom:14px}
+.enr-row{display:grid;grid-template-columns:18px 1fr;column-gap:8px;align-items:start;padding:4px 0;border-bottom:1px dotted var(--line);cursor:pointer}
+.enr-row input{margin-top:3px}
+.enr-n{font-size:12.5px}
+.enr-w{color:var(--flag);font-weight:400}
+.enr-s{grid-column:2;font-family:var(--mono);font-size:10px;color:var(--muted);overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -393,6 +420,7 @@ table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
       <defs id="defs"></defs>
       <g id="gGrid" class="grid"></g>
       <g id="gLand"></g>
+      <g id="gRelief"></g>
       <g id="gLake"></g>
       <g id="gRiver"></g>
       <g id="gTerr"></g>
@@ -412,6 +440,7 @@ table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
         <button id="tLabels" class="on" title="Afficher les noms">Noms</button>
         <button id="tPois" class="on" title="Afficher les lieux">Lieux</button>
         <button id="tRiv" class="on" title="Afficher les fleuves et les grands lacs">Fleuves</button>
+        <button id="tRel" class="on" title="Afficher le relief">Relief</button>
         <button id="tGrid" title="Afficher la grille">Grille</button>
         <button id="tFit" title="Recentrer la carte">Recentrer</button>
       </div>
@@ -457,7 +486,6 @@ table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
   <aside class="side">
     <nav class="tabs" role="tablist">
       <button data-tab="sheet" class="on">Fiche</button>
-      <button data-tab="items">Éléments</button>
       <button data-tab="data">Données</button>
       <button data-tab="props" id="tabProps" hidden>Propositions</button>
     </nav>
@@ -475,10 +503,10 @@ table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
 
 "use strict";
 /* =====================================================================
-   ATLAS DES CIVILISATIONS — v2.0.0
+   ATLAS DES CIVILISATIONS — v2.1.0
    Données : base partagée Supabase (lecture publique, écriture par rôle)
              ou, à défaut, data/atlas.json + brouillon local
-   Fond de carte : data/geo (Natural Earth 1:50M + tuiles 1:10M)
+   Fond de carte : data/geo (Natural Earth 1:50M + tuiles 1:10M, relief ombré)
    ===================================================================== */
 
 const $ = s => document.querySelector(s);
@@ -546,7 +574,7 @@ let editTerrId = null;
 let tab = "sheet";
 let tlFilter = "all";
 let showLinks = true;
-let show = { labels: true, pois: true, grid: false, rivers: true };
+let show = { labels: true, pois: true, grid: false, rivers: true, relief: true };
 let editArrow = null;              // {evId, i} — flèche en cours de retouche
 let modeTarget = null;             // objet visé par le mode courant
 let view = { x: -180, y: -90, w: 360, h: 180 };  // viewBox carte
@@ -605,7 +633,7 @@ const EVKINDS = { jalon: "Jalon", bataille: "Bataille", siege: "Siège", traite:
      envoient des propositions soumises à validation ;
    - « fichier » (pas de configuration) : lecture de data/atlas.json, modifications
      conservées dans ce navigateur, export pour mise à jour du dépôt. */
-const APP_VERSION = "2.0.0";
+const APP_VERSION = "2.1.0";
 const COLLS = ["civs", "territories", "events", "pois", "links", "subjections"];
 const COLL_LABEL = { civs: "Civilisation", territories: "Territoire", events: "Événement", pois: "Lieu", links: "Filiation", subjections: "Tutelle" };
 const ROLE_LABEL = { viewer: "Visiteur", contributor: "Contributeur", editor: "Éditeur", admin: "Administrateur", local: "Local" };
@@ -759,9 +787,20 @@ async function sync() {
     if (syncing) { syncTimer = setTimeout(sync, 500); return; }
     syncing = true; setSaveState("publication…");
     try {
-      const { error } = await SB.rpc("apply_changes", { p_changes: ops.map(op => wireOp(op, false)) });
-      if (error) throw error;
-      applyToBase(ops);
+      /* par lots (≈ 500 ko) : un enrichissement peut peser plusieurs mégaoctets */
+      const batches = []; let cur = [], size = 0;
+      for (const op of ops) {
+        const n = (op.json || "").length + 80;
+        if (cur.length && (size + n > 5e5 || cur.length >= 250)) { batches.push(cur); cur = []; size = 0; }
+        cur.push(op); size += n;
+      }
+      if (cur.length) batches.push(cur);
+      for (let i = 0; i < batches.length; i++) {
+        if (batches.length > 1) setSaveState(`publication ${i + 1}/${batches.length}…`);
+        const { error } = await SB.rpc("apply_changes", { p_changes: batches[i].map(op => wireOp(op, false)) });
+        if (error) throw error;
+        applyToBase(batches[i]);
+      }
       pendingOps = diffDb(base, db).length;
       setSaveState(pendingOps ? "modifié…" : "publié");
       if (pendingOps) syncTimer = setTimeout(sync, 600);
@@ -1018,7 +1057,7 @@ function summarize(ws) {
   const head = ws.slice(0, 12).map(opLine).join("\n");
   return (ws.length > 12 ? head + `\n… et ${ws.length - 12} autre(s)` : head).slice(0, 3900);
 }
-const FIELD_LABEL = { name: "nom", title: "titre", label: "intitulé", start: "début", end: "fin", year: "année", color: "couleur", region: "aire", description: "description", links: "liens", rings: "tracé", arrows: "mouvements", civId: "civilisation", overId: "puissance dominante", kind: "type", lon: "longitude", lat: "latitude", parentId: "épisode parent", from: "de", to: "vers", eventId: "événement de transition" };
+const FIELD_LABEL = { image: "image", imageCaption: "légende", imageCredit: "crédit", source: "source", name: "nom", title: "titre", label: "intitulé", start: "début", end: "fin", year: "année", color: "couleur", region: "aire", description: "description", links: "liens", rings: "tracé", arrows: "mouvements", civId: "civilisation", overId: "puissance dominante", kind: "type", lon: "longitude", lat: "latitude", parentId: "épisode parent", from: "de", to: "vers", eventId: "événement de transition" };
 function fmtVal(k, v) {
   if (v === null || v === undefined || v === "") return "—";
   if (k === "start" || k === "end" || k === "year") return fmtYear(v, true);
@@ -1030,7 +1069,7 @@ function fmtVal(k, v) {
   const s = typeof v === "object" ? JSON.stringify(v) : String(v);
   return s.length > 160 ? s.slice(0, 157) + "…" : s;
 }
-const NEW_KEYS = ["name", "title", "label", "kind", "civId", "overId", "from", "to", "start", "end", "year", "region", "lon", "lat", "rings", "arrows", "description"];
+const NEW_KEYS = ["image", "name", "title", "label", "kind", "civId", "overId", "from", "to", "start", "end", "year", "region", "lon", "lat", "rings", "arrows", "description"];
 function fieldDiff(w) {
   if (w.op === "delete") return [];
   if (!w.base) return NEW_KEYS.filter(k => w.data && w.data[k] !== undefined && w.data[k] !== null && w.data[k] !== "")
@@ -1297,7 +1336,7 @@ function updateChrome() {
 const map = $("#map");
 const gGrid = $("#gGrid"), gLand = $("#gLand"), gLake = $("#gLake"), gRiver = $("#gRiver"),
       gTerr = $("#gTerr"), gLab = $("#gTerrLabels"), gEvent = $("#gEvent"),
-      gPoi = $("#gPoi"), gEdit = $("#gEdit"), defs = $("#defs");
+      gPoi = $("#gPoi"), gEdit = $("#gEdit"), defs = $("#defs"), gRelief = $("#gRelief");
 
 const px = () => view.w / (map.clientWidth || 1);   // degrés par pixel
 function applyView() {
@@ -1307,7 +1346,7 @@ function applyView() {
   /* si la carte tient en hauteur, on la centre au lieu de la laisser flotter */
   view.y = view.h >= 176 ? -view.h / 2 - 6 : clamp(view.y, -95, 95 - view.h * .5);
   map.setAttribute("viewBox", `${view.x} ${view.y} ${view.w} ${view.h}`);
-  updateDetail();
+  updateDetail(); updateRelief();
 }
 const toXY = ([lon, lat]) => [lon, -lat];
 function ringD(ring) {
@@ -1429,6 +1468,39 @@ async function loadTile(k) {
     GEO.nodes.set(k, n);
   } catch (e) { console.warn("tuile", k, e); GEO.failed.set(k, Date.now()); }
   finally { GEO.loading.delete(k); updateDetail(); }
+}
+/* relief ombré : Natural Earth Shaded Relief, combiné au fond en mode « produit »
+   (le groupe entier est fusionné, les tuiles détaillées recouvrent l'image d'ensemble) */
+const RELIEF = { idx: null, set: new Set(), nodes: new Map(), T: 30 };
+const RELIEF_W = 110;   // largeur de vue (degrés) sous laquelle les tuiles détaillées s'affichent
+async function loadRelief() {
+  try {
+    const r = await fetch("data/geo/relief/index.json?v=" + APP_VERSION);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    RELIEF.idx = await r.json(); RELIEF.T = RELIEF.idx.tile || 30; RELIEF.set = new Set(RELIEF.idx.tiles || []);
+    gRelief.append(svgEl("image", { href: "data/geo/relief/world.jpg?v=" + APP_VERSION, x: -180, y: -90, width: 360, height: 180, preserveAspectRatio: "none" }));
+    drawRelief();
+  } catch (e) { console.warn("relief", e); }
+}
+function drawRelief() { gRelief.style.display = show.relief ? "" : "none"; updateRelief(); }
+function updateRelief() {
+  if (!RELIEF.idx || !show.relief) return;
+  const T = RELIEF.T, need = new Set();
+  if (view.w <= RELIEF_W) {
+    const lon0 = Math.floor(view.x / T) * T, lon1 = view.x + view.w;
+    const lat0 = Math.floor(-(view.y + view.h) / T) * T, lat1 = -view.y;
+    for (let x = Math.max(lon0, -180); x < Math.min(lon1, 180); x += T)
+      for (let y = Math.max(lat0, -90); y < Math.min(lat1, 90); y += T) {
+        const k = x + "_" + y;
+        if (RELIEF.set.has(k)) need.add(k);
+      }
+  }
+  for (const [k, n] of RELIEF.nodes) { const d = need.has(k) ? "" : "none"; if (n.style.display !== d) n.style.display = d; }
+  for (const k of need) if (!RELIEF.nodes.has(k)) {
+    const [x, y] = k.split("_").map(Number);
+    const n = svgEl("image", { href: `data/geo/relief/${k}.jpg?v=${APP_VERSION}`, x, y: -(y + T), width: T, height: T, preserveAspectRatio: "none" });
+    gRelief.append(n); RELIEF.nodes.set(k, n);
+  }
 }
 function drawGrid() {
   gGrid.textContent = "";
@@ -1874,7 +1946,7 @@ function select(type, id, opts = {}) {
   if (sel && sel.type === "event") { const e = byId(db.events, id); if (e) setYear(e.year, true); }
   if (sel && sel.type === "terr") { const t = byId(db.territories, id); if (t) { setYear(clamp(year, t.start, t.end ?? Y1), true); if (opts.fit !== false) fitTo(t.rings); } }
   if (sel && sel.type === "poi" && opts.fit) { const p = byId(db.pois, sel.id); if (p) fitTo([[[p.lon - 6, p.lat - 5], [p.lon + 6, p.lat + 5]]]); }
-  if (tab === "data") tab = "sheet";
+  if (tab === "data" || tab === "props") tab = "sheet";
   renderAll();
   $(".panel").scrollTop = 0;
 }
@@ -2142,27 +2214,132 @@ function renderPanel() {
   panel.textContent = "";
   if (tab === "data") return renderData();
   if (tab === "props") return renderProps();
-  if (tab === "items") return renderItems();
   return renderSheet();
 }
 
-/* ---- onglet Fiche ---- */
+/* ---- onglet Fiche : vue « Description » (lecture) et « Technique » (édition) ---- */
+let sheetMode = "fiche";
+let FORM_TARGET = null;        // conteneur d'un formulaire affiché dans le panneau plutôt qu'en fenêtre
 function renderSheet() {
-  if (!sel) {
-    panel.append(el("div", { class: "empty" }, [
-      el("p", {}, "Rien de sélectionné."),
-      el("p", {}, "Cliquez sur un territoire, un lieu ou une bande de la frise."),
-      el("div", { class: "row", style: "justify-content:center;margin-top:14px" }, [
-        el("button", { class: "btn ed", onclick: () => openCivForm() }, "+ Civilisation"),
-        el("button", { class: "btn", onclick: () => { tab = "items"; renderPanel(); } }, "Tout parcourir")
-      ])
-    ]));
-    return;
-  }
-  if (sel.type === "poi") return sheetPoi(byId(db.pois, sel.id));
-  if (sel.type === "event") return sheetEvent(byId(db.events, sel.id));
-  const c = selCiv(); if (!c) { sel = null; return renderSheet(); }
-  sheetCiv(c);
+  if (!sel) return sheetEmpty();
+  let o = null;
+  if (sel.type === "poi") o = byId(db.pois, sel.id);
+  else if (sel.type === "event") o = byId(db.events, sel.id);
+  else o = selCiv();
+  if (!o) { sel = null; return sheetEmpty(); }
+  const tech = sheetMode === "tech" && canEdit();
+  if (canEdit()) panel.append(el("div", { class: "subtabs" }, [["fiche", "Description"], ["tech", "Technique"]].map(([k, t]) =>
+    el("button", { class: (tech ? k === "tech" : k === "fiche") ? "on" : "", onclick: () => { sheetMode = k; renderPanel(); } }, t))));
+  if (sel.type === "poi") return tech ? sheetPoi(o) : descPoi(o);
+  if (sel.type === "event") return tech ? sheetEvent(o) : descEvent(o);
+  return tech ? sheetCiv(o) : descCiv(o);
+}
+function sheetEmpty() {
+  const live = db.civs.filter(c => alive(c)).sort((a, b) => a.name.localeCompare(b.name, "fr"));
+  const pad = el("div", { class: "pad" });
+  pad.append(el("p", { class: "note", style: "margin:0 0 12px" }, "Cliquez sur un territoire, un lieu ou une bande de la frise pour ouvrir sa fiche — ou cherchez-la avec « / »."));
+  pad.append(el("div", { class: "sect-h" }, [el("span", { class: "eyebrow" }, `En ${fmtYear(year, true)} · ${live.length}`),
+    el("button", { class: "btn sm ed", onclick: () => openCivForm() }, "+ Civilisation")]));
+  for (const c of live) pad.append(el("button", { class: "item main roitem", onclick: () => select("civ", c.id, { keepYear: true }) }, [
+    el("span", { class: "t" }, [el("span", { class: "dot", style: `background:${c.color};display:inline-block;margin-right:6px` }), c.name]),
+    el("span", { class: "s" }, fmtSpan(c.start, c.end) + (c.region ? " · " + c.region : ""))]));
+  if (!live.length) pad.append(el("p", { class: "note" }, "Aucune civilisation à cette date."));
+  panel.append(pad);
+}
+function figureBlock(o) {
+  if (!o || !o.image || !/^https:\/\//i.test(o.image)) return null;
+  const img = el("img", { src: o.image, alt: o.imageCaption || o.name || o.title || "", loading: "lazy", referrerpolicy: "no-referrer" });
+  const cap = (o.imageCaption || o.imageCredit) ? el("figcaption", {}, [o.imageCaption || "", o.imageCredit ? el("span", { class: "cr" }, (o.imageCaption ? " · " : "") + o.imageCredit) : null]) : null;
+  const fig = el("figure", { class: "fig" }, [el("a", { href: o.image, target: "_blank", rel: "noopener" }, img), cap]);
+  img.addEventListener("error", () => fig.remove());
+  return fig;
+}
+function roList(title, rows, max = 8) {
+  if (!rows.length) return null;
+  const s = el("div", { class: "sect" }, el("div", { class: "sect-h" }, el("span", { class: "eyebrow" }, `${title} · ${rows.length}`)));
+  const draw = n => {
+    s.querySelectorAll(".roitem,.more").forEach(x => x.remove());
+    rows.slice(0, n).forEach(r => s.append(el("button", { class: "item main roitem", onclick: r.on }, [
+      el("span", { class: "t" }, r.t), r.s ? el("span", { class: "s" }, r.s) : null])));
+    if (rows.length > n) s.append(el("button", { class: "linkbtn more", onclick: () => draw(rows.length) }, `Voir les ${rows.length}`));
+  };
+  draw(max);
+  return s;
+}
+const evSpan = e => evLong(e) ? fmtSpan(e.year, evEnd(e)) : fmtYear(e.year, true);
+function descCiv(c) {
+  const h = head("Civilisation", c.color, c.name, fmtSpan(c.start, c.end), c.region);
+  if (alive(c)) h.querySelector(".kind").append(el("span", { class: "pill live" }, "en " + fmtYear(year, false)));
+  const nowSubj = subjAt(c.id);
+  if (nowSubj) h.querySelector(".kind").append(el("span", { class: "pill", style: `border-color:${civ(nowSubj.overId)?.color};color:${civ(nowSubj.overId)?.color}` }, subjWord(nowSubj)));
+  const ts = terrOf(c.id);
+  h.append(el("div", { class: "row" }, [
+    el("button", { class: "btn", onclick: () => { const t = ts.find(t => alive(t)) || ts[0]; t ? fitTo(t.rings) : toast("Aucun territoire tracé"); } }, "Cadrer"),
+    el("button", { class: "btn", onclick: () => tlFocus(c.start, c.end ?? Y1) }, "Cadrer la frise")
+  ]));
+  panel.append(h);
+  const fig = figureBlock(c); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
+  panel.append(proseBlock(c.description, c.links));
+  const rel = [
+    ...linksIn(c.id).map(l => ({ t: "← issue de " + (civ(l.from)?.name || "?"), s: l.label || "", on: () => select("civ", l.from) })),
+    ...linksOut(c.id).map(l => ({ t: "→ donne naissance à " + (civ(l.to)?.name || "?"), s: l.label || "", on: () => select("civ", l.to) })),
+    ...subjAs(c.id).map(x => ({ t: "⤓ " + (civ(x.overId)?.name || "?"), s: (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end), on: () => { setYear(clamp(year, x.start, x.end)); select("civ", c.id, { keepYear: true }); } })),
+    ...subjOver(c.id).map(x => ({ t: "⤒ " + (civ(x.civId)?.name || "?"), s: (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end), on: () => select("civ", x.civId) }))
+  ];
+  [roList("Repères", evTop(c.id).map(e => ({ t: e.title, s: evSpan(e) + (e.kind && e.kind !== "jalon" ? " · " + EVKINDS[e.kind] : ""), on: () => select("event", e.id) }))),
+   roList("Relations", rel),
+   roList("Lieux", poisOf(c.id).map(p => ({ t: p.name, s: KINDS[p.kind] + " · " + fmtSpan(p.start, p.end), on: () => select("poi", p.id, { fit: true }) }))),
+   roList("Emprises", ts.map(t => ({ t: t.label || fmtSpan(t.start, t.end), s: fmtSpan(t.start, t.end) + (alive(t) ? " · affichée" : ""), on: () => select("terr", t.id) })), 6)
+  ].forEach(x => x && panel.append(x));
+}
+function descPoi(p) {
+  const c = p.civId ? civ(p.civId) : null;
+  const h = head(KINDS[p.kind] || "Lieu", c?.color, p.name, fmtSpan(p.start, p.end),
+    `${Math.abs(p.lat).toFixed(2)}°${p.lat >= 0 ? "N" : "S"} · ${Math.abs(p.lon).toFixed(2)}°${p.lon >= 0 ? "E" : "O"}`);
+  h.append(el("div", { class: "row" }, [
+    el("button", { class: "btn", onclick: () => fitTo([[[p.lon - 3, p.lat - 2], [p.lon + 3, p.lat + 2]]]) }, "Cadrer"),
+    c ? el("button", { class: "btn", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name) : null
+  ]));
+  panel.append(h);
+  const fig = figureBlock(p); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
+  panel.append(proseBlock(p.description, p.links));
+}
+function descEvent(e) {
+  const c = e.civId ? civ(e.civId) : null, parent = e.parentId ? byId(db.events, e.parentId) : null;
+  const h = head(parent ? "Étape" : evLong(e) ? "Épisode" : "Événement", c?.color, e.title, evSpan(e),
+    [e.kind && e.kind !== "jalon" ? EVKINDS[e.kind] : null, c?.name].filter(Boolean).join(" · "));
+  if (evAlive(e) && evLong(e)) h.querySelector(".kind").append(el("span", { class: "pill live" }, "en cours"));
+  h.append(el("div", { class: "row" }, [
+    evPts(e).length ? el("button", { class: "btn", onclick: () => fitTo([evPts(e)]) }, "Cadrer") : null,
+    parent ? el("button", { class: "btn", onclick: () => select("event", parent.id) }, "↑ " + parent.title) : null,
+    c && !parent ? el("button", { class: "btn", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name) : null
+  ]));
+  panel.append(h);
+  const fig = figureBlock(e); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
+  panel.append(proseBlock(e.description, e.links));
+  const kids = parent ? [] : evKids(e.id);
+  const st = roList("Étapes", kids.map(k => ({ t: k.title, s: evSpan(k) + (k.kind && k.kind !== "jalon" ? " · " + EVKINDS[k.kind] : ""), on: () => select("event", k.id) })));
+  if (st) panel.append(st);
+}
+/* propriétés éditables directement dans le panneau (onglet Technique) */
+function techProps(o, fn) {
+  const s = el("div", { class: "sect" }, el("div", { class: "sect-h" }, el("span", { class: "eyebrow" }, "Propriétés")));
+  const box = el("div", { class: "iform" }); s.append(box);
+  FORM_TARGET = box;
+  try { fn(); } finally { FORM_TARGET = null; }
+  s.append(el("div", { class: "meta idline" }, `Identifiant : ${o.id}${o.source ? " · source : " + o.source : ""}`));
+  return s;
+}
+/* champs d'image communs aux fiches */
+const IMG_FIELDS = [
+  { key: "image", label: "Image (adresse https)", ph: "https://upload.wikimedia.org/…", help: "Une image en ligne, de préférence sur Wikimedia Commons. L'import Wikipédia la renseigne s'il en trouve une." },
+  { type: "row", fields: [{ key: "imageCaption", label: "Légende" }, { key: "imageCredit", label: "Crédit / licence" }] }
+];
+const imgVals = o => ({ image: (o && o.image) || "", imageCaption: (o && o.imageCaption) || "", imageCredit: (o && o.imageCredit) || "" });
+function imgOut(v) {
+  const u = String(v.image || "").trim();
+  if (u && !/^https:\/\/\S+$/i.test(u)) { toast("L'image doit être une adresse https://"); return null; }
+  return { image: u || undefined, imageCaption: String(v.imageCaption || "").trim() || undefined, imageCredit: String(v.imageCredit || "").trim() || undefined };
 }
 
 function head(kindLabel, color, title, sub, meta) {
@@ -2201,13 +2378,12 @@ function sheetCiv(c) {
     class: "pill", style: `border-color:${civ(nowSubj.overId)?.color};color:${civ(nowSubj.overId)?.color}`
   }, subjWord(nowSubj)));
   h.append(el("div", { class: "row" }, [
-    el("button", { class: "btn ed", onclick: () => openCivForm(c) }, "Modifier"),
     el("button", { class: "btn", onclick: () => { const t = ts.find(t => alive(t)) || ts[0]; t ? fitTo(t.rings) : toast("Aucun territoire tracé"); } }, "Cadrer"),
     el("button", { class: "btn", onclick: () => tlFocus(c.start, c.end ?? Y1) }, "Cadrer la frise"),
     el("button", { class: "btn danger ed", onclick: () => delCiv(c) }, "Supprimer")
   ]));
   panel.append(h);
-  panel.append(proseBlock(c.description, c.links));
+  panel.append(techProps(c, () => openCivForm(c)));
 
   const asSub = subjAs(c.id), asOver = subjOver(c.id);
   panel.append(listSection(`Tutelles · ${asSub.length + asOver.length}`, "Ajouter", () => openSubjForm(null, { civId: c.id }),
@@ -2285,12 +2461,11 @@ function sheetPoi(p) {
     `${Math.abs(p.lat).toFixed(2)}°${p.lat >= 0 ? "N" : "S"} · ${Math.abs(p.lon).toFixed(2)}°${p.lon >= 0 ? "E" : "O"}`);
   if (c) h.append(el("div", { class: "meta" }, [el("button", { class: "btn sm", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name)]));
   h.append(el("div", { class: "row" }, [
-    el("button", { class: "btn ed", onclick: () => openPoiForm(p) }, "Modifier"),
     el("button", { class: "btn", onclick: () => fitTo([[[p.lon - 5, p.lat - 4], [p.lon + 5, p.lat + 4]]]) }, "Cadrer"),
     el("button", { class: "btn danger ed", onclick: () => { if (confirm(`Supprimer « ${p.name} » ?`)) { mutate(() => db.pois = db.pois.filter(x => x.id !== p.id)); sel = null; renderAll(); } } }, "Supprimer")
   ]));
   panel.append(h);
-  panel.append(proseBlock(p.description, p.links));
+  panel.append(techProps(p, () => openPoiForm(p)));
 }
 
 function delEvent(e) {
@@ -2322,14 +2497,13 @@ function sheetEvent(e) {
     [e.kind && e.kind !== "jalon" ? EVKINDS[e.kind] : null, c?.name].filter(Boolean).join(" · "));
   if (evAlive(e) && long) h.querySelector(".kind").append(el("span", { class: "pill live" }, "en cours"));
   h.append(el("div", { class: "row" }, [
-    el("button", { class: "btn ed", onclick: () => openEventForm(e) }, "Modifier"),
     evPts(e).length ? el("button", { class: "btn", onclick: () => fitTo([evPts(e)]) }, "Cadrer") : null,
     parent ? el("button", { class: "btn", onclick: () => select("event", parent.id) }, "↑ " + parent.title) : null,
     c && !parent ? el("button", { class: "btn", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name) : null,
     el("button", { class: "btn danger ed", onclick: () => delEvent(e) }, "Supprimer")
   ]));
   panel.append(h);
-  panel.append(proseBlock(e.description, e.links));
+  panel.append(techProps(e, () => openEventForm(e)));
 
   /* lieu */
   const loc = el("div", { class: "sect" });
@@ -2409,32 +2583,6 @@ function listSection(title, addLabel, addFn, rows, help) {
   return s;
 }
 
-/* ---- onglet Éléments ---- */
-let itemsSort = "date";
-function renderItems() {
-  const pad = el("div", { class: "pad" });
-  pad.append(el("div", { class: "sect-h" }, [
-    el("span", { class: "eyebrow" }, `Civilisations · ${db.civs.length}`),
-    el("button", { class: "btn sm", onclick: () => { itemsSort = itemsSort === "date" ? "nom" : "date"; renderPanel(); } }, itemsSort === "date" ? "Par date" : "Par nom"),
-    el("button", { class: "btn sm prim ed", onclick: () => openCivForm() }, "+")
-  ]));
-  const list = db.civs.slice().sort(itemsSort === "date"
-    ? (a, b) => a.start - b.start
-    : (a, b) => a.name.localeCompare(b.name, "fr"));
-  for (const c of list) {
-    const it = el("div", { class: "item" });
-    it.append(el("button", { class: "main", onclick: () => select("civ", c.id) }, [
-      el("span", { class: "t" }, [el("span", { class: "dot", style: `background:${c.color};display:inline-block;margin-right:6px` }), c.name]),
-      el("span", { class: "s" }, `${fmtSpan(c.start, c.end)} · ${terrOf(c.id).length} terr. · ${evOf(c.id).length} év. · ${poisOf(c.id).length} lieux`)
-    ]));
-    const acts = el("div", { class: "acts" });
-    acts.append(iconBtn("pen", "Modifier", () => openCivForm(c)));
-    acts.append(iconBtn("trash", "Supprimer", () => delCiv(c), "danger"));
-    it.append(acts); pad.append(it);
-  }
-  panel.append(pad);
-}
-
 /* ---- onglet Données ---- */
 function renderData() {
   const pad = el("div", { class: "pad" });
@@ -2478,6 +2626,15 @@ function renderData() {
     (backend === "file" || canPublish()) ? el("button", { class: "btn", onclick: doImport }, "Importer…") : null
   ]);
 
+  if (canPublish() || backend === "file") {
+    sect("Enrichissement");
+    note("Ajoute des civilisations et remplace les tracés d'origine par des emprises datées. Les civilisations que vous avez retravaillées sont conservées, sauf choix contraire ; une fenêtre récapitule tout avant application.");
+    const pick = () => { const inp = el("input", { type: "file", accept: ".json,application/json" }); inp.onchange = () => inp.files[0] && openEnrich(inp.files[0]); inp.click(); };
+    row([el("button", { class: "btn prim", onclick: () => openEnrich() }, "Enrichir l'atlas (v2.1.0)…"),
+      el("button", { class: "btn", onclick: pick }, "Depuis un fichier…"),
+      el("button", { class: "btn", onclick: fillImages }, "Compléter les images")]);
+  }
+
   if (role === "admin" && remoteState !== "down") {
     sect("Administration");
     row([
@@ -2495,7 +2652,8 @@ function renderData() {
 
   sect("Repères");
   note("Les tracés sont des approximations destinées à la lecture d'ensemble : bornes floues, frontières mouvantes, sources divergentes. Ils sont faits pour être corrigés.");
-  note("Fond de carte : Natural Earth (domaine public), 1:50 000 000 en vue d'ensemble et 1:10 000 000 au zoom. Réservoirs modernes retirés ; mer d'Aral et lac Tchad dans leur emprise historique. Version " + APP_VERSION + ".");
+  note("Fond de carte : Natural Earth (domaine public), 1:50 000 000 en vue d'ensemble et 1:10 000 000 au zoom, relief ombré d'après le Shaded Relief de Natural Earth. Réservoirs modernes retirés ; mer d'Aral et lac Tchad dans leur emprise historique.");
+  note("Emprises de l'enrichissement v2.1.0 : historical-basemaps, A. Ourednik (licence GPL-3.0), instantanés datés simplifiés à ≈ 2,5 km. Version de l'application " + APP_VERSION + ".");
   panel.append(pad);
 }
 
@@ -2514,12 +2672,143 @@ function delCiv(c) {
   sel = null; renderAll();
 }
 
+/* =====================  ENRICHISSEMENT DU JEU DE DONNÉES  ===================== */
+/* Un fichier d'enrichissement apporte des civilisations nouvelles et des emprises
+   plus précises. Règle de prudence : une civilisation dont un seul tracé a été
+   retouché, ajouté ou supprimé depuis le fonds d'origine garde ses tracés, sauf
+   choix explicite ; on le reconnaît à l'empreinte des éléments d'origine. */
+const ENRICH_FILE = "data/enrichissement_v2.1.0.json";
+function cyrb53(str, seed = 0) {
+  let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0; i < str.length; i++) { const ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+}
+const clone = o => JSON.parse(JSON.stringify(o));
+function planEnrich(P) {
+  const rows = [], newCivs = new Map(P.civs.map(c => [c.id, c]));
+  for (const [cid, terrs] of Object.entries(P.territoriesByCiv || {})) {
+    const c = civ(cid);
+    if (!c && !newCivs.has(cid)) continue;                  // civilisation supprimée par vos soins : on n'y touche pas
+    const cur = db.territories.filter(t => t.civId === cid);
+    const seedIds = (P.seedTerrByCiv || {})[cid] || [];
+    let status;
+    if (!c) status = "new";
+    else if (terrs.every(t => { const x = byId(db.territories, t.id); return x && canon(x) === canon(t); })) status = "done";
+    else {
+      const intact = cur.every(t => P.seedHashes["territories/" + t.id] === cyrb53(canon(t)))
+        && seedIds.every(id => cur.some(t => t.id === id));
+      status = intact ? "seed" : "reworked";
+    }
+    rows.push({
+      cid, status, terrs, cur, name: c ? c.name : newCivs.get(cid).name,
+      apply: status === "new" || status === "seed"
+    });
+  }
+  const order = { new: 0, seed: 1, reworked: 2, done: 3 };
+  return rows.sort((a, b) => order[a.status] - order[b.status] || a.name.localeCompare(b.name, "fr"));
+}
+async function openEnrich(file) {
+  if (!requireEdit()) return;
+  if (backend === "supabase" && !canPublish()) return toast("Réservé aux éditeurs");
+  let P;
+  try {
+    P = file ? JSON.parse(await file.text())
+      : await (await fetch(ENRICH_FILE + "?v=" + Date.now(), { cache: "no-store" })).json();
+    if (P.kind !== "atlas-enrichissement") throw 0;
+  } catch (e) { return toast("Fichier d'enrichissement introuvable ou illisible"); }
+  const rows = planEnrich(P);
+  const spans = r => r.terrs.map(t => t.label.replace(/^vers /, "")).join(" · ");
+  const LBL = {
+    new: ["Nouvelles civilisations", "Ajoutées avec leurs emprises et leur capitale."],
+    seed: ["Tracés d'origine remplacés", "Ces civilisations n'ont jamais été retouchées : leurs tracés approximatifs cèdent la place aux emprises datées."],
+    reworked: ["Civilisations que vous avez retravaillées", "Vos tracés sont conservés. Cochez « Remplacer » seulement si vous préférez les emprises proposées."],
+    done: ["Déjà à jour", "Ces emprises sont déjà présentes à l'identique."]
+  };
+  const body = [el("p", { class: "note", style: "margin:0 0 10px" },
+    `Enrichissement ${P.version || ""} — ${P.sources && P.sources.territories ? "emprises : " + P.sources.territories : ""}. Rien n'est appliqué avant validation ; l'opération s'annule ensuite avec Ctrl+Z.`)];
+  for (const st of ["new", "seed", "reworked", "done"]) {
+    const rs = rows.filter(r => r.status === st); if (!rs.length) continue;
+    const box = el("div", { class: "enr-sect" }, [el("div", { class: "sect-h" }, [el("span", { class: "eyebrow" }, `${LBL[st][0]} · ${rs.length}`)]), el("p", { class: "note", style: "margin:0 0 6px" }, LBL[st][1])]);
+    for (const r of rs) {
+      const cb = el("input", { type: "checkbox" }); cb.checked = r.apply; cb.disabled = st === "done";
+      cb.onchange = () => { r.apply = cb.checked; refresh(); };
+      box.append(el("label", { class: "enr-row" }, [cb,
+        el("span", { class: "enr-n" }, [r.name, st === "reworked" ? el("b", { class: "enr-w" }, " — remplacer vos " + r.cur.length + " tracé(s)") : null]),
+        el("span", { class: "enr-s" }, `${r.terrs.length} emprise${r.terrs.length > 1 ? "s" : ""} : ${spans(r)}`)]));
+    }
+    body.push(box);
+  }
+  const go = el("button", { class: "btn prim" });
+  const refresh = () => { const n = rows.filter(r => r.apply && r.status !== "done").length; go.textContent = `Appliquer (${n})`; go.disabled = !n; };
+  const m = modalShell("Enrichir l'atlas", body, [el("button", { class: "btn", onclick: () => m.close() }, "Annuler"), go], "wide");
+  refresh();
+  go.onclick = () => {
+    const sel1 = rows.filter(r => r.apply && r.status !== "done");
+    let added = 0, redrawn = 0, replaced = 0;
+    mutate(() => {
+      for (const r of sel1) {
+        if (r.status === "new") {
+          const c = P.civs.find(x => x.id === r.cid);
+          if (c && !civ(c.id)) db.civs.push(clone(c));
+          for (const p of (P.pois || []).filter(p => p.civId === r.cid)) if (!byId(db.pois, p.id)) db.pois.push(clone(p));
+          added++;
+        } else if (r.status === "seed") redrawn++; else replaced++;
+        db.territories = db.territories.filter(t => t.civId !== r.cid);
+        for (const t of r.terrs) db.territories.push(clone(t));
+      }
+    });
+    m.close(); renderAll();
+    toast(`${added} civilisation(s) ajoutée(s), ${redrawn} retracée(s)${replaced ? `, ${replaced} remplacée(s) à votre demande` : ""}`);
+  };
+}
+/* images manquantes, depuis le premier lien Wikipédia de chaque fiche */
+function wikiThumb(j) {
+  const o = j && j.originalimage, t = j && j.thumbnail;
+  if (!o && !t) return "";
+  if (t && o && o.width > 640) return t.source.replace(/\/\d+px-/, "/640px-");
+  return (o || t).source;
+}
+async function fillImages() {
+  if (!requireEdit()) return;
+  const todo = [];
+  for (const [coll, label] of [["civs", "name"], ["pois", "name"], ["events", "title"]])
+    for (const o of db[coll]) {
+      if (o.image) continue;
+      const l = (o.links || []).find(l => /wikipedia\.org\/wiki\//.test(l.url));
+      if (l) todo.push({ coll, id: o.id, url: l.url });
+    }
+  if (!todo.length) return toast("Aucune fiche sans image avec un lien Wikipédia");
+  if (!confirm(`Chercher une image Wikipédia pour ${todo.length} fiche(s) ?`)) return;
+  const found = [];
+  for (let i = 0; i < todo.length; i++) {
+    const it = todo[i];
+    setSaveState(`images ${i + 1}/${todo.length}`);
+    try {
+      const m = it.url.match(/https?:\/\/(\w+)\.wikipedia\.org\/wiki\/([^#?]+)/);
+      const r = await fetch(`https://${m[1]}.wikipedia.org/api/rest_v1/page/summary/${m[2]}`);
+      if (!r.ok) continue;
+      const src = wikiThumb(await r.json());
+      if (src) found.push({ ...it, src });
+    } catch (e) { }
+  }
+  if (!found.length) { setSaveState("à jour"); return toast("Aucune image trouvée"); }
+  mutate(() => {
+    for (const f of found) {
+      const o = byId(db[f.coll], f.id);
+      if (o && !o.image) Object.assign(o, { image: f.src, imageCredit: "Wikimedia Commons, via Wikipédia" });
+    }
+  });
+  renderAll(); toast(`${found.length} image(s) ajoutée(s)`);
+}
+
 /* =====================  FORMULAIRES  ===================== */
 const PALETTE = ["#8c3b2e", "#2c4a63", "#4a6b45", "#7a5a2e", "#5b4a72", "#2f6b6b", "#a06a2c", "#6b2f45", "#3f5a8a", "#6e7a3a", "#8a5b6b", "#455055"];
 
 function openForm(title, fields, values, onSave, extra) {
   if (!requireEdit()) return { close() { }, state: {}, controls: {} };
-  const root = $("#modalRoot");
+  const root = $("#modalRoot"), inline = FORM_TARGET;
   const state = Object.assign({}, values);
   const body = el("div", { class: "body" });
   const controls = {};
@@ -2554,6 +2843,11 @@ function openForm(title, fields, values, onSave, extra) {
     if (f.after) w.append(f.after(c, state));
     return w;
   }
+  if (inline) {
+    inline.append(body, el("div", { class: "row iform-acts" }, [extra || null, el("button", { class: "btn prim", onclick: commit }, "Enregistrer")]));
+    body.addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) commit(); });
+    return { close, state, controls };
+  }
   const modal = el("div", { class: "modal" }, [
     el("header", {}, [el("h3", {}, title), el("button", { class: "iconbtn", onclick: close, "aria-label": "Fermer" }, "✕")]),
     body,
@@ -2566,7 +2860,7 @@ function openForm(title, fields, values, onSave, extra) {
   const scrim = el("div", { class: "scrim", onclick: e => { if (e.target === scrim) close(); } }, modal);
   root.append(scrim);
   setTimeout(() => { const first = body.querySelector("input,textarea,select"); first && first.focus(); }, 20);
-  function close() { scrim.remove(); document.removeEventListener("keydown", key, true); }
+  function close() { if (inline) return; scrim.remove(); document.removeEventListener("keydown", key, true); }
   function key(e) { if (e.key === "Escape") { e.stopPropagation(); close(); } if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) commit(); }
   document.addEventListener("keydown", key, true);
   function commit() {
@@ -2600,9 +2894,15 @@ function wikiField() {
         if (!r.ok) throw 0;
         const j = await r.json();
         descCtrl.value = (descCtrl.value ? descCtrl.value + "\n\n" : "") + j.extract;
-        const lk = document.querySelector("#f-linksText");
+        const scope = descCtrl.closest(".body") || document;
+        const lk = scope.querySelector("#f-linksText");
         const url = j.content_urls?.desktop?.page || v;
         if (lk && !lk.value.includes(url)) lk.value = (lk.value ? lk.value + "\n" : "") + "Wikipédia — " + j.title + " | " + url;
+        const im = scope.querySelector("#f-image"), src = wikiThumb(j);
+        if (im && !im.value && src) {
+          im.value = src;
+          const cr = scope.querySelector("#f-imageCredit"); if (cr && !cr.value) cr.value = "Wikimedia Commons, via Wikipédia";
+        }
         toast("Résumé importé");
       } catch (e) { toast("Wikipédia injoignable — collez le texte à la main"); }
       btn.textContent = "Importer"; btn.disabled = false;
@@ -2623,19 +2923,21 @@ function openCivForm(c) {
     { key: "region", label: "Aire", ph: "Méditerranée · Europe" },
     { key: "color", label: "Couleur", type: "color" },
     { key: "description", label: "Description", type: "textarea", help: "Mise en forme simple : **gras**, *italique*, - liste, ## titre, [texte](url)", after: wikiField() },
-    { key: "linksText", label: "Liens (un par ligne : Libellé | URL)", type: "textarea", rows: 3 }
+    { key: "linksText", label: "Liens (un par ligne : Libellé | URL)", type: "textarea", rows: 3 },
+    ...IMG_FIELDS
   ], {
     name: c?.name || "", start: c ? c.start : year, end: c ? c.end : year + 200,
     region: c?.region || "", color: c?.color || PALETTE[db.civs.length % PALETTE.length],
-    description: c?.description || "", linksText: linksToText(c?.links)
+    description: c?.description || "", linksText: linksToText(c?.links), ...imgVals(c)
   }, v => {
     if (!v.name.trim()) { toast("Le nom est obligatoire"); return false; }
     if (v.start === null) { toast("Date de début manquante"); return false; }
+    const im = imgOut(v); if (!im) return false;
     mutate(() => {
       const o = c || { id: uid("civ") };
       Object.assign(o, {
         name: v.name.trim(), start: v.start, end: v.end === null ? Y1 : v.end,
-        region: v.region.trim(), color: v.color, description: v.description, links: textToLinks(v.linksText)
+        region: v.region.trim(), color: v.color, description: v.description, links: textToLinks(v.linksText), ...im
       });
       if (isNew) db.civs.push(o);
       sel = { type: "civ", id: o.id };
@@ -2852,20 +3154,22 @@ function openEventForm(e, init) {
         { key: "civId", label: "Civilisation", type: "select", options: [["", "— aucune —"]].concat(db.civs.slice().sort((a, b) => a.name.localeCompare(b.name, "fr")).map(c => [c.id, c.name])) }]
     },
     { key: "description", label: "Description", type: "textarea", rows: 5, after: wikiField() },
-    { key: "linksText", label: "Liens (un par ligne : Libellé | URL)", type: "textarea", rows: 2 }
+    { key: "linksText", label: "Liens (un par ligne : Libellé | URL)", type: "textarea", rows: 2 },
+    ...IMG_FIELDS
   ], {
     title: e?.title || "", year: e ? e.year : (init?.year ?? year),
     end: e && evLong(e) ? e.end : "", kind: e?.kind || (init?.parentId ? "bataille" : "jalon"),
     civId: e?.civId || init?.civId || "",
-    description: e?.description || "", linksText: linksToText(e?.links)
+    description: e?.description || "", linksText: linksToText(e?.links), ...imgVals(e)
   }, v => {
     if (!v.title.trim() || v.year === null) { toast("Intitulé et année sont requis"); return false; }
     if (v.end !== null && v.end < v.year) { toast("La fin précède le début"); return false; }
+    const im = imgOut(v); if (!im) return false;
     mutate(() => {
       const o = e || { id: uid("evt"), parentId: init?.parentId || null, arrows: [], lon: null, lat: null };
       Object.assign(o, {
         title: v.title.trim(), year: v.year, end: v.end === null ? v.year : v.end, kind: v.kind,
-        civId: v.civId || null, description: v.description, links: textToLinks(v.linksText)
+        civId: v.civId || null, description: v.description, links: textToLinks(v.linksText), ...im
       });
       if (isNew) db.events.push(o);
       sel = { type: "event", id: o.id };
@@ -2911,21 +3215,23 @@ function openPoiForm(p, init) {
         { key: "end", label: "Jusqu'à", type: "number" }]
     },
     { key: "description", label: "Description", type: "textarea", rows: 5, after: wikiField() },
-    { key: "linksText", label: "Liens (un par ligne : Libellé | URL)", type: "textarea", rows: 2 }
+    { key: "linksText", label: "Liens (un par ligne : Libellé | URL)", type: "textarea", rows: 2 },
+    ...IMG_FIELDS
   ], {
     name: p?.name || "", kind: p?.kind || "ville", civId: p?.civId || init?.civId || selCiv()?.id || "",
     lat: p ? p.lat : init?.lat, lon: p ? p.lon : init?.lon,
     start: p ? p.start : year, end: p ? p.end : Y1,
-    description: p?.description || "", linksText: linksToText(p?.links)
+    description: p?.description || "", linksText: linksToText(p?.links), ...imgVals(p)
   }, v => {
     if (!v.name.trim()) { toast("Le nom est obligatoire"); return false; }
     if (v.lat === null || v.lon === null) { toast("Coordonnées manquantes"); return false; }
+    const im = imgOut(v); if (!im) return false;
     mutate(() => {
       const o = p || { id: uid("poi") };
       Object.assign(o, {
         name: v.name.trim(), kind: v.kind, civId: v.civId || null,
         lat: clamp(v.lat, -85, 85), lon: clamp(v.lon, -180, 180),
-        start: v.start ?? Y0, end: v.end ?? Y1, description: v.description, links: textToLinks(v.linksText)
+        start: v.start ?? Y0, end: v.end ?? Y1, description: v.description, links: textToLinks(v.linksText), ...im
       });
       if (isNew) db.pois.push(o);
       sel = { type: "poi", id: o.id };
@@ -3050,6 +3356,11 @@ Sur la fiche d'une civilisation — ou en face d'un mouvement, sur la fiche d'un
 - **Ctrl/Cmd + Z** : annuler la dernière modification
 - **/** : rechercher · molette : zoom (carte et frise)
 
+## Fiche et onglet Technique
+Chaque élément s'ouvre sur sa **Description** : image, texte, repères chronologiques, relations, lieux et emprises, sans aucun bouton d'édition. Les comptes autorisés disposent en plus de l'onglet **Technique** : toutes les propriétés y sont modifiables sur place (nom, dates, couleur, texte, liens, image), ainsi que les territoires, tutelles, filiations, événements et lieux rattachés.
+
+L'image est une simple adresse https, de préférence sur Wikimedia Commons ; l'import d'un résumé Wikipédia la remplit lorsqu'il en trouve une.
+
 ## Comptes et contributions
 Tout le monde consulte l'atlas sans compte. **Créer un compte** (bouton en haut à droite) permet de modifier : vos changements restent alors des **brouillons** dans votre navigateur, signalés par le bouton *Proposer*. Ajoutez une note (vos sources, par exemple) et envoyez : un éditeur relit la proposition, l'examine sur la carte, puis la publie ou la refuse avec un commentaire. L'onglet *Propositions* suit leur sort.
 
@@ -3096,6 +3407,7 @@ $("#tPoi").onclick = () => setMode(mode === "placePoi" ? "select" : "placePoi");
 $("#tLabels").onclick = e => { show.labels = !show.labels; e.currentTarget.classList.toggle("on", show.labels); renderMap(); };
 $("#tPois").onclick = e => { show.pois = !show.pois; e.currentTarget.classList.toggle("on", show.pois); renderMap(); };
 $("#tRiv").onclick = e => { show.rivers = !show.rivers; e.currentTarget.classList.toggle("on", show.rivers); drawRivers(); };
+$("#tRel").onclick = e => { show.relief = !show.relief; e.currentTarget.classList.toggle("on", show.relief); drawRelief(); };
 $("#tGrid").onclick = e => { show.grid = !show.grid; e.currentTarget.classList.toggle("on", show.grid); drawGrid(); };
 $("#tFit").onclick = fitWorld;
 $("#btnNewCiv").onclick = () => openCivForm();
@@ -3127,7 +3439,7 @@ function renderAll() { renderMap(); renderTimeline(); renderPanel(); }
       SB = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, { auth: { persistSession: true, detectSessionInUrl: true } });
     else console.error("supabase-js non chargé");
   }
-  drawGrid(); applyView(); loadGeo();
+  drawGrid(); applyView(); loadGeo(); loadRelief();
   await loadPublished();
   if (backend === "supabase" && !SB) remoteState = "down";
   if (backend === "file") {

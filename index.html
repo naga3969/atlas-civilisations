@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- Atlas des civilisations — v2.2.0 -->
+<!-- Atlas des civilisations — v2.3.0 -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="generator" content="Atlas des civilisations 2.2.0">
+<meta name="generator" content="Atlas des civilisations 2.3.0">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Atlas des civilisations · 5000 av. J.-C. → 1900</title>
 <style>
@@ -372,6 +372,58 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
 #btnSide.on{background:var(--accent);border-color:var(--accent);color:#fff}
 @media (max-width:1000px){.rz{display:none}#btnSide{display:none}}
 
+/* ---------- v2.3.0 : téléphone et tablette en portrait ---------- */
+.mob-only,.mob-only-wrap,.sheet-grab,.sheet-x,#yearRange{display:none}
+@media (max-width:900px){
+  body{overflow:hidden}
+  .app{height:100dvh;max-width:100vw;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"top" "map" "time"}
+  .mapwrap{height:auto;border:none}
+  .topbar{gap:6px;padding:0 8px;height:48px}
+  .brand h1{font-size:15px}
+  #btnNewCiv,#btnSide,#zFull,.role-chip,.save-state,#tlCount{display:none!important}
+  #btnAccount{max-width:110px}
+  /* fiche : volet glissant depuis le bas */
+  .side{position:fixed;left:0;right:0;bottom:0;height:calc(100dvh - 56px);z-index:80;border-radius:14px 14px 0 0;
+    box-shadow:0 -10px 34px rgba(20,25,30,.24);transform:translateY(105%);transition:transform .24s ease;border:none;max-height:none}
+  body.sheet-half .side{transform:translateY(calc(100% - 54dvh))}
+  body.sheet-full .side{transform:none}
+  .sheet-grab{display:flex;justify-content:center;align-items:center;height:26px;flex:0 0 auto;touch-action:none;cursor:grab}
+  .sheet-grab span{width:42px;height:5px;border-radius:3px;background:var(--line-2)}
+  .sheet-x{display:grid;place-items:center;position:absolute;right:8px;top:4px;width:34px;height:30px;font-size:16px;color:var(--muted);z-index:2}
+  .tabs{padding-right:44px}
+  .tabs button{padding:10px 6px}
+  .item .acts{opacity:1}
+  /* frise : un curseur d'années, dépliable */
+  .timeline{height:auto;border-top:1px solid var(--line-2)}
+  body:not(.tl-off) .timeline{height:min(46dvh,330px)}
+  .tl-head{gap:6px;padding:6px 8px;flex-wrap:nowrap}
+  .readout .y{font-size:20px}
+  #yearRange{display:block;flex:1;min-width:60px;accent-color:var(--flag);height:28px}
+  body:not(.tl-off) #yearRange,body.tl-off .tl-filter,body.tl-off #tlLinks,body.tl-off #tlZoomOut,body.tl-off #tlZoomIn{display:none}
+  body:not(.tl-off) .tl-head{flex-wrap:wrap}
+  .tl-head .btn.sm{padding:6px 10px;font-size:12px}
+  /* outils de carte */
+  .overlay-tl{top:8px;left:8px;gap:5px}
+  .tool button{padding:8px 10px}
+  .mob-only{display:block}
+  .mob-only-wrap{display:flex}
+  #layerTool{display:none}
+  body.layers-open #layerTool{display:flex;flex-direction:column}
+  body.layers-open #tLayers{background:var(--accent);color:#fff}
+  .zoomtool button{width:40px;height:38px;font-size:18px}
+  .overlay-br{right:8px;bottom:8px}
+  .banner{top:auto;bottom:10px;max-width:calc(100% - 70px);left:8px;transform:none}
+  /* fenêtres en plein écran, cibles tactiles élargies */
+  .scrim{padding:0;place-items:stretch}
+  .modal,.modal.wide,.modal.narrow{width:100%;height:100dvh;max-height:100dvh;border-radius:0;border:none}
+  .btn{padding:6px 11px}
+  .subtabs button{padding:7px 16px}
+  .roitem{padding:8px 6px}
+  .results{position:fixed;left:8px;right:8px;top:52px;max-height:60dvh}
+  .search:focus-within{width:min(260px,60vw)}
+  .search:not(:focus-within) input::placeholder{color:transparent}
+}
+
 /* ---------- v2.1.0 : relief, fiche descriptive, onglet Technique, enrichissement ---------- */
 #gRelief{mix-blend-mode:multiply;opacity:.9;pointer-events:none}
 #gRelief image{image-rendering:auto}
@@ -440,7 +492,8 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
         <button id="tTerr" title="Tracer un territoire">+ Territoire</button>
         <button id="tPoi" title="Placer un lieu">+ Lieu</button>
       </div>
-      <div class="tool">
+      <div class="tool mob-only-wrap"><button id="tLayers" class="mob-only" title="Calques">Calques</button></div>
+      <div class="tool" id="layerTool">
         <button id="tLabels" class="on" title="Afficher les noms">Noms</button>
         <button id="tPois" class="on" title="Afficher les lieux">Lieux</button>
         <button id="tRiv" class="on" title="Afficher les fleuves et les grands lacs">Fleuves</button>
@@ -472,6 +525,7 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
       </div>
       <button class="btn sm" id="yBack" title="Reculer (←)">‹</button>
       <button class="btn sm" id="yFwd" title="Avancer (→)">›</button>
+      <input type="range" id="yearRange" min="-5000" max="1900" step="1" aria-label="Année">
       <div class="spacer"></div>
       <span class="eyebrow" id="tlCount"></span>
       <button class="btn sm on" id="tlLinks" title="Afficher les filiations entre civilisations">Filiations</button>
@@ -494,6 +548,8 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
   </section>
 
   <aside class="side">
+    <div class="sheet-grab" id="sheetGrab" title="Glisser pour agrandir ou réduire"><span></span></div>
+    <button class="sheet-x" id="sheetX" aria-label="Fermer la fiche">✕</button>
     <div class="rz rz-side" id="rzSide" title="Glisser pour redimensionner · double-clic : taille d'origine"></div>
     <nav class="tabs" role="tablist">
       <button data-tab="sheet" class="on">Fiche</button>
@@ -514,7 +570,7 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
 
 "use strict";
 /* =====================================================================
-   ATLAS DES CIVILISATIONS — v2.2.0
+   ATLAS DES CIVILISATIONS — v2.3.0
    Données : base partagée Supabase (lecture publique, écriture par rôle)
              ou, à défaut, data/atlas.json + brouillon local
    Fond de carte : data/geo (Natural Earth 1:50M + tuiles 1:10M, relief ombré)
@@ -644,7 +700,7 @@ const EVKINDS = { jalon: "Jalon", bataille: "Bataille", siege: "Siège", traite:
      envoient des propositions soumises à validation ;
    - « fichier » (pas de configuration) : lecture de data/atlas.json, modifications
      conservées dans ce navigateur, export pour mise à jour du dépôt. */
-const APP_VERSION = "2.2.0";
+const APP_VERSION = "2.3.0";
 const COLLS = ["civs", "territories", "events", "pois", "links", "subjections"];
 const COLL_LABEL = { civs: "Civilisation", territories: "Territoire", events: "Événement", pois: "Lieu", links: "Filiation", subjections: "Tutelle" };
 const ROLE_LABEL = { viewer: "Visiteur", contributor: "Contributeur", editor: "Éditeur", admin: "Administrateur", local: "Local" };
@@ -1790,7 +1846,7 @@ function redrawEditPaths(t) {
 
 /* infobulle */
 const tip = $("#tip");
-function showTip(e, html) { tip.innerHTML = html; tip.classList.add("on"); moveTip(e); }
+function showTip(e, html) { if (e.pointerType === "touch") return; tip.innerHTML = html; tip.classList.add("on"); moveTip(e); }
 function moveTip(e) {
   const r = $(".mapwrap").getBoundingClientRect();
   tip.style.left = clamp(e.clientX - r.left + 12, 4, r.width - tip.offsetWidth - 4) + "px";
@@ -1815,6 +1871,7 @@ function panEnd() {
   setTimeout(() => { panning = null; }, 0);   // laisse passer le clic qui suit
 }
 map.addEventListener("pointerdown", e => {
+  if (touches.size > 1) return;
   if (mode === "drawTerr" || mode === "drawArrow" || mode === "placePoi" || mode === "placeEvPt") return;
   if (e.target.closest(".vtx")) return;
   panning = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y }; moved = 0;
@@ -1873,6 +1930,11 @@ function fitTo(rings) {
   applyView(); scheduleMap();
 }
 function fitWorld() {
+  /* en portrait, le monde entier tiendrait dans un bandeau : on cadre l'Ancien Monde */
+  if (map.clientHeight > map.clientWidth * 1.1) {
+    view = { x: -25, y: -90, w: 130, h: 180 }; applyView();
+    view.y = -32 - view.h / 2; applyView(); scheduleMap(); return;
+  }
   view = { x: -180, y: -90, w: 360, h: 180 };
   applyView();
   view.y = -12 - view.h / 2;   /* recentré sur les terres émergées, non sur l'équateur */
@@ -1944,7 +2006,7 @@ function select(type, id, opts = {}) {
   if (sel && sel.type === "terr") { const t = byId(db.territories, id); if (t) { setYear(clamp(year, t.start, t.end ?? Y1), true); if (opts.fit !== false) fitTo(t.rings); } }
   if (sel && sel.type === "poi" && opts.fit) { const p = byId(db.pois, sel.id); if (p) fitTo([[[p.lon - 6, p.lat - 5], [p.lon + 6, p.lat + 5]]]); }
   if (tab === "data" || tab === "props") tab = "sheet";
-  if (sel && !ui.side) { ui.side = true; applyUi(); }
+  if (sel) revealSheet();
   renderAll();
   followSelection();
   $(".panel").scrollTop = 0;
@@ -1953,6 +2015,7 @@ function setYear(y, silent) {
   year = clamp(Math.round(y), Y0, Y1);
   $("#yearNum").textContent = Math.abs(year) || 1;
   $("#yearEra").textContent = year < 0 ? "AV. J.-C." : "AP. J.-C.";
+  const yr = $("#yearRange"); if (yr && +yr.value !== year) yr.value = year;
   positionPlayhead();
   scheduleMap();
   if (!silent) { updateBarsLive(); renderPanel(); }
@@ -2129,6 +2192,7 @@ function drawLinks(pos, laneCount, w) {
 }
 
 function showTipTL(e, html) {
+  if (e.pointerType === "touch") return;
   const r = $(".mapwrap").getBoundingClientRect();
   tip.innerHTML = html; tip.classList.add("on");
   tip.style.left = clamp(e.clientX - r.left - 60, 4, r.width - 200) + "px";
@@ -2154,6 +2218,7 @@ function tlSetFromEvent(e) {
 }
 tlBody.addEventListener("pointerdown", e => {
   if (e.target.closest(".bar,.ev,.evs") || e.target.closest("svg.filiations")) return;
+  if (e.pointerType === "touch" && e.target.closest(".lanes")) return;   // au doigt, les bandes défilent ; la règle règle l'année
   tldrag = true; tlBody.setPointerCapture(e.pointerId); tlSetFromEvent(e);
 });
 tlBody.addEventListener("pointermove", e => { if (tldrag) tlSetFromEvent(e); });
@@ -3232,6 +3297,9 @@ Sur la fiche d'une civilisation — ou en face d'un mouvement, sur la fiche d'un
 - **+** / **−** ou double-clic : zoomer la carte (**Maj** + double-clic : dézoomer)
 - **P** : panneau latéral · **F** : frise · **C** : carte seule (les deux à la fois)
 
+## Sur téléphone
+La carte occupe l'écran ; deux doigts pour zoomer et se déplacer, double-toucher pour zoomer. La fiche s'ouvre en volet depuis le bas : faites glisser sa poignée vers le haut pour l'agrandir, vers le bas pour la réduire puis la fermer. La frise se réduit à un curseur d'années ; la flèche ▴ la déplie. Le bouton *Calques* regroupe noms, lieux, fleuves, relief et grille.
+
 ## Disposition
 Le panneau latéral et la frise se replient (bouton *Panneau* en haut, flèche à droite de l'en-tête de la frise) et se redimensionnent en glissant leur bord ; un double-clic sur le bord rétablit la taille d'origine. Ces réglages sont conservés dans le navigateur. Sélectionner un élément rouvre le panneau et centre la frise sur sa période.
 
@@ -3286,28 +3354,51 @@ document.addEventListener("keydown", e => {
 /* =====================  DISPOSITION : PANNEAUX, ZOOM, CENTRAGE  ===================== */
 /* panneau latéral et frise repliables et redimensionnables ; état conservé dans ce navigateur */
 const UI_KEY = "atlas-civ:ui:v1";
-const UI_DEF = { side: true, tl: true, tlH: 246, sideW: 384 };
+const UI_DEF = { side: true, tl: true, tlH: 246, sideW: 384, tlM: false };
+/* téléphone : carte plein écran, fiche en volet glissant depuis le bas, frise réduite à un curseur */
+const MQ = matchMedia("(max-width: 900px)");
+const isMobile = () => MQ.matches;
+let sheet = "closed";                     // volet mobile : closed | half | full
+const tlOn = () => isMobile() ? ui.tlM : ui.tl;
 let ui = Object.assign({}, UI_DEF, (() => { try { return JSON.parse(localStorage.getItem(UI_KEY)) || {}; } catch (e) { return {}; } })());
 function setVars() {
   document.documentElement.style.setProperty("--tl-h", ui.tlH + "px");
   document.documentElement.style.setProperty("--side-w", ui.sideW + "px");
 }
 function applyUi(save = true) {
-  document.body.classList.toggle("side-off", !ui.side);
-  document.body.classList.toggle("tl-off", !ui.tl);
+  const mob = isMobile();
+  document.body.classList.toggle("mobile", mob);
+  document.body.classList.toggle("side-off", !mob && !ui.side);
+  document.body.classList.toggle("tl-off", !tlOn());
+  document.body.classList.toggle("sheet-half", mob && sheet === "half");
+  document.body.classList.toggle("sheet-full", mob && sheet === "full");
   setVars();
   $("#btnSide").classList.toggle("on", ui.side);
   $("#btnSide").title = (ui.side ? "Masquer" : "Afficher") + " le panneau (P)";
-  $("#tlToggle").textContent = ui.tl ? "▾" : "▴";
-  $("#tlToggle").title = (ui.tl ? "Replier" : "Déplier") + " la frise (F)";
+  $("#tlToggle").textContent = tlOn() ? "▾" : "▴";
+  $("#tlToggle").title = (tlOn() ? "Replier" : "Déplier") + " la frise (F)";
   $("#zFull").classList.toggle("on", !ui.side && !ui.tl);
   if (save) try { localStorage.setItem(UI_KEY, JSON.stringify(ui)); } catch (e) { }
   applyView(); scheduleMap();
-  if (ui.tl) requestAnimationFrame(renderTimeline);
+  if (tlOn()) requestAnimationFrame(renderTimeline);
 }
-const toggleSide = v => { ui.side = v === undefined ? !ui.side : v; applyUi(); };
-const toggleTl = v => { ui.tl = v === undefined ? !ui.tl : v; applyUi(); };
+MQ.addEventListener("change", () => { sheet = "closed"; document.body.classList.remove("layers-open"); applyUi(false); });
+function setSheet(v) { sheet = v; applyUi(false); if (v === "closed") document.activeElement && document.activeElement.blur && document.activeElement.blur(); }
+const toggleSide = v => {
+  if (isMobile()) return setSheet(v === false || (v === undefined && sheet !== "closed") ? "closed" : "half");
+  ui.side = v === undefined ? !ui.side : v; applyUi();
+};
+const toggleTl = v => {
+  const k = isMobile() ? "tlM" : "tl";
+  ui[k] = v === undefined ? !ui[k] : v; applyUi();
+};
+/* ouverture de la fiche à la sélection */
+function revealSheet() {
+  if (isMobile()) { if (sheet === "closed") setSheet("half"); }
+  else if (!ui.side) { ui.side = true; applyUi(); }
+}
 function mapOnly() {
+  if (isMobile()) { ui.tlM = false; setSheet("closed"); return applyUi(); }
   const only = !ui.side && !ui.tl;
   ui.side = ui.tl = only; applyUi();
 }
@@ -3335,14 +3426,14 @@ function zoomMap(f, gx, gy) {
 
 /* la frise suit la sélection : période centrée (ou cadrée si elle déborde), bande ramenée au milieu */
 function centerTimeline(a, b) {
-  if (!ui.tl) return;
+  if (!tlOn()) return;
   b = b ?? a;
   const span = tview.b - tview.a;
   if (b - a > span * .85) { tlFocus(a, b); }
   else { const m = (a + b) / 2; tview.a = m - span / 2; tview.b = m + span / 2; clampTView(); renderTimeline(); }
 }
 function scrollToBar(id) {
-  if (!ui.tl || !id) return;
+  if (!tlOn() || !id) return;
   const lanesEl = $("#lanes"), bar = [...laneIn.querySelectorAll(".bar")].find(b => b.dataset.civ === id);
   if (!bar) return;
   lanesEl.scrollTo({ top: Math.max(0, bar.offsetTop - lanesEl.clientHeight / 2 + 10), behavior: "smooth" });
@@ -3353,6 +3444,53 @@ function followSelection() {
   else if (sel.type === "poi") return;
   else { const c = selCiv(); if (c) { centerTimeline(c.start, c.end ?? Y1); scrollToBar(c.id); } }
 }
+
+/* volet mobile : poignée à glisser (haut = plein écran, bas = réduire puis fermer), toucher = basculer */
+(function () {
+  const grab = $("#sheetGrab");
+  let y0 = null, t0 = 0;
+  grab.addEventListener("pointerdown", e => { y0 = e.clientY; t0 = Date.now(); grab.setPointerCapture(e.pointerId); });
+  grab.addEventListener("pointerup", e => {
+    if (y0 === null) return;
+    const dy = e.clientY - y0; y0 = null;
+    if (Math.abs(dy) < 8 && Date.now() - t0 < 400) return setSheet(sheet === "full" ? "half" : "full");
+    if (dy < -40) setSheet("full");
+    else if (dy > 40) setSheet(sheet === "full" ? "half" : "closed");
+  });
+  grab.addEventListener("pointercancel", () => { y0 = null; });
+  $("#sheetX").onclick = () => setSheet("closed");
+})();
+
+/* pincement à deux doigts sur la carte : zoom autour du centre des doigts, déplacement simultané */
+const touches = new Map();
+let pinch = null;
+function geoAt(v, cx, cy) {
+  const r = map.getBoundingClientRect(), k = v.w / r.width;
+  return [v.x + (cx - r.left) * k, v.y + (cy - r.top) * k];      // repère SVG (y = -latitude)
+}
+map.addEventListener("pointerdown", e => {
+  if (e.pointerType !== "touch") return;
+  touches.set(e.pointerId, [e.clientX, e.clientY]);
+  if (touches.size === 2) {
+    const [a, b] = [...touches.values()];
+    const c = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, g: geoAt(view, c[0], c[1]), w: view.w };
+    panEnd(); moved = 1e9;
+  }
+}, true);
+window.addEventListener("pointermove", e => {
+  if (!touches.has(e.pointerId)) return;
+  touches.set(e.pointerId, [e.clientX, e.clientY]);
+  if (!pinch || touches.size < 2) return;
+  const [a, b] = [...touches.values()], r = map.getBoundingClientRect();
+  const d = Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, c = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  const nw = clamp(pinch.w * pinch.d / d, 0.8, 400), k = nw / r.width;
+  view.w = nw; view.x = pinch.g[0] - (c[0] - r.left) * k; view.y = pinch.g[1] - (c[1] - r.top) * k;
+  applyView(); scheduleMap();
+});
+const endTouch = e => { touches.delete(e.pointerId); if (touches.size < 2) pinch = null; };
+window.addEventListener("pointerup", endTouch);
+window.addEventListener("pointercancel", endTouch);
 
 /* =====================  BRANCHEMENTS  ===================== */
 $("#tSelect").onclick = () => setMode("select");
@@ -3375,6 +3513,8 @@ $("#tlToggle").onclick = () => toggleTl();
 $("#zIn").onclick = () => zoomMap(.67);
 $("#zOut").onclick = () => zoomMap(1.5);
 $("#zFull").onclick = mapOnly;
+$("#tLayers").onclick = () => document.body.classList.toggle("layers-open");
+$("#yearRange").addEventListener("input", e => setYear(+e.target.value));
 $("#btnAccount").onclick = () => (user ? openAccount() : openAuth("login"));
 $("#btnPropose").onclick = openPropose;
 $("#yBack").onclick = () => setYear(year - 25);
@@ -3397,6 +3537,7 @@ function renderAll() { renderMap(); renderTimeline(); renderPanel(); }
 (async function init() {
   setSaveState("chargement…");
   applyUi(false);
+  if (isMobile()) fitWorld();
   if (CFG.supabaseUrl && CFG.supabaseAnonKey) {
     backend = "supabase";
     if (window.supabase && window.supabase.createClient)

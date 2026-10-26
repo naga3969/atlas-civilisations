@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- Atlas des civilisations — v2.1.0 -->
+<!-- Atlas des civilisations — v2.2.0 -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="generator" content="Atlas des civilisations 2.1.0">
+<meta name="generator" content="Atlas des civilisations 2.2.0">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Atlas des civilisations · 5000 av. J.-C. → 1900</title>
 <style>
@@ -34,7 +34,7 @@ button{cursor:pointer;background:none;border:none;padding:0}
 /* ---------- ossature ---------- */
 .app{
   display:grid; height:100dvh;
-  grid-template-columns:1fr 384px;
+  grid-template-columns:minmax(0,1fr) var(--side-w,384px);
   grid-template-rows:auto minmax(0,1fr) auto;
   grid-template-areas:"top top" "map side" "time side";
 }
@@ -125,13 +125,6 @@ button{cursor:pointer;background:none;border:none;padding:0}
 }
 .hint kbd{font-family:var(--mono);font-size:10px;background:var(--surface-3);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:2px;padding:0 3px}
 .overlay-br{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;z-index:20}
-.legend{
-  background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);padding:7px 9px;
-  box-shadow:0 1px 3px rgba(20,25,30,.10);max-width:210px;max-height:34vh;overflow:auto
-}
-.legend .eyebrow{margin-bottom:5px}
-.legend button{display:flex;align-items:center;gap:7px;width:100%;padding:2px 0;text-align:left;font-size:12px}
-.legend button:hover{color:var(--accent)}
 .sw{width:11px;height:11px;flex:0 0 auto;border-radius:2px;border:1px solid rgba(0,0,0,.22)}
 .tip{
   position:absolute;z-index:40;pointer-events:none;background:#22282d;color:#f2f2ef;
@@ -145,7 +138,7 @@ button{cursor:pointer;background:none;border:none;padding:0}
 /* ---------- frise ---------- */
 .timeline{
   grid-area:time;background:var(--surface);border-top:1px solid var(--line-2);
-  display:flex;flex-direction:column;height:246px;position:relative;user-select:none
+  display:flex;flex-direction:column;height:var(--tl-h,246px);position:relative;user-select:none
 }
 .tl-head{display:flex;align-items:center;gap:10px;padding:6px 12px 4px;border-bottom:1px solid var(--line)}
 .readout{display:flex;align-items:baseline;gap:6px}
@@ -202,7 +195,7 @@ button{cursor:pointer;background:none;border:none;padding:0}
 .tl-empty{padding:14px;color:var(--muted);font-size:12px}
 
 /* ---------- panneau ---------- */
-.side{grid-area:side;background:var(--surface);display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.side{grid-area:side;background:var(--surface);display:flex;flex-direction:column;min-width:0;overflow:hidden;position:relative}
 .tabs{display:flex;border-bottom:1px solid var(--line-2);flex:0 0 auto;background:var(--surface-2)}
 .tabs button{
   flex:1;padding:8px 4px;font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
@@ -297,7 +290,6 @@ button{cursor:pointer;background:none;border:none;padding:0}
   .timeline{height:236px}
   .tl-head{flex-wrap:wrap;row-gap:5px}
   #tlCount,.save-state{display:none}
-  .legend{display:none}
   .overlay-tl .tool button{padding:5px 7px;font-size:11.5px}
   .brand{overflow:hidden}
   .brand h1{font-size:14.5px;overflow:hidden;text-overflow:ellipsis}
@@ -363,6 +355,23 @@ table.users th{text-align:left;font-family:var(--mono);font-size:10px;letter-spa
 table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
 @media (max-width:900px){.role-chip{display:none}#btnAccount{max-width:96px}}
 
+/* ---------- v2.2.0 : panneaux repliables, zoom, frise qui suit la sélection ---------- */
+body.side-off .app{grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "map" "time"}
+body.side-off .side{display:none}
+body.tl-off .timeline{height:auto}
+body.tl-off .tl-body,body.tl-off .rz-tl,body.tl-off .tl-head .tl-full{display:none}
+.rz{position:absolute;z-index:30;touch-action:none}
+.rz-tl{left:0;right:0;top:-3px;height:7px;cursor:ns-resize}
+.rz-side{top:0;bottom:0;left:-3px;width:7px;cursor:ew-resize}
+.rz:hover,body.resizing .rz{background:rgba(44,74,99,.18)}
+body.resizing,body.resizing *{cursor:inherit;user-select:none}
+.zoomtool{flex-direction:column}
+.zoomtool button{width:30px;height:28px;padding:0;font-size:15px;line-height:1;border-right:none;border-bottom:1px solid var(--line)}
+.zoomtool button:last-child{border-bottom:none}
+.scalebar:empty{display:none}
+#btnSide.on{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (max-width:1000px){.rz{display:none}#btnSide{display:none}}
+
 /* ---------- v2.1.0 : relief, fiche descriptive, onglet Technique, enrichissement ---------- */
 #gRelief{mix-blend-mode:multiply;opacity:.9;pointer-events:none}
 #gRelief image{image-rendering:auto}
@@ -383,12 +392,6 @@ table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
 .iform textarea{min-height:90px}
 .iform-acts{justify-content:flex-end;margin-top:4px}
 .idline{font-family:var(--mono);font-size:10px;margin-top:10px;overflow-wrap:anywhere}
-.enr-sect{margin-bottom:14px}
-.enr-row{display:grid;grid-template-columns:18px 1fr;column-gap:8px;align-items:start;padding:4px 0;border-bottom:1px dotted var(--line);cursor:pointer}
-.enr-row input{margin-top:3px}
-.enr-n{font-size:12.5px}
-.enr-w{color:var(--flag);font-weight:400}
-.enr-s{grid-column:2;font-family:var(--mono);font-size:10px;color:var(--muted);overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -412,6 +415,7 @@ table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
     <button class="btn ed" id="btnNewCiv">+ Civilisation</button>
     <span class="role-chip" id="roleChip" hidden></span>
     <button class="btn" id="btnAccount" hidden>Se connecter</button>
+    <button class="btn on" id="btnSide" title="Masquer le panneau (P)">Panneau</button>
     <button class="btn" id="btnHelp" title="Aide et raccourcis">?</button>
   </header>
 
@@ -448,14 +452,19 @@ table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
     </div>
 
     <div class="overlay-br">
-      <div class="legend" id="legend"></div>
-      <div class="scalebar" id="coords">—</div>
+      <div class="tool zoomtool" role="toolbar" aria-label="Zoom">
+        <button id="zIn" title="Zoomer (+)">+</button>
+        <button id="zOut" title="Dézoomer (−)">−</button>
+        <button id="zFull" title="Carte seule : replier panneau et frise (C)">⛶</button>
+      </div>
+      <div class="scalebar" id="coords"></div>
     </div>
     <div class="tip" id="tip"></div>
     <div class="banner" id="banner" hidden></div>
   </div>
 
   <section class="timeline">
+    <div class="rz rz-tl" id="rzTl" title="Glisser pour redimensionner · double-clic : taille d'origine"></div>
     <div class="tl-head">
       <div class="readout">
         <span class="y" id="yearNum">0</span>
@@ -473,7 +482,8 @@ table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
       </div>
       <button class="btn sm" id="tlZoomOut" title="Dézoomer la frise">−</button>
       <button class="btn sm" id="tlZoomIn" title="Zoomer la frise">+</button>
-      <button class="btn sm" id="tlAll" title="Toute la période">⤢</button>
+      <button class="btn sm tl-full" id="tlAll" title="Toute la période">⤢</button>
+      <button class="btn sm" id="tlToggle" title="Replier la frise (F)">▾</button>
     </div>
     <div class="tl-body" id="tlBody">
       <div class="ruler" id="ruler"></div>
@@ -484,6 +494,7 @@ table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
   </section>
 
   <aside class="side">
+    <div class="rz rz-side" id="rzSide" title="Glisser pour redimensionner · double-clic : taille d'origine"></div>
     <nav class="tabs" role="tablist">
       <button data-tab="sheet" class="on">Fiche</button>
       <button data-tab="data">Données</button>
@@ -503,7 +514,7 @@ table.users td{padding:5px 6px;border-bottom:1px solid var(--line)}
 
 "use strict";
 /* =====================================================================
-   ATLAS DES CIVILISATIONS — v2.1.0
+   ATLAS DES CIVILISATIONS — v2.2.0
    Données : base partagée Supabase (lecture publique, écriture par rôle)
              ou, à défaut, data/atlas.json + brouillon local
    Fond de carte : data/geo (Natural Earth 1:50M + tuiles 1:10M, relief ombré)
@@ -633,7 +644,7 @@ const EVKINDS = { jalon: "Jalon", bataille: "Bataille", siege: "Siège", traite:
      envoient des propositions soumises à validation ;
    - « fichier » (pas de configuration) : lecture de data/atlas.json, modifications
      conservées dans ce navigateur, export pour mise à jour du dépôt. */
-const APP_VERSION = "2.1.0";
+const APP_VERSION = "2.2.0";
 const COLLS = ["civs", "territories", "events", "pois", "links", "subjections"];
 const COLL_LABEL = { civs: "Civilisation", territories: "Territoire", events: "Événement", pois: "Lieu", links: "Filiation", subjections: "Tutelle" };
 const ROLE_LABEL = { viewer: "Visiteur", contributor: "Contributeur", editor: "Éditeur", admin: "Administrateur", local: "Local" };
@@ -1285,7 +1296,8 @@ async function openUsers() {
 async function initRemoteFromFile() {
   if (role !== "admin") return;
   const warn = remoteState === "empty" ? "Charger le contenu de data/atlas.json dans la base partagée ?"
-    : "Remplacer TOUT le contenu publié par celui de data/atlas.json ?\n\nL'historique des versions remplacées est conservé dans la table item_history.";
+    : null;
+  if (!warn) return;
   if (!confirm(warn)) return;
   try {
     const d = await loadFile();
@@ -1614,7 +1626,6 @@ function renderMap() {
   }
   renderEvents();
   drawEditLayer();
-  renderLegend();
 }
 
 /* --- mouvements : courbe lissée et pointe de flèche --- */
@@ -1777,23 +1788,6 @@ function redrawEditPaths(t) {
   if (tp) tp.setAttribute("d", pathD(t.rings));
 }
 
-function renderLegend() {
-  const box = $("#legend"); box.textContent = "";
-  const list = activeTerrs();
-  const seen = new Map();
-  for (const { c } of list) if (!seen.has(c.id)) seen.set(c.id, c);
-  box.append(el("div", { class: "eyebrow" }, `En ${fmtYear(year, true)} · ${seen.size}`));
-  if (!seen.size) { box.append(el("div", { class: "meta" }, "Aucun territoire cartographié à cette date.")); return; }
-  const selId = selCiv()?.id;
-  [...seen.values()].sort((a, b) => a.name.localeCompare(b.name, "fr")).forEach(c => {
-    const sj = subjAt(c.id);
-    box.append(el("button", { onclick: () => select("civ", c.id), style: selId === c.id ? "font-weight:600" : "" }, [
-      el("span", { class: "sw", style: `background:${c.color}` }),
-      el("span", {}, sj ? c.name + " · " + subjWord(sj) : c.name)
-    ]));
-  });
-}
-
 /* infobulle */
 const tip = $("#tip");
 function showTip(e, html) { tip.innerHTML = html; tip.classList.add("on"); moveTip(e); }
@@ -1846,8 +1840,11 @@ map.addEventListener("pointerup", e => {
   }
   if (mode === "select" && !e.target.closest(".terr,.poi,.evm,.mvt")) select(null);
 });
-map.addEventListener("pointerleave", () => { hideTip(); $("#coords").textContent = "—"; });
-map.addEventListener("dblclick", e => { if (mode === "drawTerr" || mode === "drawArrow") { e.preventDefault(); finishDraft(); } });
+map.addEventListener("pointerleave", () => { hideTip(); $("#coords").textContent = ""; });
+map.addEventListener("dblclick", e => {
+  if (mode === "drawTerr" || mode === "drawArrow") { e.preventDefault(); finishDraft(); return; }
+  if (mode === "select" && !e.target.closest(".vtx")) { const g = clientToGeo(e); zoomMap(e.shiftKey ? 2 : .5, g[0], g[1]); }
+});
 map.addEventListener("wheel", e => {
   e.preventDefault();
   const g = clientToGeo(e), f = Math.exp(e.deltaY * 0.0016);
@@ -1947,7 +1944,9 @@ function select(type, id, opts = {}) {
   if (sel && sel.type === "terr") { const t = byId(db.territories, id); if (t) { setYear(clamp(year, t.start, t.end ?? Y1), true); if (opts.fit !== false) fitTo(t.rings); } }
   if (sel && sel.type === "poi" && opts.fit) { const p = byId(db.pois, sel.id); if (p) fitTo([[[p.lon - 6, p.lat - 5], [p.lon + 6, p.lat + 5]]]); }
   if (tab === "data" || tab === "props") tab = "sheet";
+  if (sel && !ui.side) { ui.side = true; applyUi(); }
   renderAll();
+  followSelection();
   $(".panel").scrollTop = 0;
 }
 function setYear(y, silent) {
@@ -2145,7 +2144,6 @@ function updateBarsLive() {
     const cv = civ(b.dataset?.civ); if (!cv) continue;
     b.classList.toggle("off", !alive(cv));
   }
-  renderLegend();
 }
 
 /* interactions frise */
@@ -2621,27 +2619,17 @@ function renderData() {
   note(role === "admin" || backend === "file"
     ? "L'export produit un fichier au format de data/atlas.json : déposez-le dans le dépôt pour mettre à jour la copie de secours lue quand la base est injoignable."
     : "Téléchargez le contenu affiché au format JSON.");
-  row([
-    el("button", { class: "btn prim", onclick: doExport }, "Exporter (.json)"),
-    (backend === "file" || canPublish()) ? el("button", { class: "btn", onclick: doImport }, "Importer…") : null
-  ]);
+  row([el("button", { class: "btn prim", onclick: doExport }, "Exporter (.json)")]);
 
   if (canPublish() || backend === "file") {
-    sect("Enrichissement");
-    note("Ajoute des civilisations et remplace les tracés d'origine par des emprises datées. Les civilisations que vous avez retravaillées sont conservées, sauf choix contraire ; une fenêtre récapitule tout avant application.");
-    const pick = () => { const inp = el("input", { type: "file", accept: ".json,application/json" }); inp.onchange = () => inp.files[0] && openEnrich(inp.files[0]); inp.click(); };
-    row([el("button", { class: "btn prim", onclick: () => openEnrich() }, "Enrichir l'atlas (v2.1.0)…"),
-      el("button", { class: "btn", onclick: pick }, "Depuis un fichier…"),
-      el("button", { class: "btn", onclick: fillImages }, "Compléter les images")]);
+    sect("Outils");
+    note("Va chercher une image pour chaque fiche qui n'en a pas et possède un lien Wikipédia.");
+    row([el("button", { class: "btn", onclick: fillImages }, "Compléter les images")]);
   }
 
   if (role === "admin" && remoteState !== "down") {
     sect("Administration");
-    row([
-      el("button", { class: "btn", onclick: openUsers }, "Comptes et rôles…"),
-      remoteState === "ok" ? el("button", { class: "btn danger", onclick: initRemoteFromFile }, "Recharger la base depuis data/atlas.json") : null
-    ]);
-    note("Le rechargement remplace tout le contenu publié par celui du fichier du dépôt.");
+    row([el("button", { class: "btn", onclick: openUsers }, "Comptes et rôles…")]);
   }
   if (backend === "file") {
     sect("Réinitialisation");
@@ -2653,7 +2641,7 @@ function renderData() {
   sect("Repères");
   note("Les tracés sont des approximations destinées à la lecture d'ensemble : bornes floues, frontières mouvantes, sources divergentes. Ils sont faits pour être corrigés.");
   note("Fond de carte : Natural Earth (domaine public), 1:50 000 000 en vue d'ensemble et 1:10 000 000 au zoom, relief ombré d'après le Shaded Relief de Natural Earth. Réservoirs modernes retirés ; mer d'Aral et lac Tchad dans leur emprise historique.");
-  note("Emprises de l'enrichissement v2.1.0 : historical-basemaps, A. Ourednik (licence GPL-3.0), instantanés datés simplifiés à ≈ 2,5 km. Version de l'application " + APP_VERSION + ".");
+  note("Emprises datées (enrichissement v2.1.0) : historical-basemaps, A. Ourednik (licence GPL-3.0), instantanés datés simplifiés à ≈ 2,5 km. Version de l'application " + APP_VERSION + ".");
   panel.append(pad);
 }
 
@@ -2672,97 +2660,6 @@ function delCiv(c) {
   sel = null; renderAll();
 }
 
-/* =====================  ENRICHISSEMENT DU JEU DE DONNÉES  ===================== */
-/* Un fichier d'enrichissement apporte des civilisations nouvelles et des emprises
-   plus précises. Règle de prudence : une civilisation dont un seul tracé a été
-   retouché, ajouté ou supprimé depuis le fonds d'origine garde ses tracés, sauf
-   choix explicite ; on le reconnaît à l'empreinte des éléments d'origine. */
-const ENRICH_FILE = "data/enrichissement_v2.1.0.json";
-function cyrb53(str, seed = 0) {
-  let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
-  for (let i = 0; i < str.length; i++) { const ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
-}
-const clone = o => JSON.parse(JSON.stringify(o));
-function planEnrich(P) {
-  const rows = [], newCivs = new Map(P.civs.map(c => [c.id, c]));
-  for (const [cid, terrs] of Object.entries(P.territoriesByCiv || {})) {
-    const c = civ(cid);
-    if (!c && !newCivs.has(cid)) continue;                  // civilisation supprimée par vos soins : on n'y touche pas
-    const cur = db.territories.filter(t => t.civId === cid);
-    const seedIds = (P.seedTerrByCiv || {})[cid] || [];
-    let status;
-    if (!c) status = "new";
-    else if (terrs.every(t => { const x = byId(db.territories, t.id); return x && canon(x) === canon(t); })) status = "done";
-    else {
-      const intact = cur.every(t => P.seedHashes["territories/" + t.id] === cyrb53(canon(t)))
-        && seedIds.every(id => cur.some(t => t.id === id));
-      status = intact ? "seed" : "reworked";
-    }
-    rows.push({
-      cid, status, terrs, cur, name: c ? c.name : newCivs.get(cid).name,
-      apply: status === "new" || status === "seed"
-    });
-  }
-  const order = { new: 0, seed: 1, reworked: 2, done: 3 };
-  return rows.sort((a, b) => order[a.status] - order[b.status] || a.name.localeCompare(b.name, "fr"));
-}
-async function openEnrich(file) {
-  if (!requireEdit()) return;
-  if (backend === "supabase" && !canPublish()) return toast("Réservé aux éditeurs");
-  let P;
-  try {
-    P = file ? JSON.parse(await file.text())
-      : await (await fetch(ENRICH_FILE + "?v=" + Date.now(), { cache: "no-store" })).json();
-    if (P.kind !== "atlas-enrichissement") throw 0;
-  } catch (e) { return toast("Fichier d'enrichissement introuvable ou illisible"); }
-  const rows = planEnrich(P);
-  const spans = r => r.terrs.map(t => t.label.replace(/^vers /, "")).join(" · ");
-  const LBL = {
-    new: ["Nouvelles civilisations", "Ajoutées avec leurs emprises et leur capitale."],
-    seed: ["Tracés d'origine remplacés", "Ces civilisations n'ont jamais été retouchées : leurs tracés approximatifs cèdent la place aux emprises datées."],
-    reworked: ["Civilisations que vous avez retravaillées", "Vos tracés sont conservés. Cochez « Remplacer » seulement si vous préférez les emprises proposées."],
-    done: ["Déjà à jour", "Ces emprises sont déjà présentes à l'identique."]
-  };
-  const body = [el("p", { class: "note", style: "margin:0 0 10px" },
-    `Enrichissement ${P.version || ""} — ${P.sources && P.sources.territories ? "emprises : " + P.sources.territories : ""}. Rien n'est appliqué avant validation ; l'opération s'annule ensuite avec Ctrl+Z.`)];
-  for (const st of ["new", "seed", "reworked", "done"]) {
-    const rs = rows.filter(r => r.status === st); if (!rs.length) continue;
-    const box = el("div", { class: "enr-sect" }, [el("div", { class: "sect-h" }, [el("span", { class: "eyebrow" }, `${LBL[st][0]} · ${rs.length}`)]), el("p", { class: "note", style: "margin:0 0 6px" }, LBL[st][1])]);
-    for (const r of rs) {
-      const cb = el("input", { type: "checkbox" }); cb.checked = r.apply; cb.disabled = st === "done";
-      cb.onchange = () => { r.apply = cb.checked; refresh(); };
-      box.append(el("label", { class: "enr-row" }, [cb,
-        el("span", { class: "enr-n" }, [r.name, st === "reworked" ? el("b", { class: "enr-w" }, " — remplacer vos " + r.cur.length + " tracé(s)") : null]),
-        el("span", { class: "enr-s" }, `${r.terrs.length} emprise${r.terrs.length > 1 ? "s" : ""} : ${spans(r)}`)]));
-    }
-    body.push(box);
-  }
-  const go = el("button", { class: "btn prim" });
-  const refresh = () => { const n = rows.filter(r => r.apply && r.status !== "done").length; go.textContent = `Appliquer (${n})`; go.disabled = !n; };
-  const m = modalShell("Enrichir l'atlas", body, [el("button", { class: "btn", onclick: () => m.close() }, "Annuler"), go], "wide");
-  refresh();
-  go.onclick = () => {
-    const sel1 = rows.filter(r => r.apply && r.status !== "done");
-    let added = 0, redrawn = 0, replaced = 0;
-    mutate(() => {
-      for (const r of sel1) {
-        if (r.status === "new") {
-          const c = P.civs.find(x => x.id === r.cid);
-          if (c && !civ(c.id)) db.civs.push(clone(c));
-          for (const p of (P.pois || []).filter(p => p.civId === r.cid)) if (!byId(db.pois, p.id)) db.pois.push(clone(p));
-          added++;
-        } else if (r.status === "seed") redrawn++; else replaced++;
-        db.territories = db.territories.filter(t => t.civId !== r.cid);
-        for (const t of r.terrs) db.territories.push(clone(t));
-      }
-    });
-    m.close(); renderAll();
-    toast(`${added} civilisation(s) ajoutée(s), ${redrawn} retracée(s)${replaced ? `, ${replaced} remplacée(s) à votre demande` : ""}`);
-  };
-}
 /* images manquantes, depuis le premier lien Wikipédia de chaque fiche */
 function wikiThumb(j) {
   const o = j && j.originalimage, t = j && j.thumbnail;
@@ -3288,29 +3185,6 @@ function doExport() {
   document.body.append(a); a.click(); a.remove();
   toast("Fichier exporté");
 }
-function doImport() {
-  if (!requireEdit()) return;
-  const inp = el("input", { type: "file", accept: ".json,application/json" });
-  inp.addEventListener("change", async () => {
-    const f = inp.files[0]; if (!f) return;
-    try {
-      const j = JSON.parse(await f.text());
-      const d = j.db || j;
-      if (!d.civs) throw 0;
-      const merge = db.civs.length && confirm("Fusionner avec le contenu actuel ?\n\nOK = fusionner · Annuler = remplacer");
-      mutate(() => {
-        if (!merge) db = emptyDb();
-        const ids = new Set(db.civs.map(c => c.id));
-        for (const k of COLLS) (d[k] || []).forEach(o => {
-          if (!o || !o.id || (merge && db[k].some(x => x.id === o.id))) return;
-          db[k].push(o);
-        });
-      });
-      migrate(); sel = null; renderAll(); toast("Contenu importé");
-    } catch (e) { toast("Fichier illisible"); }
-  });
-  inp.click();
-}
 /* =====================  DIVERS  ===================== */
 let toastT;
 function toast(msg) {
@@ -3355,6 +3229,11 @@ Sur la fiche d'une civilisation — ou en face d'un mouvement, sur la fiche d'un
 - **Échap** : quitter le mode en cours · **Entrée** : fermer le tracé
 - **Ctrl/Cmd + Z** : annuler la dernière modification
 - **/** : rechercher · molette : zoom (carte et frise)
+- **+** / **−** ou double-clic : zoomer la carte (**Maj** + double-clic : dézoomer)
+- **P** : panneau latéral · **F** : frise · **C** : carte seule (les deux à la fois)
+
+## Disposition
+Le panneau latéral et la frise se replient (bouton *Panneau* en haut, flèche à droite de l'en-tête de la frise) et se redimensionnent en glissant leur bord ; un double-clic sur le bord rétablit la taille d'origine. Ces réglages sont conservés dans le navigateur. Sélectionner un élément rouvre le panneau et centre la frise sur sa période.
 
 ## Fiche et onglet Technique
 Chaque élément s'ouvre sur sa **Description** : image, texte, repères chronologiques, relations, lieux et emprises, sans aucun bouton d'édition. Les comptes autorisés disposent en plus de l'onglet **Technique** : toutes les propriétés y sont modifiables sur place (nom, dates, couleur, texte, liens, image), ainsi que les territoires, tutelles, filiations, événements et lieux rattachés.
@@ -3390,11 +3269,90 @@ document.addEventListener("keydown", e => {
   }
   if (e.key === "Enter" && (mode === "drawTerr" || mode === "drawArrow")) finishDraft();
   if (e.key === "Backspace" && draft && draft.pts.length) { e.preventDefault(); draft.pts.pop(); drawEditLayer(); }
+  if (!e.metaKey && !e.ctrlKey && !e.altKey) {
+    const k = e.key.toLowerCase();
+    if (k === "+" || k === "=") { zoomMap(.67); return; }
+    if (k === "-" || k === "_") { zoomMap(1.5); return; }
+    if (k === "p") { toggleSide(); return; }
+    if (k === "f") { toggleTl(); return; }
+    if (k === "c") { mapOnly(); return; }
+  }
   if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
     const step = e.altKey ? 100 : e.shiftKey ? 10 : 1;
     setYear(year + (e.key === "ArrowRight" ? step : -step));
   }
 });
+
+/* =====================  DISPOSITION : PANNEAUX, ZOOM, CENTRAGE  ===================== */
+/* panneau latéral et frise repliables et redimensionnables ; état conservé dans ce navigateur */
+const UI_KEY = "atlas-civ:ui:v1";
+const UI_DEF = { side: true, tl: true, tlH: 246, sideW: 384 };
+let ui = Object.assign({}, UI_DEF, (() => { try { return JSON.parse(localStorage.getItem(UI_KEY)) || {}; } catch (e) { return {}; } })());
+function setVars() {
+  document.documentElement.style.setProperty("--tl-h", ui.tlH + "px");
+  document.documentElement.style.setProperty("--side-w", ui.sideW + "px");
+}
+function applyUi(save = true) {
+  document.body.classList.toggle("side-off", !ui.side);
+  document.body.classList.toggle("tl-off", !ui.tl);
+  setVars();
+  $("#btnSide").classList.toggle("on", ui.side);
+  $("#btnSide").title = (ui.side ? "Masquer" : "Afficher") + " le panneau (P)";
+  $("#tlToggle").textContent = ui.tl ? "▾" : "▴";
+  $("#tlToggle").title = (ui.tl ? "Replier" : "Déplier") + " la frise (F)";
+  $("#zFull").classList.toggle("on", !ui.side && !ui.tl);
+  if (save) try { localStorage.setItem(UI_KEY, JSON.stringify(ui)); } catch (e) { }
+  applyView(); scheduleMap();
+  if (ui.tl) requestAnimationFrame(renderTimeline);
+}
+const toggleSide = v => { ui.side = v === undefined ? !ui.side : v; applyUi(); };
+const toggleTl = v => { ui.tl = v === undefined ? !ui.tl : v; applyUi(); };
+function mapOnly() {
+  const only = !ui.side && !ui.tl;
+  ui.side = ui.tl = only; applyUi();
+}
+function dragResize(handle, onMove, onReset) {
+  handle.addEventListener("pointerdown", e => {
+    e.preventDefault(); handle.setPointerCapture(e.pointerId); document.body.classList.add("resizing");
+    const mv = ev => { onMove(ev); setVars(); applyView(); scheduleMap(); if (ui.tl) renderTimeline(); };
+    const up = () => { handle.removeEventListener("pointermove", mv); handle.removeEventListener("pointerup", up); document.body.classList.remove("resizing"); applyUi(); };
+    handle.addEventListener("pointermove", mv); handle.addEventListener("pointerup", up);
+  });
+  handle.addEventListener("dblclick", () => { onReset(); applyUi(); });
+}
+dragResize($("#rzTl"), ev => { ui.tlH = clamp(Math.round(window.innerHeight - ev.clientY), 130, Math.round(window.innerHeight * .7)); }, () => { ui.tlH = UI_DEF.tlH; });
+dragResize($("#rzSide"), ev => { ui.sideW = clamp(Math.round(window.innerWidth - ev.clientX), 280, Math.round(window.innerWidth * .55)); }, () => { ui.sideW = UI_DEF.sideW; });
+
+/* zoom de la carte autour d'un point (par défaut le centre de la vue) */
+function zoomMap(f, gx, gy) {
+  if (gx === undefined) { gx = view.x + view.w / 2; gy = -(view.y + view.h / 2); }
+  const nw = clamp(view.w * f, 0.8, 400);
+  const rx = (gx - view.x) / view.w, ry = (-gy - view.y) / view.h;
+  view.x = gx - rx * nw; view.w = nw;
+  view.y = -gy - ry * nw * (map.clientHeight / map.clientWidth);
+  applyView(); scheduleMap();
+}
+
+/* la frise suit la sélection : période centrée (ou cadrée si elle déborde), bande ramenée au milieu */
+function centerTimeline(a, b) {
+  if (!ui.tl) return;
+  b = b ?? a;
+  const span = tview.b - tview.a;
+  if (b - a > span * .85) { tlFocus(a, b); }
+  else { const m = (a + b) / 2; tview.a = m - span / 2; tview.b = m + span / 2; clampTView(); renderTimeline(); }
+}
+function scrollToBar(id) {
+  if (!ui.tl || !id) return;
+  const lanesEl = $("#lanes"), bar = [...laneIn.querySelectorAll(".bar")].find(b => b.dataset.civ === id);
+  if (!bar) return;
+  lanesEl.scrollTo({ top: Math.max(0, bar.offsetTop - lanesEl.clientHeight / 2 + 10), behavior: "smooth" });
+}
+function followSelection() {
+  if (!sel) return;
+  if (sel.type === "event") { const e = byId(db.events, sel.id); if (e) centerTimeline(e.year, evEnd(e)); }
+  else if (sel.type === "poi") return;
+  else { const c = selCiv(); if (c) { centerTimeline(c.start, c.end ?? Y1); scrollToBar(c.id); } }
+}
 
 /* =====================  BRANCHEMENTS  ===================== */
 $("#tSelect").onclick = () => setMode("select");
@@ -3412,6 +3370,11 @@ $("#tGrid").onclick = e => { show.grid = !show.grid; e.currentTarget.classList.t
 $("#tFit").onclick = fitWorld;
 $("#btnNewCiv").onclick = () => openCivForm();
 $("#btnHelp").onclick = helpModal;
+$("#btnSide").onclick = () => toggleSide();
+$("#tlToggle").onclick = () => toggleTl();
+$("#zIn").onclick = () => zoomMap(.67);
+$("#zOut").onclick = () => zoomMap(1.5);
+$("#zFull").onclick = mapOnly;
 $("#btnAccount").onclick = () => (user ? openAccount() : openAuth("login"));
 $("#btnPropose").onclick = openPropose;
 $("#yBack").onclick = () => setYear(year - 25);
@@ -3433,6 +3396,7 @@ function renderAll() { renderMap(); renderTimeline(); renderPanel(); }
 /* =====================  DÉMARRAGE  ===================== */
 (async function init() {
   setSaveState("chargement…");
+  applyUi(false);
   if (CFG.supabaseUrl && CFG.supabaseAnonKey) {
     backend = "supabase";
     if (window.supabase && window.supabase.createClient)

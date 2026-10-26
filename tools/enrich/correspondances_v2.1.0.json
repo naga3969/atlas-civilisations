@@ -1,0 +1,617 @@
+[
+ {
+  "id": "babylone",
+  "start": -1792,
+  "end": -539,
+  "names": "Babylonia"
+ },
+ {
+  "id": "assyrie",
+  "start": -1365,
+  "end": -609,
+  "names": "Assyria"
+ },
+ {
+  "id": "hittites",
+  "start": -1650,
+  "end": -1178,
+  "names": "Hittites"
+ },
+ {
+  "id": "egypte",
+  "start": -3100,
+  "end": -332,
+  "names": "Egypt",
+  "years": [
+   -3100,
+   -400
+  ]
+ },
+ {
+  "id": "koush",
+  "start": -1070,
+  "end": 350,
+  "names": "Kush|Meroe"
+ },
+ {
+  "id": "indus",
+  "start": -3300,
+  "end": -1300,
+  "names": "Indus valley civilization"
+ },
+ {
+  "id": "minoens",
+  "start": -2700,
+  "end": -1450,
+  "names": "Minoan"
+ },
+ {
+  "id": "grece",
+  "start": -1100,
+  "end": -36,
+  "names": "Greek city-states|Greek colonies",
+  "years": [
+   -1100,
+   -300
+  ]
+ },
+ {
+  "id": "achemenides",
+  "start": -559,
+  "end": -330,
+  "names": "Achaemenid Empire"
+ },
+ {
+  "id": "macedoine",
+  "start": -336,
+  "end": -323,
+  "names": "Empire of Alexander"
+ },
+ {
+  "id": "seleucides",
+  "start": -312,
+  "end": -63,
+  "names": "Seleucid Kingdom"
+ },
+ {
+  "id": "lagides",
+  "start": -305,
+  "end": -30,
+  "names": "Ptolemaic Kingdom"
+ },
+ {
+  "id": "carthage",
+  "start": -814,
+  "end": -146,
+  "names": "Carthage|Carthaginian Empire"
+ },
+ {
+  "id": "celtes",
+  "start": -800,
+  "end": -50,
+  "names": "Celts|Celtiberians"
+ },
+ {
+  "id": "rome-rep",
+  "start": -509,
+  "end": -27,
+  "names": "Rome|Roman Republic"
+ },
+ {
+  "id": "rome-emp",
+  "start": -27,
+  "end": 395,
+  "names": "Roman Empire|Rome \\(.*\\)"
+ },
+ {
+  "id": "rome-occ",
+  "start": 395,
+  "end": 476,
+  "names": "Western Roman Empire"
+ },
+ {
+  "id": "byzance",
+  "start": 395,
+  "end": 1453,
+  "names": "Eastern Roman Empire|Byzantine Empire"
+ },
+ {
+  "id": "parthes",
+  "start": -247,
+  "end": 224,
+  "names": "Parthia|Parthian Empire"
+ },
+ {
+  "id": "sassanides",
+  "start": 224,
+  "end": 651,
+  "names": "Sasanian Empire|Persia",
+  "years": [
+   300,
+   700
+  ]
+ },
+ {
+  "id": "maurya",
+  "start": -322,
+  "end": -185,
+  "names": "Mauryan Empire"
+ },
+ {
+  "id": "gupta",
+  "start": 320,
+  "end": 550,
+  "names": "Gupta Empire"
+ },
+ {
+  "id": "chola",
+  "start": 848,
+  "end": 1279,
+  "names": "Chola Empire|Cholas"
+ },
+ {
+  "id": "moghol",
+  "start": 1526,
+  "end": 1857,
+  "names": "Mughal Empire"
+ },
+ {
+  "id": "zhou",
+  "start": -1046,
+  "end": -256,
+  "names": "Zhou states"
+ },
+ {
+  "id": "han",
+  "start": -202,
+  "end": 220,
+  "names": "Han|Han Empire"
+ },
+ {
+  "id": "tang",
+  "start": 618,
+  "end": 907,
+  "names": "Tang Empire"
+ },
+ {
+  "id": "song",
+  "start": 960,
+  "end": 1279,
+  "names": "Song Empire"
+ },
+ {
+  "id": "ming",
+  "start": 1368,
+  "end": 1644,
+  "names": "Ming Empire|Ming Chinese Empire"
+ },
+ {
+  "id": "qing",
+  "start": 1644,
+  "end": 1900,
+  "names": "Manchu Empire|Qing Empire"
+ },
+ {
+  "id": "xiongnu",
+  "start": -209,
+  "end": 155,
+  "names": "Xiongnu"
+ },
+ {
+  "id": "mongols",
+  "start": 1206,
+  "end": 1368,
+  "names": "Mongol Empire|Great Khanate|Golden Horde|Khanate of the Golden Horde|Ilkhanate|Chagatai Khanate",
+  "years": [
+   1200,
+   1300
+  ]
+ },
+ {
+  "id": "japon",
+  "start": 300,
+  "end": 1868,
+  "names": "Yamato|Japan|Imperial Japan \\(Fujiwara\\)|Shogun Japan \\(Kamakura\\)|Japan \\(Warring States\\)"
+ },
+ {
+  "id": "khmer",
+  "start": 802,
+  "end": 1431,
+  "names": "Khmer Empire"
+ },
+ {
+  "id": "omeyyade",
+  "start": 661,
+  "end": 750,
+  "names": "Umayyad Caliphate"
+ },
+ {
+  "id": "abbasside",
+  "start": 750,
+  "end": 1258,
+  "names": "Abbasid Caliphate"
+ },
+ {
+  "id": "andalus",
+  "start": 711,
+  "end": 1492,
+  "names": "Umayyad Caliphate|Emirate of Córdoba|Caliphate of Córdoba|Almoravid dynasty|Almohad Caliphate|Granada",
+  "years": [
+   711,
+   1492
+  ]
+ },
+ {
+  "id": "ottoman",
+  "start": 1299,
+  "end": 1900,
+  "names": "Ottoman Empire"
+ },
+ {
+  "id": "safavides",
+  "start": 1501,
+  "end": 1736,
+  "names": "Safavid Empire"
+ },
+ {
+  "id": "aksoum",
+  "start": 100,
+  "end": 940,
+  "names": "Axum"
+ },
+ {
+  "id": "ethiopie",
+  "start": 1270,
+  "end": 1900,
+  "names": "Ethiopia"
+ },
+ {
+  "id": "ghana",
+  "start": 300,
+  "end": 1240,
+  "names": "Empire of Ghana|Ghana"
+ },
+ {
+  "id": "mali",
+  "start": 1235,
+  "end": 1670,
+  "names": "Mali"
+ },
+ {
+  "id": "songhai",
+  "start": 1464,
+  "end": 1591,
+  "names": "Songhai"
+ },
+ {
+  "id": "kanem",
+  "start": 700,
+  "end": 1893,
+  "names": "Kanem|Kanem-Bornu"
+ },
+ {
+  "id": "zimbabwe",
+  "start": 1100,
+  "end": 1450,
+  "names": "Great Zimbabwe"
+ },
+ {
+  "id": "kongo",
+  "start": 1390,
+  "end": 1857,
+  "names": "Congo"
+ },
+ {
+  "id": "olmeques",
+  "start": -1500,
+  "end": -400,
+  "names": "Olmec"
+ },
+ {
+  "id": "maya",
+  "start": -400,
+  "end": 1524,
+  "names": "Maya chiefdoms and states|Maya states|Maya city-states"
+ },
+ {
+  "id": "teotihuacan",
+  "start": -100,
+  "end": 650,
+  "names": "Teotihuacan"
+ },
+ {
+  "id": "azteques",
+  "start": 1428,
+  "end": 1521,
+  "names": "Aztec Empire"
+ },
+ {
+  "id": "incas",
+  "start": 1438,
+  "end": 1533,
+  "names": "Inca Empire"
+ },
+ {
+  "id": "vikings",
+  "start": 793,
+  "end": 1100,
+  "names": "Danes|Kingdom of Norway|Norway|Denmark-Norway|Sweden"
+ },
+ {
+  "id": "francs",
+  "start": 481,
+  "end": 888,
+  "names": "Franks|Frankish Kingdom|Carolingian Empire"
+ },
+ {
+  "id": "hre",
+  "start": 962,
+  "end": 1806,
+  "names": "Holy Roman Empire"
+ },
+ {
+  "id": "rus",
+  "start": 882,
+  "end": 1240,
+  "names": "Kyivan Rus|Kievan Rus|Other Rus Principalities|Principality of Novgorod"
+ },
+ {
+  "id": "russie",
+  "start": 1547,
+  "end": 1900,
+  "names": "Tsardom of Muscovy|Russian Empire"
+ },
+ {
+  "id": "france",
+  "start": 987,
+  "end": 1792,
+  "names": "Kingdom of France|France",
+  "years": [
+   987,
+   1783
+  ]
+ },
+ {
+  "id": "angleterre",
+  "start": 927,
+  "end": 1900,
+  "names": "England|England and Ireland|United Kingdom|United Kingdom of Great Britain and Ireland",
+  "subj": "United Kingdom|Great Britain|British.*",
+  "years": [
+   927,
+   1900
+  ]
+ },
+ {
+  "id": "espagne",
+  "start": 1492,
+  "end": 1898,
+  "names": "Castille|Spain|.*\\(Spain\\)|Viceroyalty of New Spain|Viceroyalty of New Granada|Viceroyalty of Peru|Viceroyalty of the Río de la Plata",
+  "subj": "Spain"
+ },
+ {
+  "id": "portugal",
+  "start": 1415,
+  "end": 1900,
+  "names": "Portugal|.*\\(Portugal\\)|Portuguese .*",
+  "subj": "Portugal"
+ },
+ {
+  "id": "usa",
+  "start": 1776,
+  "end": 1900,
+  "names": "United States|United States of America"
+ },
+ {
+  "id": "civ-jflu77c",
+  "start": -400,
+  "end": 106,
+  "names": "Nabatean Kingdom"
+ },
+ {
+  "id": "civ-wq2vzvz",
+  "start": -900,
+  "end": -600,
+  "names": "Urartu"
+ },
+ {
+  "id": "elam",
+  "start": -3200,
+  "end": -539,
+  "names": "Elam"
+ },
+ {
+  "id": "kouchans",
+  "start": 30,
+  "end": 375,
+  "names": "Kushan Empire"
+ },
+ {
+  "id": "huns",
+  "start": 370,
+  "end": 469,
+  "names": "Hunnic Empire"
+ },
+ {
+  "id": "avars",
+  "start": 567,
+  "end": 822,
+  "names": "Avars"
+ },
+ {
+  "id": "wisigoths",
+  "start": 418,
+  "end": 711,
+  "names": "Visigoths|Visigothic Kingdom"
+ },
+ {
+  "id": "ostrogoths",
+  "start": 493,
+  "end": 553,
+  "names": "Ostrogoths"
+ },
+ {
+  "id": "khazars",
+  "start": 650,
+  "end": 969,
+  "names": "Khazars"
+ },
+ {
+  "id": "fatimides",
+  "start": 909,
+  "end": 1171,
+  "names": "Fatimid Caliphate"
+ },
+ {
+  "id": "seldjoukides",
+  "start": 1037,
+  "end": 1194,
+  "names": "Seljuk Empire"
+ },
+ {
+  "id": "mamelouks",
+  "start": 1250,
+  "end": 1517,
+  "names": "Mamluke Sultanate"
+ },
+ {
+  "id": "timourides",
+  "start": 1370,
+  "end": 1507,
+  "names": "Timurid Empire|Timurid Emirates"
+ },
+ {
+  "id": "delhi",
+  "start": 1206,
+  "end": 1526,
+  "names": "Sultanate of Delhi"
+ },
+ {
+  "id": "vijayanagar",
+  "start": 1336,
+  "end": 1646,
+  "names": "Vijayanagara"
+ },
+ {
+  "id": "silla",
+  "start": -57,
+  "end": 935,
+  "names": "Silla"
+ },
+ {
+  "id": "coree",
+  "start": 918,
+  "end": 1897,
+  "names": "Goryeo|Korea"
+ },
+ {
+  "id": "tibet",
+  "start": 618,
+  "end": 842,
+  "names": "Tibetan Empire"
+ },
+ {
+  "id": "srivijaya",
+  "start": 650,
+  "end": 1377,
+  "names": "Srivijaya Empire"
+ },
+ {
+  "id": "champa",
+  "start": 192,
+  "end": 1832,
+  "names": "Champa|Champa City States"
+ },
+ {
+  "id": "pagan",
+  "start": 849,
+  "end": 1297,
+  "names": "Pagan|Kingdom of Pagan"
+ },
+ {
+  "id": "ayutthaya",
+  "start": 1351,
+  "end": 1767,
+  "names": "Ayutthaya"
+ },
+ {
+  "id": "liao",
+  "start": 916,
+  "end": 1125,
+  "names": "Liao"
+ },
+ {
+  "id": "xixia",
+  "start": 1038,
+  "end": 1227,
+  "names": "Xixia"
+ },
+ {
+  "id": "sui",
+  "start": 581,
+  "end": 618,
+  "names": "Sui Empire",
+  "years": [
+   581,
+   650
+  ]
+ },
+ {
+  "id": "tolteques",
+  "start": 900,
+  "end": 1168,
+  "names": "Toltec Empire"
+ },
+ {
+  "id": "moche",
+  "start": 100,
+  "end": 800,
+  "names": "Moche"
+ },
+ {
+  "id": "nazca",
+  "start": -100,
+  "end": 800,
+  "names": "Nazca"
+ },
+ {
+  "id": "benin",
+  "start": 1180,
+  "end": 1897,
+  "names": "Benin"
+ },
+ {
+  "id": "oyo",
+  "start": 1300,
+  "end": 1836,
+  "names": "Oyo"
+ },
+ {
+  "id": "pologne",
+  "start": 1386,
+  "end": 1795,
+  "names": "Poland-Lithuania|Polish–Lithuanian Commonwealth|Poland",
+  "years": [
+   1386,
+   1783
+  ]
+ },
+ {
+  "id": "venise",
+  "start": 697,
+  "end": 1797,
+  "names": "Venice"
+ },
+ {
+  "id": "hongrie",
+  "start": 1000,
+  "end": 1526,
+  "names": "Hungary|Kingdom of Hungary|Imperial Hungary"
+ },
+ {
+  "id": "autriche",
+  "start": 1526,
+  "end": 1900,
+  "names": "Austrian Empire|Austria Hungary"
+ }
+]

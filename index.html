@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- Atlas des civilisations — v2.4.0 -->
+<!-- Atlas des civilisations — v2.5.0 -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="generator" content="Atlas des civilisations 2.4.0">
+<meta name="generator" content="Atlas des civilisations 2.5.0">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Atlas des civilisations · 5000 av. J.-C. → 1900</title>
 <style>
@@ -372,6 +372,29 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
 #btnSide.on{background:var(--accent);border-color:var(--accent);color:#fff}
 @media (max-width:1000px){.rz{display:none}#btnSide{display:none}}
 
+/* ---------- v2.5.0 : frise compacte, navigation, priorité au contenu ---------- */
+.lanes{bottom:9px}
+.tl-body.focus .events-band{height:30px}
+.tl-body.focus .lanes{top:56px}
+.tl-focus-h{top:3px}
+.trk-h{height:16px;line-height:16px}
+.trk-h span{padding:0 6px 0 2px;border-radius:2px;background:linear-gradient(90deg,var(--surface) 85%,transparent)}
+.ti{height:15px;line-height:13px}
+.ti.stub{color:var(--ink-2);font-size:10px}
+.ti.stub span{display:block;overflow:hidden;text-overflow:ellipsis}
+.ti.stub-l{background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--c) 28%,transparent));border-left-color:transparent;border-radius:0 2px 2px 0;text-align:right}
+.ti.stub-r{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 28%,transparent),transparent);border-right-color:transparent;border-radius:2px 0 0 2px}
+.ti.guess{border-style:dashed}
+.trk-add{position:absolute;left:6px;right:6px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.trk-add .btn{text-transform:none;letter-spacing:0;font-family:inherit;padding:0 7px;height:18px;line-height:16px;font-size:11px;color:var(--ink-2)}
+.trk-add span{margin-right:4px}
+.fill-btns{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.fill-in .btn{color:var(--ink-2)}
+.tl-nav{position:absolute;left:0;right:0;bottom:0;height:9px;background:var(--surface-2);border-top:1px solid var(--line);z-index:6;cursor:pointer;touch-action:none}
+.tl-nav-win{position:absolute;top:1px;bottom:1px;background:rgba(44,74,99,.28);border-radius:3px;cursor:grab;min-width:10px}
+.tl-nav:hover .tl-nav-win,.tl-nav.drag .tl-nav-win{background:rgba(44,74,99,.55)}
+.tl-nav.drag .tl-nav-win{cursor:grabbing}
+
 /* ---------- v2.4.0 : frises par entité, entrées croisées, personnages ---------- */
 .tl-focus-h{position:absolute;left:6px;right:6px;top:6px;pointer-events:auto;z-index:3;display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden}
 .tl-focus-h b{font-family:var(--serif);font-size:14px}
@@ -567,6 +590,7 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
       <div class="events-band" id="evBand"></div>
       <div class="lanes" id="lanes"><div class="lane-in" id="laneIn"></div></div>
       <div class="playhead" id="playhead"></div>
+      <div class="tl-nav" id="tlNav" title="Glisser pour se déplacer dans le temps · Ctrl + molette : zoom · Maj + molette : défilement"><div class="tl-nav-win" id="tlNavWin"></div></div>
     </div>
   </section>
 
@@ -593,7 +617,7 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
 
 "use strict";
 /* =====================================================================
-   ATLAS DES CIVILISATIONS — v2.4.0
+   ATLAS DES CIVILISATIONS — v2.5.0
    Données : base partagée Supabase (lecture publique, écriture par rôle)
              ou, à défaut, data/atlas.json + brouillon local
    Fond de carte : data/geo (Natural Earth 1:50M + tuiles 1:10M, relief ombré)
@@ -723,7 +747,7 @@ const EVKINDS = { periode: "Période", regne: "Règne", guerre: "Guerre", batail
      envoient des propositions soumises à validation ;
    - « fichier » (pas de configuration) : lecture de data/atlas.json, modifications
      conservées dans ce navigateur, export pour mise à jour du dépôt. */
-const APP_VERSION = "2.4.0";
+const APP_VERSION = "2.5.0";
 const COLLS = ["civs", "territories", "events", "pois", "links", "subjections", "persons"];
 const COLL_LABEL = { persons: "Personnage", civs: "Civilisation", territories: "Territoire", events: "Événement", pois: "Lieu", links: "Filiation", subjections: "Tutelle" };
 const ROLE_LABEL = { viewer: "Visiteur", contributor: "Contributeur", editor: "Éditeur", admin: "Administrateur", local: "Local" };
@@ -2056,7 +2080,7 @@ function setYear(y, silent) {
 }
 
 /* =====================  FRISE  ===================== */
-const tlBody = $("#tlBody"), ruler = $("#ruler"), evBand = $("#evBand"), laneIn = $("#laneIn"), playhead = $("#playhead");
+const tlBody = $("#tlBody"), ruler = $("#ruler"), evBand = $("#evBand"), laneIn = $("#laneIn"), playhead = $("#playhead"), tlNav = $("#tlNav"), tlNavWin = $("#tlNavWin");
 const tlW = () => tlBody.clientWidth || 1;
 const yToX = y => (y - tview.a) / (tview.b - tview.a) * tlW();
 const xToY = x => tview.a + x / tlW() * (tview.b - tview.a);
@@ -2239,6 +2263,13 @@ function positionPlayhead() {
   const x = yToX(year);
   playhead.style.display = (x < -2 || x > tlW() + 2) ? "none" : "block";
   playhead.style.left = x + "px";
+  positionNav();
+}
+function positionNav() {
+  const W = tlNav.clientWidth || 1, R = Y1 - Y0;
+  const a = (clamp(tview.a, Y0, Y1) - Y0) / R, b = (clamp(tview.b, Y0, Y1) - Y0) / R;
+  tlNav.style.visibility = tview.b - tview.a >= R * .98 ? "hidden" : "visible";
+  tlNavWin.style.left = a * W + "px"; tlNavWin.style.width = Math.max((b - a) * W, 10) + "px";
 }
 function updateBarsLive() {
   for (const b of laneIn.children) {
@@ -2254,17 +2285,19 @@ function tlSetFromEvent(e) {
   setYear(xToY(e.clientX - r.left));
 }
 tlBody.addEventListener("pointerdown", e => {
-  if (e.target.closest(".bar,.ev,.evs,.ti,.trk-h,.tl-focus-h") || e.target.closest("svg.filiations")) return;
+  if (e.target.closest(".bar,.ev,.evs,.ti,.trk-h,.tl-focus-h,.trk-add,.tl-nav") || e.target.closest("svg.filiations")) return;
   if (e.pointerType === "touch" && e.target.closest(".lanes")) return;   // au doigt, les bandes défilent ; la règle règle l'année
   tldrag = true; tlBody.setPointerCapture(e.pointerId); tlSetFromEvent(e);
 });
 tlBody.addEventListener("pointermove", e => { if (tldrag) tlSetFromEvent(e); });
 tlBody.addEventListener("pointerup", () => { tldrag = false; });
 tlBody.addEventListener("wheel", e => {
+  const horiz = e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY);
+  if (!horiz && !e.ctrlKey && !e.metaKey) return;        // molette seule : on laisse défiler les bandes
   e.preventDefault();
   const r = tlBody.getBoundingClientRect(), px0 = e.clientX - r.left;
-  if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-    const d = (e.deltaX || e.deltaY) / tlW() * (tview.b - tview.a);
+  if (horiz) {
+    const d = (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) / tlW() * (tview.b - tview.a);
     tview.a += d; tview.b += d;
   } else {
     const y = xToY(px0), f = Math.exp(e.deltaY * .0016);
@@ -2275,6 +2308,18 @@ tlBody.addEventListener("wheel", e => {
   }
   clampTView(); renderTimeline();
 }, { passive: false });
+tlNav.addEventListener("pointerdown", e => {
+  e.stopPropagation(); e.preventDefault();
+  const r = tlNav.getBoundingClientRect(), R = Y1 - Y0, span = tview.b - tview.a;
+  const yAt = x => Y0 + (x - r.left) / r.width * R;
+  let off = span / 2;
+  if (e.target === tlNavWin) off = yAt(e.clientX) - tview.a;
+  else { tview.a = yAt(e.clientX) - off; tview.b = tview.a + span; clampTView(); renderTimeline(); }
+  tlNav.setPointerCapture(e.pointerId); tlNav.classList.add("drag");
+  const mv = ev => { tview.a = yAt(ev.clientX) - off; tview.b = tview.a + span; clampTView(); renderTimeline(); };
+  const up = () => { tlNav.removeEventListener("pointermove", mv); tlNav.removeEventListener("pointerup", up); tlNav.classList.remove("drag"); };
+  tlNav.addEventListener("pointermove", mv); tlNav.addEventListener("pointerup", up);
+});
 function clampTView() {
   const span = tview.b - tview.a;
   if (tview.a < Y0 - span * .05) { tview.a = Y0 - span * .05; tview.b = tview.a + span; }
@@ -2747,7 +2792,7 @@ async function fillImages() {
   renderAll(); toast(`${found.length} image(s) ajoutée(s)`);
 }
 
-/* =====================  CHRONOLOGIE CROISÉE (v2.4.0)  ===================== */
+/* =====================  CHRONOLOGIE CROISÉE (v2.4.0, compactée en v2.5.0)  ===================== */
 /* Une entrée chronologique (collection « events ») est unique et peut être reliée
    à plusieurs civilisations (avec leur rôle), plusieurs lieux et plusieurs
    personnages. Elle apparaît dans la frise et la fiche de chacun d'eux. */
@@ -2849,9 +2894,34 @@ function focusEntries() {
   if (f.type === "poi") return evOfPoi(f.id);
   return evOfPerson(f.id);
 }
+/* continuité : filiations déclarées, sinon civilisations qui se succèdent sur le même sol */
+function bboxOf(ts) {
+  let x0 = 999, y0 = 999, x1 = -999, y1 = -999;
+  for (const t of ts) for (const r of t.rings || []) for (const [x, y] of r) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  return x1 < x0 ? null : [x0, y0, x1, y1];
+}
+function bboxOverlap(a, b) {
+  if (!a || !b) return 0;
+  const w = Math.min(a[2], b[2]) - Math.max(a[0], b[0]), h = Math.min(a[3], b[3]) - Math.max(a[1], b[1]);
+  if (w <= 0 || h <= 0) return 0;
+  const sa = Math.min((a[2] - a[0]) * (a[3] - a[1]), (b[2] - b[0]) * (b[3] - b[1])) || 1;
+  return w * h / sa;
+}
+function continuity(c) {
+  const before = linksIn(c.id).map(l => ({ c: civ(l.from), label: l.label, sure: true })).filter(x => x.c);
+  const after = linksOut(c.id).map(l => ({ c: civ(l.to), label: l.label, sure: true })).filter(x => x.c);
+  if (before.length && after.length) return { before, after };
+  const mine = terrOf(c.id), first = bboxOf(mine.filter(t => t.start <= c.start + 60)), last = bboxOf(mine.filter(t => (t.end ?? Y1) >= (c.end ?? Y1) - 60));
+  const guess = (cands, ref) => cands.map(o => ({ c: o.c, ov: bboxOverlap(o.b, ref) })).filter(x => x.ov > .25).sort((a, b) => b.ov - a.ov).slice(0, 2).map(x => ({ c: x.c, sure: false }));
+  if (!before.length && first) before.push(...guess(db.civs.filter(o => o.id !== c.id && o.end !== null && o.end !== undefined && o.end >= c.start - 80 && o.end <= c.start + 40 && o.start < c.start)
+    .map(o => ({ c: o, b: bboxOf(terrOf(o.id).filter(t => (t.end ?? Y1) >= o.end - 60)) })), first));
+  if (!after.length && last && c.end !== null && c.end !== undefined && c.end < Y1) after.push(...guess(db.civs.filter(o => o.id !== c.id && o.start >= c.end - 40 && o.start <= c.end + 80 && (o.end ?? Y1) > c.end)
+    .map(o => ({ c: o, b: bboxOf(terrOf(o.id).filter(t => t.start <= o.start + 60)) })), last));
+  return { before, after };
+}
 function renderFocusTL(w) {
   const o = focusEnt(), f = tlEnt;
-  const span = f.type === "civ" ? fmtSpan(o.start, o.end) : f.type === "poi" ? fmtSpan(o.start, o.end) : personSpan(o);
+  const span = f.type === "person" ? personSpan(o) : fmtSpan(o.start, o.end);
   const label = { civ: "Civilisation", poi: KINDS[o.kind] || "Lieu", person: "Personnage" }[f.type];
   evBand.textContent = "";
   evBand.append(el("div", { class: "tl-focus-h" }, [
@@ -2861,38 +2931,40 @@ function renderFocusTL(w) {
   ]));
   laneIn.textContent = "";
   const selEv = sel && sel.type === "event" ? sel.id : null;
-  let top = 4;
-  const ROW = 19;
-  /* une piste : titre, bouton d'ajout, éléments répartis en rangées sans chevauchement */
+  const ROW = 18, empties = [];
+  let top = 3;
+  /* une piste : titre en marge sur la première rangée, éléments répartis sans chevauchement ;
+     une piste vide ne prend pas de place : elle rejoint la ligne « Ajouter » en bas */
   function track(title, items, add) {
-    if (!items.length && !(add && canEdit())) return;
-    laneIn.append(el("div", { class: "trk-h", style: `top:${top}px` }, [el("span", {}, title + (items.length ? " · " + items.length : "")),
-      add ? el("button", { class: "btn sm ed", title: "Ajouter", onclick: ev => { ev.stopPropagation(); add(); } }, "+") : null]));
-    top += 17;
-    const rows = [];
+    if (!items.length) { if (add && title) empties.push([title, add]); return; }
+    const lbl = title ? el("div", { class: "trk-h", style: `top:${top}px` }, [el("span", {}, title + " · " + items.length),
+      add ? el("button", { class: "btn sm ed", title: "Ajouter", onclick: ev => { ev.stopPropagation(); add(); } }, "+") : null]) : null;
+    const LW = title ? title.length * 6.4 + (add && canEdit() ? 46 : 26) : 0;   // la marge du titre est occupée sur la 1re rangée
+    const rows = [LW], rowStub = [false];
     const placed = items.map(it => {
       const x0 = yToX(it.a), x1 = Math.max(yToX(it.b), x0 + (it.b > it.a ? 3 : 0));
-      const point = it.b <= it.a || x1 - x0 < 6;
-      const lw = it.t.length * 6 + 18;
-      const end = point ? x0 + lw : Math.max(x1, x1 - x0 < lw ? x0 + lw : x1);
+      const point = it.b <= it.a || x1 - x0 < 6, lw = it.t.length * 6 + 18;
+      const end = it.fixed ? x1 : point ? x0 + lw : Math.max(x1, x1 - x0 < lw ? x0 + lw : x1);
       return { it, x0, x1, point, end };
     }).filter(p => p.end > -50 && p.x0 < w + 50).sort((a, b) => a.x0 - b.x0);
     for (const p of placed) {
-      let r = rows.findIndex(e => e + 6 < p.x0);
-      if (r < 0) { rows.push(0); r = rows.length - 1; }
-      rows[r] = p.end;
+      /* une amorce de filiation se colle bord à bord à la bande de la civilisation */
+      let r = rows.findIndex((e, i) => e + (rowStub[i] || p.it.stub ? -2 : 6) < Math.max(p.x0, 0));
+      if (r < 0) { rows.push(0); rowStub.push(false); r = rows.length - 1; }
+      rows[r] = p.end; rowStub[r] = !!p.it.stub;
       const vx = p.point ? p.x0 : Math.max(p.x0, -1), vw = p.point ? 0 : Math.max(Math.min(p.x1, w + 1) - vx, 3);
       const n = el("div", {
-        class: "ti" + (p.point ? " pt" : "") + (p.it.sel ? " sel" : "") + (!p.point && vw < p.it.t.length * 6 + 8 ? " narrow" : ""),
+        class: "ti" + (p.point ? " pt" : "") + (p.it.sel ? " sel" : "") + (p.it.cls ? " " + p.it.cls : "") + (!p.point && !p.it.fixed && vw < p.it.t.length * 6 + 8 ? " narrow" : ""),
         style: `left:${vx}px;${p.point ? "" : `width:${vw}px;`}top:${top + r * ROW}px;--c:${p.it.c}`
       }, el("span", {}, p.it.t));
       n.addEventListener("click", ev => { ev.stopPropagation(); p.it.on(); });
-      n.addEventListener("pointerenter", ev => showTipTL(ev, `<b>${esc(p.it.t)}</b><br><span class="yr">${esc(p.it.s || "")}</span>`));
+      n.addEventListener("pointerenter", ev => showTipTL(ev, `<b>${esc(p.it.tip || p.it.t)}</b><br><span class="yr">${esc(p.it.s || "")}</span>`));
       n.addEventListener("pointerleave", hideTip);
       laneIn.append(n);
     }
-    top += rows.length ? rows.length * ROW + 8 : 6;
-    laneIn.append(el("div", { class: "trk-sep", style: `top:${top - 4}px` }));
+    if (lbl) laneIn.append(lbl);
+    top += rows.length * ROW + 5;
+    laneIn.append(el("div", { class: "trk-sep", style: `top:${top - 3}px` }));
   }
   const evItem = e => ({
     a: e.year, b: evEnd(e), t: e.title, c: KIND_COL[e.kind] || "#7a6a5a", sel: selEv === e.id,
@@ -2903,30 +2975,36 @@ function renderFocusTL(w) {
   const ctx = f.type === "civ" ? { civId: f.id } : f.type === "poi" ? { poiIds: [f.id], civId: o.civId || "" } : { people: [{ personId: f.id, role: "participant" }] };
 
   if (f.type === "civ") {
-    /* étendue territoriale */
+    /* étendue territoriale, titre incrusté */
     const ts = terrOf(o.id);
     if (ts.length) {
-      const H = 30, N = Math.min(240, Math.max(40, Math.round(w / 4)));
+      const H = 26, N = Math.min(240, Math.max(40, Math.round(w / 4)));
       const at = y => ts.reduce((n, t) => n + (t.start <= y && (t.end ?? Y1) >= y ? terrArea(t) : 0), 0);
-      const marks = [...new Set(ts.flatMap(t => [t.start, t.end ?? Y1]))];
-      const max = Math.max(1, ...marks.map(at));
+      const max = Math.max(1, ...[...new Set(ts.flatMap(t => [t.start, t.end ?? Y1]))].map(at));
       let d = "";
-      for (let i = 0; i <= N; i++) { const x = i / N * w, y = xToY(x), v = at(y); d += (i ? "L" : "M") + x.toFixed(1) + "," + (H - v / max * (H - 3)).toFixed(1); }
-      laneIn.append(el("div", { class: "trk-h", style: `top:${top}px` }, el("span", {}, "Étendue · max ≈ " + fmtArea(max))));
-      top += 15;
+      for (let i = 0; i <= N; i++) { const x = i / N * w, v = at(xToY(x)); d += (i ? "L" : "M") + x.toFixed(1) + "," + (H - v / max * (H - 2)).toFixed(1); }
       const svg = svgEl("svg", { class: "trk-area", width: w, height: H, style: `top:${top}px` });
       svg.append(svgEl("path", { d: d + `L${w},${H}L0,${H}Z`, fill: o.color, "fill-opacity": .22, stroke: o.color, "stroke-width": 1.2 }));
-      laneIn.append(svg);
-      top += H + 8;
+      laneIn.append(svg, el("div", { class: "trk-h", style: `top:${top}px` }, el("span", {}, "Étendue · max ≈ " + fmtArea(max))));
+      top += H + 5;
+      laneIn.append(el("div", { class: "trk-sep", style: `top:${top - 3}px` }));
     }
-    /* la civilisation et ses tutelles */
-    track("Civilisation", [
-      { a: o.start, b: o.end ?? Y1, t: o.name, c: o.color, s: fmtSpan(o.start, o.end), on: () => select("civ", o.id, { keepYear: true }) },
+    /* la civilisation, ce qui la précède et la suit (amorces courtes), ses tutelles */
+    const STUB = 120, k = (tview.b - tview.a) / w, cont = continuity(o);
+    const stubs = [
+      ...cont.before.map(x => ({ a: o.start - STUB * k, b: o.start, fixed: true, stub: true, t: "← " + x.c.name, c: x.c.color, cls: "stub stub-l" + (x.sure ? "" : " guess"),
+        tip: x.c.name, s: (x.sure ? "avant · " + (x.label || "filiation") : "avant · même territoire (filiation non déclarée)") + " · " + fmtSpan(x.c.start, x.c.end), on: () => select("civ", x.c.id) })),
+      ...cont.after.map(x => ({ a: o.end ?? Y1, b: (o.end ?? Y1) + STUB * k, fixed: true, stub: true, t: x.c.name + " →", c: x.c.color, cls: "stub stub-r" + (x.sure ? "" : " guess"),
+        tip: x.c.name, s: (x.sure ? "après · " + (x.label || "filiation") : "après · même territoire (filiation non déclarée)") + " · " + fmtSpan(x.c.start, x.c.end), on: () => select("civ", x.c.id) }))
+    ];
+    track(null, [
+      { a: o.start, stub: true, b: o.end ?? Y1, t: o.name, c: o.color, s: fmtSpan(o.start, o.end), on: () => select("civ", o.id, { keepYear: true }) },
+      ...stubs,
       ...subjAs(o.id).map(x => ({ a: x.start, b: x.end, t: subjWord(x) + " " + (civ(x.overId)?.name || ""), c: civ(x.overId)?.color || "#777", s: fmtSpan(x.start, x.end), on: () => select("civ", x.overId) }))
     ]);
   } else if (f.type === "poi") {
     track("Existence", [{ a: o.start, b: o.end ?? Y1, t: o.name, c: civ(o.civId)?.color || "#7a6a5a", s: fmtSpan(o.start, o.end), on: () => select("poi", o.id) }]);
-    track("Contrôle (d'après les territoires)", ownersOf(o).map(([a, b, cid]) => ({ a, b, t: civ(cid).name, c: civ(cid).color, s: fmtSpan(a, b), on: () => select("civ", cid) })));
+    track("Contrôle", ownersOf(o).map(([a, b, cid]) => ({ a, b, t: civ(cid).name, c: civ(cid).color, s: fmtSpan(a, b) + " · d'après les territoires", on: () => select("civ", cid) })));
   } else {
     track("Vie", o.start === null || o.start === undefined ? [] : [{ a: o.start, b: o.end ?? o.start, t: o.name, c: "#6b4f8a", s: personSpan(o), on: () => select("person", o.id) }]);
   }
@@ -2935,32 +3013,47 @@ function renderFocusTL(w) {
   const ps = f.type === "civ" ? personsOfCiv(o.id) : f.type === "poi" ? personsOfPoi(o.id) : [];
   if (f.type !== "person") track("Personnages", ps.filter(p => p.start !== null && p.start !== undefined).map(p => ({ a: p.start, b: p.end ?? p.start, t: p.name, c: "#6b4f8a", s: personSpan(p) + (p.title ? " · " + p.title : ""), on: () => select("person", p.id) })),
     f.type === "civ" ? () => openPersonForm(null, { civIds: [o.id] }) : null);
-  laneIn.style.height = Math.max(top + 6, 40) + "px";
+  if (empties.length && canEdit()) {
+    laneIn.append(el("div", { class: "trk-add", style: `top:${top}px` }, [el("span", {}, "Ajouter"),
+      ...empties.map(([t, fn]) => el("button", { class: "btn sm ed", onclick: ev => { ev.stopPropagation(); fn(); } }, "+ " + t.toLowerCase()))]));
+    top += 24;
+  }
+  laneIn.style.height = Math.max(top + 4, 40) + "px";
 }
 
 /* --- fiche : listes en lecture, avec ajout pour les contributeurs --- */
-function roList(title, rows, max = 8, add) {
-  const can = add && canEdit();
-  if (!rows.length && !can) return null;
-  const s = el("div", { class: "sect" }, el("div", { class: "sect-h" }, [el("span", { class: "eyebrow" }, rows.length ? `${title} · ${rows.length}` : title),
-    can ? el("button", { class: "btn sm ed", onclick: add }, "+ Ajouter") : null]));
+function roList(title, rows, max = 8) {
+  if (!rows.length) return null;
+  const s = el("div", { class: "sect" }, el("div", { class: "sect-h" }, el("span", { class: "eyebrow" }, `${title} · ${rows.length}`)));
   const draw = n => {
-    s.querySelectorAll(".roitem,.more,.roempty").forEach(x => x.remove());
+    s.querySelectorAll(".roitem,.more").forEach(x => x.remove());
     rows.slice(0, n).forEach(r => s.append(el("button", { class: "item main roitem", onclick: r.on }, [
       el("span", { class: "t" }, [r.c ? el("span", { class: "dot", style: `background:${r.c};display:inline-block;margin-right:6px` }) : null, r.t]),
       r.s ? el("span", { class: "s" }, r.s) : null])));
     if (rows.length > n) s.append(el("button", { class: "linkbtn more", onclick: () => draw(rows.length) }, `Voir les ${rows.length}`));
-    if (!rows.length) s.append(el("p", { class: "note roempty", style: "margin:0" }, "Rien pour l'instant."));
   };
   draw(max);
   return s;
 }
+/* sections de fiche : [titre, lignes, ajout, max] ; les remplies dans l'ordre, puis une ligne « Compléter » */
+function sections(list) {
+  const empty = [];
+  for (const [title, rows, add, max] of list) {
+    if (rows.length) {
+      const s = roList(title, rows, max || 6);
+      if (add && canEdit()) s.querySelector(".sect-h").append(el("button", { class: "btn sm ed", onclick: add }, "+"));
+      panel.append(s);
+    } else if (add) empty.push([title, add]);
+  }
+  if (empty.length && canEdit()) panel.append(el("div", { class: "sect fill-in" }, [el("div", { class: "eyebrow" }, "Compléter"),
+    el("div", { class: "fill-btns" }, empty.map(([t, fn]) => el("button", { class: "btn sm ed", onclick: fn }, "+ " + t.toLowerCase())))]));
+}
 const evSpan = e => evLong(e) ? fmtSpan(e.year, evEnd(e)) : fmtYear(e.year, true);
 function entrySections(list, ctx, roleOf) {
-  return TRACKS.map(([key, title, kinds]) => roList(title, list.filter(e => kinds.includes(e.kind || "jalon")).map(e => ({
+  return TRACKS.map(([key, title, kinds]) => [title, list.filter(e => kinds.includes(e.kind || "jalon")).map(e => ({
     t: e.title, c: KIND_COL[e.kind], on: () => select("event", e.id),
     s: evSpan(e) + (kinds.length > 1 || key === "autre" ? " · " + (EVKINDS[e.kind] || "") : "") + (roleOf ? roleOf(e) : "")
-  })), 6, () => openEventForm(null, Object.assign({ kind: kinds[0] }, clone(ctx)))));
+  })), () => openEventForm(null, Object.assign({ kind: kinds[0] }, clone(ctx)))]);
 }
 const personRows = ps => ps.map(p => ({ t: p.name, c: "#6b4f8a", s: personSpan(p) + (p.title ? " · " + p.title : ""), on: () => select("person", p.id) }));
 
@@ -2978,19 +3071,19 @@ function descCiv(c) {
   const fig = figureBlock(c); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
   panel.append(proseBlock(c.description, c.links));
   const role = e => { const r = evRole(e, c.id); return r !== "principal" ? " · " + CIV_ROLES[r] : ""; };
-  entrySections(evOf(c.id), { civId: c.id }, role).forEach(x => x && panel.append(x));
-  const pr = roList("Personnages", personRows(personsOfCiv(c.id)), 6, () => openPersonForm(null, { civIds: [c.id] }));
-  if (pr) panel.append(pr);
   const rel = [
     ...linksIn(c.id).map(l => ({ t: "← issue de " + (civ(l.from)?.name || "?"), s: l.label || "", on: () => select("civ", l.from) })),
     ...linksOut(c.id).map(l => ({ t: "→ donne naissance à " + (civ(l.to)?.name || "?"), s: l.label || "", on: () => select("civ", l.to) })),
     ...subjAs(c.id).map(x => ({ t: "⤓ " + (civ(x.overId)?.name || "?"), s: (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end), on: () => select("civ", x.overId) })),
     ...subjOver(c.id).map(x => ({ t: "⤒ " + (civ(x.civId)?.name || "?"), s: (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end), on: () => select("civ", x.civId) }))
   ];
-  [roList("Relations", rel),
-   roList("Lieux", poisOf(c.id).map(p => ({ t: p.name, s: KINDS[p.kind] + " · " + fmtSpan(p.start, p.end), on: () => select("poi", p.id, { fit: true }) })), 8, () => setMode("placePoi")),
-   roList("Emprises", ts.map(t => ({ t: t.label || fmtSpan(t.start, t.end), s: fmtSpan(t.start, t.end) + (alive(t) ? " · affichée" : ""), on: () => select("terr", t.id) })), 6)
-  ].forEach(x => x && panel.append(x));
+  sections([
+    ...entrySections(evOf(c.id), { civId: c.id }, role),
+    ["Personnages", personRows(personsOfCiv(c.id)), () => openPersonForm(null, { civIds: [c.id] })],
+    ["Relations", rel],
+    ["Lieux", poisOf(c.id).map(p => ({ t: p.name, s: KINDS[p.kind] + " · " + fmtSpan(p.start, p.end), on: () => select("poi", p.id, { fit: true }) })), () => setMode("placePoi"), 8],
+    ["Emprises", ts.map(t => ({ t: t.label || fmtSpan(t.start, t.end), s: fmtSpan(t.start, t.end) + (alive(t) ? " · affichée" : ""), on: () => select("terr", t.id) }))]
+  ]);
 }
 function descPoi(p) {
   const c = p.civId ? civ(p.civId) : null;
@@ -3003,11 +3096,11 @@ function descPoi(p) {
   panel.append(h);
   const fig = figureBlock(p); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
   panel.append(proseBlock(p.description, p.links));
-  const own = roList("Contrôlé par", ownersOf(p).map(([a, b, cid]) => ({ t: civ(cid).name, c: civ(cid).color, s: fmtSpan(a, b), on: () => select("civ", cid) })), 8);
-  if (own) panel.append(own);
-  entrySections(evOfPoi(p.id), { poiIds: [p.id], civId: p.civId || "" }).forEach(x => x && panel.append(x));
-  const pr = roList("Personnages", personRows(personsOfPoi(p.id)), 6);
-  if (pr) panel.append(pr);
+  sections([
+    ["Contrôlé par", ownersOf(p).map(([a, b, cid]) => ({ t: civ(cid).name, c: civ(cid).color, s: fmtSpan(a, b), on: () => select("civ", cid) })), null, 8],
+    ...entrySections(evOfPoi(p.id), { poiIds: [p.id], civId: p.civId || "" }),
+    ["Personnages", personRows(personsOfPoi(p.id))]
+  ]);
 }
 function descEvent(e) {
   const c = e.civId ? civ(e.civId) : null, parent = e.parentId ? byId(db.events, e.parentId) : null;
@@ -3020,12 +3113,13 @@ function descEvent(e) {
   panel.append(h);
   const fig = figureBlock(e); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
   panel.append(proseBlock(e.description, e.links));
-  [roList("Civilisations", evCivIds(e).map(civ).filter(Boolean).map(x => ({ t: x.name, c: x.color, s: CIV_ROLES[evRole(e, x.id)], on: () => select("civ", x.id, { keepYear: true }) })), 12),
-   roList("Lieux", evPoiIds(e).map(id => byId(db.pois, id)).filter(Boolean).map(p => ({ t: p.name, s: KINDS[p.kind] || "", on: () => select("poi", p.id, { fit: true }) })), 12),
-   roList("Personnages", evPeople(e).map(x => ({ p: person(x.personId), r: x.role })).filter(x => x.p).map(x => ({ t: x.p.name, c: "#6b4f8a", s: PERSON_ROLES[x.r] || "", on: () => select("person", x.p.id) })), 12),
-   roList("Étapes", evKids(e.id).map(k => ({ t: k.title, c: KIND_COL[k.kind], s: evSpan(k) + " · " + (EVKINDS[k.kind] || ""), on: () => select("event", k.id) })), 8,
-     () => openEventForm(null, { parentId: e.id, kind: e.kind === "guerre" ? "bataille" : "jalon", civId: e.civId || "", parts: clone(e.parts || []) }))
-  ].forEach(x => x && panel.append(x));
+  sections([
+    ["Civilisations", evCivIds(e).map(civ).filter(Boolean).map(x => ({ t: x.name, c: x.color, s: CIV_ROLES[evRole(e, x.id)], on: () => select("civ", x.id, { keepYear: true }) })), null, 12],
+    ["Lieux", evPoiIds(e).map(id => byId(db.pois, id)).filter(Boolean).map(p => ({ t: p.name, s: KINDS[p.kind] || "", on: () => select("poi", p.id, { fit: true }) })), null, 12],
+    ["Personnages", evPeople(e).map(x => ({ p: person(x.personId), r: x.role })).filter(x => x.p).map(x => ({ t: x.p.name, c: "#6b4f8a", s: PERSON_ROLES[x.r] || "", on: () => select("person", x.p.id) })), null, 12],
+    ["Étapes", evKids(e.id).map(k => ({ t: k.title, c: KIND_COL[k.kind], s: evSpan(k) + " · " + (EVKINDS[k.kind] || ""), on: () => select("event", k.id) })),
+      () => openEventForm(null, { parentId: e.id, kind: e.kind === "guerre" ? "bataille" : "jalon", civId: e.civId || "", parts: clone(e.parts || []) }), 8]
+  ]);
 }
 function descPerson(p) {
   const cs = (p.civIds || []).map(civ).filter(Boolean);
@@ -3035,10 +3129,11 @@ function descPerson(p) {
   const fig = figureBlock(p); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
   panel.append(proseBlock(p.description, p.links));
   const role = e => { const x = evPeople(e).find(q => q.personId === p.id); return x && PERSON_ROLES[x.role] ? " · " + PERSON_ROLES[x.role] : ""; };
-  entrySections(evOfPerson(p.id), { people: [{ personId: p.id, role: "participant" }], civId: (p.civIds || [])[0] || "" }, role).forEach(x => x && panel.append(x));
   const civsLinked = [...new Set([...(p.civIds || []), ...evOfPerson(p.id).flatMap(evCivIds)])].map(civ).filter(Boolean);
-  const cl = roList("Civilisations", civsLinked.map(c => ({ t: c.name, c: c.color, s: fmtSpan(c.start, c.end), on: () => select("civ", c.id) })), 8);
-  if (cl) panel.append(cl);
+  sections([
+    ...entrySections(evOfPerson(p.id), { people: [{ personId: p.id, role: "participant" }], civId: (p.civIds || [])[0] || "" }, role),
+    ["Civilisations", civsLinked.map(c => ({ t: c.name, c: c.color, s: fmtSpan(c.start, c.end), on: () => select("civ", c.id) })), null, 8]
+  ]);
 }
 function sheetPerson(p) {
   const h = head("Personnage", "#6b4f8a", p.name, personSpan(p), p.title || "");
@@ -3671,7 +3766,8 @@ Sur la fiche d'une civilisation — ou en face d'un mouvement, sur la fiche d'un
 - **←** / **→** : reculer ou avancer d'un pas · **Maj** ×10 · **Alt** ×100
 - **Échap** : quitter le mode en cours · **Entrée** : fermer le tracé
 - **Ctrl/Cmd + Z** : annuler la dernière modification
-- **/** : rechercher · molette : zoom (carte et frise)
+- **/** : rechercher · molette : zoom de la carte
+- Frise : molette = défiler les bandes · **Ctrl** + molette (ou pincement du pavé tactile) = zoom · **Maj** + molette = avancer ou reculer dans le temps ; la barre fine sous la frise se fait glisser
 - **+** / **−** ou double-clic : zoomer la carte (**Maj** + double-clic : dézoomer)
 - **P** : panneau latéral · **F** : frise · **C** : carte seule (les deux à la fois)
 

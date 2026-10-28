@@ -1,4 +1,4 @@
-# Atlas des civilisations — v2.4.0
+# Atlas des civilisations — v2.5.0
 
 Atlas historique interactif (5000 av. J.-C. → 1900) : carte et frise synchronisées, territoires, lieux, événements, filiations, tutelles.
 
@@ -67,6 +67,9 @@ L'enrichissement v2.1.0 (civilisations supplémentaires, emprises datées) est d
 ## Interface
 
 - **Frise d'une entité** : cliquer une civilisation, un lieu ou un personnage n'affiche que sa frise, cadrée sur sa durée — pistes Périodes, Règnes, Guerres et batailles, Traités, Événements, Personnages ; pour une civilisation, la courbe de son étendue territoriale (calculée sur les emprises) et ses tutelles ; pour un lieu, qui le contrôlait (calculé à partir des territoires tracés). **← Toutes** revient à l'ensemble.
+- **Priorité au contenu** : dans la frise comme dans la fiche, seules les pistes et sections remplies s'affichent, dans l'ordre ; les vides sont regroupées en bas sur une seule ligne (*Ajouter* dans la frise, *Compléter* dans la fiche), visible des seuls comptes autorisés. Le titre d'une piste est incrusté sur sa première rangée.
+- **Continuité** : dans la frise d'une civilisation, de courtes amorces montrent ce qui la précède (← à gauche) et la suit (→ à droite), sans allonger la frise. Elles viennent des filiations déclarées ; à défaut, des civilisations qui se succèdent à quelques décennies près sur le même territoire (trait pointillé, « filiation non déclarée »). Un clic ouvre la civilisation.
+- **Navigation dans la frise** : molette = défiler les bandes ; **Ctrl** + molette (ou pincement du pavé tactile) = zoom ; **Maj** + molette = avancer ou reculer dans le temps ; une barre fine sous la frise montre la fenêtre affichée et se fait glisser. La molette seule continue de zoomer la carte.
 - **Entrées croisées** : une entrée n'existe qu'une fois mais se relie à plusieurs civilisations (chacune avec son rôle : principal, vainqueur, vaincu, allié, belligérant, signataire, fondateur, concerné), à plusieurs lieux et à plusieurs personnages (souverain, commandant, fondateur, auteur, signataire, participant) ; elle apparaît dans la frise et la fiche de chacun. Une entrée peut faire partie d'une autre (une bataille dans une guerre). Les boutons **+** des pistes et des sections créent une entrée déjà reliée à l'élément affiché.
 - **Personnages** : fiches à part (dates, titre, biographie, image, civilisations de rattachement), recherchables.
 - **Lieux** : *Technique › Rattacher les entrées proches* propose les entrées localisées à moins de 30 km.
@@ -102,6 +105,7 @@ python3 tools/build_relief_v2.1.0.py shadedrelief.jpg ./ne/ne_50m_land.geojson .
 
 ## Historique
 
+- **2.5.0** — frise d'entité compacte (titres incrustés, pistes vides regroupées), sections remplies en priorité dans la fiche, amorces de continuité avant/après, molette de frise : Ctrl = zoom, Maj = déplacement, barre de navigation.
 - **2.4.0** — chronologie croisée : frise propre à chaque civilisation, lieu et personnage ; entrées typées (période, règne, guerre, bataille, traité…) reliées à plusieurs civilisations avec rôle, lieux et personnages ; fiches Personnage ; courbe d'étendue ; contrôle d'un lieu calculé ; migration SQL v2.4.0.
 - **2.3.1** — correctif : après un déplacement de la carte, les clics de placement (lieu, point d'événement) et de tracé étaient ignorés ; la carte se fait désormais glisser dans tous les modes.
 - **2.3.0** — adaptation au téléphone : volet de fiche glissant, curseur d'années, pincement, menu Calques, fenêtres plein écran, infobulles désactivées au doigt.

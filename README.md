@@ -1,4 +1,4 @@
-# Atlas des civilisations — v2.3.1
+# Atlas des civilisations — v2.4.0
 
 Atlas historique interactif (5000 av. J.-C. → 1900) : carte et frise synchronisées, territoires, lieux, événements, filiations, tutelles.
 
@@ -13,6 +13,7 @@ Atlas historique interactif (5000 av. J.-C. → 1900) : carte et frise synchroni
 | `data/geo/t/*.json` | 464 tuiles 10° × 10° au 1:10 000 000, chargées au zoom |
 | `data/geo/relief/` | relief ombré : image d'ensemble + 69 tuiles 30° × 30°, chargées au zoom |
 | `supabase/schema_v2.0.0.sql` | tables, règles d'accès (RLS) et fonctions |
+| `supabase/migration_v2.4.0.sql` | ajoute la collection des personnages (à exécuter après le schéma) |
 | `tools/build_geo.py` | régénère `data/geo` (traits de côte, lacs, fleuves) depuis Natural Earth |
 | `tools/build_relief_v2.1.0.py` | régénère `data/geo/relief` |
 | `tools/build_enrich_v2.1.0.py`, `tools/enrich/` | ont produit l'enrichissement v2.1.0 (conservés pour la traçabilité de la source GPL) |
@@ -52,12 +53,24 @@ Si `config.js` est laissé vide, l'atlas fonctionne en **mode fichier** : lectur
 
 Les rôles des autres comptes se gèrent ensuite depuis *Données › Comptes et rôles…*.
 
+## Mise à jour vers la v2.4.0
+
+1. **D'abord**, dans Supabase › *SQL Editor*, exécuter `supabase/migration_v2.4.0.sql` (rejouable sans risque). Sans cette étape, la publication d'un personnage est refusée par la base.
+2. Copier `index.html` et `README.md`, commit, push.
+
+Rien à convertir : les événements existants restent valables (leur civilisation devient la civilisation principale) et peuvent être enrichis au fil de l'eau.
+
 ## Données
 
 L'enrichissement v2.1.0 (civilisations supplémentaires, emprises datées) est désormais intégré à la base ; l'application ne propose plus d'import. Le fichier `data/enrichissement_v2.1.0.json` peut être retiré du dépôt, **après** avoir déposé un export à jour (*Données › Exporter (.json)*) à la place de `data/atlas.json`, qui sert de copie de secours et d'initialisation.
 
 ## Interface
 
+- **Frise d'une entité** : cliquer une civilisation, un lieu ou un personnage n'affiche que sa frise, cadrée sur sa durée — pistes Périodes, Règnes, Guerres et batailles, Traités, Événements, Personnages ; pour une civilisation, la courbe de son étendue territoriale (calculée sur les emprises) et ses tutelles ; pour un lieu, qui le contrôlait (calculé à partir des territoires tracés). **← Toutes** revient à l'ensemble.
+- **Entrées croisées** : une entrée n'existe qu'une fois mais se relie à plusieurs civilisations (chacune avec son rôle : principal, vainqueur, vaincu, allié, belligérant, signataire, fondateur, concerné), à plusieurs lieux et à plusieurs personnages (souverain, commandant, fondateur, auteur, signataire, participant) ; elle apparaît dans la frise et la fiche de chacun. Une entrée peut faire partie d'une autre (une bataille dans une guerre). Les boutons **+** des pistes et des sections créent une entrée déjà reliée à l'élément affiché.
+- **Personnages** : fiches à part (dates, titre, biographie, image, civilisations de rattachement), recherchables.
+- **Lieux** : *Technique › Rattacher les entrées proches* propose les entrées localisées à moins de 30 km.
+- Supprimer une civilisation conserve les entrées partagées : la civilisation suivante devient principale.
 - **Fiche › Description** : présentation en lecture (image, texte, repères, relations, lieux, emprises), seule vue offerte aux visiteurs.
 - **Fiche › Technique** (comptes autorisés) : toutes les propriétés modifiables sur place, image comprise, et les listes de territoires, tutelles, filiations, événements et lieux avec leurs actions.
 - Sans sélection, la fiche liste les civilisations présentes à l'année du curseur.
@@ -89,6 +102,7 @@ python3 tools/build_relief_v2.1.0.py shadedrelief.jpg ./ne/ne_50m_land.geojson .
 
 ## Historique
 
+- **2.4.0** — chronologie croisée : frise propre à chaque civilisation, lieu et personnage ; entrées typées (période, règne, guerre, bataille, traité…) reliées à plusieurs civilisations avec rôle, lieux et personnages ; fiches Personnage ; courbe d'étendue ; contrôle d'un lieu calculé ; migration SQL v2.4.0.
 - **2.3.1** — correctif : après un déplacement de la carte, les clics de placement (lieu, point d'événement) et de tracé étaient ignorés ; la carte se fait désormais glisser dans tous les modes.
 - **2.3.0** — adaptation au téléphone : volet de fiche glissant, curseur d'années, pincement, menu Calques, fenêtres plein écran, infobulles désactivées au doigt.
 - **2.2.0** — légende supprimée ; panneau et frise repliables et redimensionnables ; frise centrée sur la sélection ; zoom par boutons, clavier et double-clic ; imports JSON et enrichissement retirés de l'interface.

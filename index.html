@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- Atlas des civilisations — v2.5.0 -->
+<!-- Atlas des civilisations — v2.6.0 -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="generator" content="Atlas des civilisations 2.5.0">
+<meta name="generator" content="Atlas des civilisations 2.6.0">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Atlas des civilisations · 5000 av. J.-C. → 1900</title>
 <style>
@@ -490,6 +490,162 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
 .iform textarea{min-height:90px}
 .iform-acts{justify-content:flex-end;margin-top:4px}
 .idline{font-family:var(--mono);font-size:10px;margin-top:10px;overflow-wrap:anywhere}
+/* ---------- v2.6.0 : fiche civilisation (résumé + fiche complète) ---------- */
+.muted{color:var(--muted)}
+.linkbtn{color:var(--accent);font-size:12px;text-decoration:underline;text-underline-offset:2px}
+.h2ed{display:flex;align-items:center;gap:6px}
+.h2ed .iconbtn{margin-left:auto}
+.fig-sm img{max-height:170px}
+.clamp{font-size:13.5px;line-height:1.6;color:#22272b;margin:0 0 4px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.marks{list-style:none;margin:0;padding:0}
+.marks button{display:grid;grid-template-columns:62px 1fr;gap:8px;width:100%;text-align:left;padding:3px 4px;border-radius:2px;font-size:12.5px}
+.marks button:hover{background:var(--surface-2)}
+.marks button:hover .t{color:var(--accent);text-decoration:underline}
+.marks .y{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:right;padding-top:2px;font-variant-numeric:tabular-nums}
+.counts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.count{display:flex;flex-direction:column;align-items:flex-start;padding:7px 9px;border:1px solid var(--line);border-radius:var(--r);background:#fff;text-align:left}
+.count:hover{border-color:var(--accent);background:var(--accent-soft)}
+.count .n{font-family:var(--serif);font-size:19px;line-height:1.1;font-weight:600}
+.count .l{font-size:11.5px;color:var(--ink-2)}
+.count.zero{background:var(--surface)}
+.count.zero .n{color:var(--muted)}
+.todo{background:#fbf6ea;border-top-color:#ecdcb4}
+.todo .chips{display:flex;flex-wrap:wrap;gap:5px}
+.todo .chips button{padding:2px 9px;border:1px dashed #c9ad6b;border-radius:10px;font-size:11.5px;color:#6b5320;background:#fff}
+.todo .chips button:hover{border-style:solid}
+
+@media (min-width:901px){body.full-on .app{grid-template-areas:"top top" "map side" "time time"}body.full-on .side{display:none}}
+.fullsheet{grid-row:2;grid-column:1 / -1;z-index:30;background:var(--surface);display:flex;flex-direction:column;min-height:0;border-bottom:1px solid var(--line-2);box-shadow:0 10px 30px rgba(20,25,30,.16)}
+.fhead{display:flex;align-items:flex-end;gap:16px;padding:10px 18px 0;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.fid{padding-bottom:9px;min-width:220px}
+.fid .kind{display:flex;align-items:center;gap:7px}
+.fid h2{font-family:var(--serif);font-size:22px;line-height:1.15;margin:2px 0 0;font-weight:600}
+.fmeta{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.ftabs{display:flex;gap:2px}
+.ftabs button{padding:7px 13px 8px;font-size:12.5px;color:var(--ink-2);border:1px solid transparent;border-bottom:none;border-radius:3px 3px 0 0;margin-bottom:-1px;display:flex;gap:6px;align-items:baseline;white-space:nowrap}
+.ftabs button .c{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.ftabs button:hover{color:var(--ink)}
+.ftabs button.on{background:#fff;border-color:var(--line-2);color:var(--ink);font-weight:600}
+.facts{margin-left:auto;display:flex;gap:6px;padding-bottom:9px;flex-wrap:wrap}
+.fbody{flex:1;min-height:0;overflow:auto;background:#fff;overscroll-behavior:contain}
+.fpane{padding:14px 18px 22px}
+.fcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+.fcols.ov{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+.fcols.geo2{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.fblock{border:1px solid var(--line);border-radius:4px;background:var(--surface);margin-bottom:12px}
+.fbh{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 12px;border-bottom:1px solid var(--line);min-height:34px}
+.fbh .eyebrow{flex:1}
+.fbb{padding:10px 12px;background:#fff;border-radius:0 0 4px 4px}
+.fblock.editing{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.fblock.editing .fbh{background:var(--accent-soft)}
+.kv{display:grid;grid-template-columns:90px 1fr;gap:4px 12px;font-size:12.5px;margin:0}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0}
+.imgph{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;min-height:110px;border:1px dashed var(--line-2);border-radius:3px;color:var(--muted);font-size:12px;background:var(--surface)}
+.mdprev{border:1px solid var(--line);border-radius:3px;padding:6px 10px;background:var(--surface);max-height:260px;overflow:auto}
+.linksed .linkrow{display:grid;grid-template-columns:1fr 1.5fr 24px;gap:6px;margin-bottom:5px}
+.linksed input{width:100%;background:#fff;border:1px solid var(--line-2);border-radius:var(--r);padding:5px 7px;font-size:12.5px}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:1px 7px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:11.5px;white-space:nowrap}
+button.tag:hover{border-color:var(--accent)}
+.tag .r{color:var(--muted);font-size:10.5px}
+.tag .dot{width:6px;height:6px}
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.toolbar .spacer,.fcol-h .spacer{flex:1}
+.chipsf{display:flex;gap:4px;flex-wrap:wrap}
+.chipsf button{padding:2px 9px;border:1px solid var(--line-2);border-radius:12px;font-size:11.5px;color:var(--ink-2);background:#fff;display:flex;gap:5px;align-items:center}
+.chipsf button .c{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.chipsf button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.chipsf button.on .c{color:#cfdbe5}
+.chipsf button.empty:not(.on){border-style:dashed;color:var(--muted)}
+.srch{border:1px solid var(--line-2);border-radius:var(--r);padding:3px 8px;font-size:12px;width:190px;background:#fff}
+.chk{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--ink-2);cursor:pointer}
+.tscroll{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+table.t th{position:sticky;top:0;z-index:1;background:var(--surface-2);text-align:left;font-weight:500;font-size:11px;color:var(--ink-2);padding:6px 8px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+table.t td{padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.t tbody tr:hover td{background:#f6f8fa}
+table.t tr.cur td{background:#eef3f7}
+table.t td.y{font-family:var(--mono);font-size:11px;color:var(--ink-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+table.t td.tt{font-weight:500}
+table.t td.ac{white-space:nowrap;text-align:right;width:1%}
+table.t td.ac .iconbtn{display:inline-grid;vertical-align:middle;opacity:.45}
+table.t tr:hover td.ac .iconbtn,table.t td.ac .iconbtn:focus{opacity:1}
+table.t td.empty{padding:16px 8px;text-align:center}
+.tchrono tr{cursor:pointer}
+.tchrono tr.kid td.tt{padding-left:28px;position:relative}
+.tchrono tr.kid td.tt:before{content:"";position:absolute;left:13px;top:0;height:50%;width:9px;border-left:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
+.tsub{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;font-weight:400;font-size:11.5px;color:var(--muted);margin-top:2px}
+.dup{display:inline-flex;gap:4px;align-items:center;color:#7a5a12;background:#fbf3df;border:1px dashed #d9bd77;border-radius:10px;padding:1px 3px 1px 8px}
+.kindb{display:inline-flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap}
+.kindb i{width:7px;height:7px;transform:rotate(45deg);display:inline-block}
+td.geo{color:var(--accent);text-align:center}
+.src{font-family:var(--mono);font-size:9.5px;color:var(--muted);font-weight:400}
+tr.editrow td{background:var(--accent-soft)!important;vertical-align:top;padding-top:7px;padding-bottom:7px}
+tr.editrow input,tr.editrow select{border:1px solid var(--line-2);border-radius:3px;padding:3px 6px;font-size:12px;background:#fff;width:100%;min-width:0}
+tr.editrow .yy{display:grid;gap:4px;width:92px}
+tr.editrow td.hintc{font-size:11.5px;vertical-align:middle}
+.fnote{font-size:11.5px;color:var(--muted);margin-top:8px}
+.fnote.warn{color:#8a5a12;margin:4px 0 8px}
+.fcol-h{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.fcol-h h4{font-family:var(--serif);font-size:15px;margin:0;font-weight:600}
+.relitem{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--line);border-radius:4px;margin-bottom:6px;background:#fff}
+.relitem .arr{font-size:15px;color:var(--ink-2);width:18px;text-align:center;flex:0 0 auto}
+.relitem .grow{flex:1;min-width:0;text-align:left}
+.relitem .t{font-weight:500}
+.relitem .s{font-size:11.5px;color:var(--muted)}
+.relitem.sugg{border-style:dashed;background:var(--surface)}
+.relitem.sugg .t{color:var(--ink-2)}
+.emptyrel{padding:12px;border:1px dashed var(--line-2);border-radius:4px;color:var(--muted);font-size:12px;text-align:center}
+.covwrap{margin:2px 0 6px}
+.covleg{display:flex;gap:12px;font-size:10.5px;color:var(--muted);margin-bottom:3px}
+.covleg span:before{content:"";display:inline-block;width:10px;height:8px;margin-right:4px;vertical-align:0;border-radius:1px}
+.covleg .lp:before{background:#c7d4e0;border:1px solid #4f6d8a}
+.covleg .lt:before{background:rgba(154,90,74,.3);border:1px solid #9a5a4a}
+.covleg .lg:before{background:repeating-linear-gradient(45deg,#f3d9cf 0 3px,#fff 3px 6px);border:1px dashed var(--flag)}
+.cov{border:1px solid var(--line);border-radius:3px;background:var(--surface);padding:3px 0;max-height:240px;overflow:auto}
+.covrow{position:relative;min-height:20px}
+.covrow+.covrow{margin-top:3px}
+.covrow .seg{position:absolute;height:20px;border-radius:2px;font-size:10px;line-height:18px;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:left}
+.covrow.ter .seg{background:rgba(154,90,74,.22);border:1px solid rgba(154,90,74,.75);color:#4a2a20}
+.covrow.per .seg{background:#dfe7ee;border:1px solid #4f6d8a;color:#24384a}
+.covrow .seg:hover{filter:brightness(.93)}
+.covrow .gap{position:absolute;top:-2px;bottom:-2px;background:repeating-linear-gradient(45deg,#f3d9cf 0 4px,#fff 4px 8px);border:1px dashed var(--flag);pointer-events:auto}
+.covax{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px}
+.takef-r{display:flex;gap:6px}
+.takef-r select{flex:1;min-width:0}
+.takef .chk{margin-top:5px}
+@media (max-width:900px){
+  .fullsheet{position:fixed;inset:0;z-index:95;box-shadow:none}
+  .fhead{padding:8px 12px 0;gap:6px}
+  .fid{min-width:0;flex:1 1 100%;padding-bottom:0}
+  .fid h2{font-size:19px}
+  .facts{order:-1;margin:0 0 0 auto;padding:0;flex:1 1 100%;justify-content:flex-end}
+  .facts .btn:not(:last-child){display:none}
+  .ftabs{overflow-x:auto;flex:1 1 100%;scrollbar-width:none}
+  .fpane{padding:12px}
+  .fcols,.fcols.ov,.fcols.geo2{grid-template-columns:minmax(0,1fr)}
+  table.t thead{display:none}
+  table.t,table.t tbody{display:block}
+  table.t tr{display:grid;grid-template-columns:74px 1fr auto;grid-auto-flow:row dense;gap:2px 8px;padding:8px 2px;border-bottom:1px solid var(--line);align-items:center}
+  table.t td.y{grid-column:1;grid-row:1}
+  table.t td.y+td.y{grid-row:2}
+  table.t td{display:block;border:none;padding:0}
+  table.t td.opt{display:none}
+  table.t td.tt{grid-column:2;grid-row:1}
+  table.t td.ac{grid-column:3;grid-row:1 / span 3}
+  table.t td.ac .iconbtn{opacity:1;width:32px;height:30px}
+  table.t td:not(.y):not(.ti):not(.ac){grid-column:2;font-size:11.5px;color:var(--muted)}
+  table.t td.empty{grid-column:1 / -1}
+  .tchrono tr.kid td.tt{padding-left:14px}
+  .tchrono tr.kid td.tt:before{left:2px}
+  tr.editrow{grid-template-columns:1fr!important}
+  tr.editrow td{grid-column:1!important;grid-row:auto!important}
+  tr.editrow .yy{grid-template-columns:1fr 1fr;width:auto}
+  tr.editrow td.hintc{display:none}
+  .srch{flex:1;width:auto}
+  .marks button{padding:7px 4px}
+}
 </style>
 </head>
 <body>
@@ -606,6 +762,8 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
     <div class="panel" id="panel"></div>
   </aside>
 
+  <section class="fullsheet" id="fullSheet" hidden></section>
+
 </div>
 
 <div id="modalRoot"></div>
@@ -617,7 +775,7 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
 
 "use strict";
 /* =====================================================================
-   ATLAS DES CIVILISATIONS — v2.5.0
+   ATLAS DES CIVILISATIONS — v2.6.0
    Données : base partagée Supabase (lecture publique, écriture par rôle)
              ou, à défaut, data/atlas.json + brouillon local
    Fond de carte : data/geo (Natural Earth 1:50M + tuiles 1:10M, relief ombré)
@@ -747,7 +905,7 @@ const EVKINDS = { periode: "Période", regne: "Règne", guerre: "Guerre", batail
      envoient des propositions soumises à validation ;
    - « fichier » (pas de configuration) : lecture de data/atlas.json, modifications
      conservées dans ce navigateur, export pour mise à jour du dépôt. */
-const APP_VERSION = "2.5.0";
+const APP_VERSION = "2.6.0";
 const COLLS = ["civs", "territories", "events", "pois", "links", "subjections", "persons"];
 const COLL_LABEL = { persons: "Personnage", civs: "Civilisation", territories: "Territoire", events: "Événement", pois: "Lieu", links: "Filiation", subjections: "Tutelle" };
 const ROLE_LABEL = { viewer: "Visiteur", contributor: "Contributeur", editor: "Éditeur", admin: "Administrateur", local: "Local" };
@@ -1172,7 +1330,7 @@ function summarize(ws) {
   const head = ws.slice(0, 12).map(opLine).join("\n");
   return (ws.length > 12 ? head + `\n… et ${ws.length - 12} autre(s)` : head).slice(0, 3900);
 }
-const FIELD_LABEL = { parts: "autres civilisations", poiIds: "lieux", people: "personnages", civIds: "rattachements", civRole: "rôle", image: "image", imageCaption: "légende", imageCredit: "crédit", source: "source", name: "nom", title: "titre", label: "intitulé", start: "début", end: "fin", year: "année", color: "couleur", region: "aire", description: "description", links: "liens", rings: "tracé", arrows: "mouvements", civId: "civilisation", overId: "puissance dominante", kind: "type", lon: "longitude", lat: "latitude", parentId: "épisode parent", from: "de", to: "vers", eventId: "événement de transition" };
+const FIELD_LABEL = { parts: "autres civilisations", poiIds: "lieux", people: "personnages", civIds: "rattachements", civRole: "rôle", image: "image", imageCaption: "légende", imageCredit: "crédit", source: "source", name: "nom", title: "titre", label: "intitulé", start: "début", end: "fin", year: "année", color: "couleur", region: "aire", description: "description", links: "liens", rings: "tracé", arrows: "mouvements", civId: "civilisation", overId: "puissance dominante", kind: "type", lon: "longitude", lat: "latitude", parentId: "épisode parent", from: "de", to: "vers", eventId: "événement de transition", periodId: "période", periodNo: "rapprochements écartés", noFil: "suggestions de filiation écartées" };
 function fmtVal(k, v) {
   if (v === null || v === undefined || v === "") return "—";
   if (k === "parts") return v.map(p => civName(p.civId) + " (" + (CIV_ROLES[p.role] || p.role) + ")").join(", ");
@@ -2347,7 +2505,10 @@ function icon(name) {
     target: '<circle cx="8" cy="8" r="4.6"/><path d="M8 1v2.2M8 12.8V15M1 8h2.2M12.8 8H15"/>',
     up: '<path d="M4 10l4-4 4 4"/>',
     copy: '<rect x="5.5" y="5.5" width="8" height="8" rx="1"/><path d="M10.5 5.5V3.5a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h2"/>',
-    link: '<path d="M6.5 9.5l3-3M6.8 4.4l1.3-1.3a2.4 2.4 0 013.4 3.4L10.2 7.8M9.2 11.6l-1.3 1.3a2.4 2.4 0 01-3.4-3.4L5.8 8.2"/>'
+    link: '<path d="M6.5 9.5l3-3M6.8 4.4l1.3-1.3a2.4 2.4 0 013.4 3.4L10.2 7.8M9.2 11.6l-1.3 1.3a2.4 2.4 0 01-3.4-3.4L5.8 8.2"/>',
+    unlink: '<path d="M6.8 4.4l1.3-1.3a2.4 2.4 0 013.4 3.4L10.2 7.8M9.2 11.6l-1.3 1.3a2.4 2.4 0 01-3.4-3.4L5.8 8.2M2.5 2.5l11 11"/>',
+    eye: '<path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8z"/><circle cx="8" cy="8" r="1.8"/>',
+    open: '<path d="M9.5 2.5h4v4M13.5 2.5L8 8M12 9.5v4H2.5V4h4"/>'
   }[name];
   const s = svgEl("svg", { width: 15, height: 15, viewBox: "0 0 16 16", fill: "none", stroke: "currentColor", "stroke-width": 1.4, "stroke-linecap": "round", "stroke-linejoin": "round" });
   s.innerHTML = p; return s;
@@ -2373,13 +2534,14 @@ function renderSheet() {
   else if (sel.type === "person") o = person(sel.id);
   else o = selCiv();
   if (!o) { sel = null; return sheetEmpty(); }
+  /* v2.6.0 : une civilisation s'ouvre sur son résumé ; tout se lit et se modifie dans la fiche complète */
+  if (sel.type === "civ" || sel.type === "terr") return sumCiv(o);
   const tech = sheetMode === "tech" && canEdit();
   if (canEdit()) panel.append(el("div", { class: "subtabs" }, [["fiche", "Description"], ["tech", "Technique"]].map(([k, t]) =>
     el("button", { class: (tech ? k === "tech" : k === "fiche") ? "on" : "", onclick: () => { sheetMode = k; renderPanel(); } }, t))));
   if (sel.type === "person") return tech ? sheetPerson(o) : descPerson(o);
   if (sel.type === "poi") return tech ? sheetPoi(o) : descPoi(o);
-  if (sel.type === "event") return tech ? sheetEvent(o) : descEvent(o);
-  return tech ? sheetCiv(o) : descCiv(o);
+  return tech ? sheetEvent(o) : descEvent(o);
 }
 function sheetEmpty() {
   const live = db.civs.filter(c => alive(c)).sort((a, b) => a.name.localeCompare(b.name, "fr"));
@@ -2449,91 +2611,6 @@ function proseBlock(text, links) {
   return wrap;
 }
 
-function sheetCiv(c) {
-  const ts = terrOf(c.id), evs = evOf(c.id), ps = poisOf(c.id);
-  const h = head("Civilisation", c.color, c.name, fmtSpan(c.start, c.end), c.region);
-  if (alive(c)) h.querySelector(".kind").append(el("span", { class: "pill live" }, "en " + fmtYear(year, false)));
-  const nowSubj = subjAt(c.id);
-  if (nowSubj) h.querySelector(".kind").append(el("span", {
-    class: "pill", style: `border-color:${civ(nowSubj.overId)?.color};color:${civ(nowSubj.overId)?.color}`
-  }, subjWord(nowSubj)));
-  h.append(el("div", { class: "row" }, [
-    el("button", { class: "btn", onclick: () => { const t = ts.find(t => alive(t)) || ts[0]; t ? fitTo(t.rings) : toast("Aucun territoire tracé"); } }, "Cadrer"),
-    el("button", { class: "btn", onclick: () => tlFocus(c.start, c.end ?? Y1) }, "Cadrer la frise"),
-    el("button", { class: "btn danger ed", onclick: () => delCiv(c) }, "Supprimer")
-  ]));
-  panel.append(h);
-  panel.append(techProps(c, () => openCivForm(c)));
-
-  const asSub = subjAs(c.id), asOver = subjOver(c.id);
-  panel.append(listSection(`Tutelles · ${asSub.length + asOver.length}`, "Ajouter", () => openSubjForm(null, { civId: c.id }),
-    asSub.map(x => ({
-      t: "⤓ " + (civ(x.overId)?.name || "?"),
-      s: (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end) + (subjAt(c.id) === x ? " · en cours" : ""),
-      on: () => { setYear(clamp(year, x.start, x.end)); select("civ", c.id, { keepYear: true }); },
-      edit: () => openSubjForm(x, { civId: c.id }),
-      del: () => { mutate(() => db.subjections = db.subjections.filter(y => y.id !== x.id)); renderAll(); }
-    })).concat(asOver.map(x => ({
-      t: "⤒ " + (civ(x.civId)?.name || "?"),
-      s: (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end),
-      on: () => select("civ", x.civId),
-      edit: () => openSubjForm(x, { civId: c.id }),
-      del: () => { mutate(() => db.subjections = db.subjections.filter(y => y.id !== x.id)); renderAll(); }
-    }))),
-    "Une civilisation qui subsiste mais passe sous le contrôle d'une autre : ⤓ elle subit, ⤒ elle domine. La carte et la frise le montrent sur la période."));
-
-  const ins = linksIn(c.id), outs = linksOut(c.id);
-  panel.append(listSection(`Filiation · ${ins.length + outs.length}`, "Ajouter", () => openLinkForm(null, { from: c.id }),
-    ins.map(l => ({
-      t: "← " + (civ(l.from)?.name || "?"),
-      s: (l.label || "dont elle procède") + (linkYear(l) !== null ? " · " + fmtYear(linkYear(l), true) : ""),
-      on: () => select("civ", l.from),
-      edit: () => openLinkForm(l, { from: c.id }),
-      del: () => { mutate(() => db.links = db.links.filter(x => x.id !== l.id)); renderAll(); }
-    })).concat(outs.map(l => ({
-      t: "→ " + (civ(l.to)?.name || "?"),
-      s: (l.label || "à laquelle elle donne naissance") + (linkYear(l) !== null ? " · " + fmtYear(linkYear(l), true) : ""),
-      on: () => select("civ", l.to),
-      edit: () => openLinkForm(l, { from: c.id }),
-      del: () => { mutate(() => db.links = db.links.filter(x => x.id !== l.id)); renderAll(); }
-    }))),
-    "Reliez cette civilisation à celle dont elle procède, ou à celles qui lui succèdent. Le lien se dessine sur la frise."));
-
-  panel.append(listSection(`Territoires · ${ts.length}`, "Ajouter",
-    () => (db.territories.some(t => t.rings && t.rings.length) ? openTerrCopy(c.id) : setMode("drawTerr", { civId: c.id })),
-    ts.map(t => ({
-      t: t.label || fmtSpan(t.start, t.end),
-      s: fmtSpan(t.start, t.end) + (alive(t) ? " · affiché" : ""),
-      live: alive(t),
-      on: () => select("terr", t.id),
-      copy: () => openTerrCopy(c.id, t.id),
-      edit: () => openTerrForm(t),
-      geom: () => { editTerrId = t.id; fitTo(t.rings); setMode("editGeom"); },
-      del: () => { if (confirm(`Supprimer le territoire « ${t.label || fmtSpan(t.start, t.end)} » ?`)) { mutate(() => db.territories = db.territories.filter(x => x.id !== t.id)); renderAll(); } }
-    })), "Un territoire = une emprise valable entre deux dates. Créez-en un par phase d'expansion."));
-
-  panel.append(listSection(`Événements · ${evs.length}`, "Ajouter", () => openEventForm(null, { civId: c.id, year }),
-    evTop(c.id).map(e => {
-      const k = evKids(e.id).length;
-      return {
-        t: e.title,
-        s: (evLong(e) ? fmtSpan(e.year, evEnd(e)) : fmtYear(e.year, true))
-          + (k ? ` · ${k} étape${k > 1 ? "s" : ""}` : "") + (evHasGeo(e) ? " · cartographié" : ""),
-        on: () => select("event", e.id),
-        edit: () => openEventForm(e),
-        del: () => delEvent(e)
-      };
-    })));
-
-  panel.append(listSection(`Lieux · ${ps.length}`, "Placer", () => { select("civ", c.id, { keepYear: true }); setMode("placePoi"); },
-    ps.map(p => ({
-      t: p.name, s: KINDS[p.kind] + " · " + fmtSpan(p.start, p.end),
-      on: () => select("poi", p.id, { fit: true }),
-      edit: () => openPoiForm(p),
-      del: () => { mutate(() => db.pois = db.pois.filter(x => x.id !== p.id)); renderAll(); }
-    }))));
-}
-
 function sheetPoi(p) {
   if (!p) { sel = null; return renderSheet(); }
   const c = p.civId ? civ(p.civId) : null;
@@ -2553,7 +2630,10 @@ function delEvent(e) {
   if (!requireEdit()) return;
   const k = evKids(e.id);
   if (!confirm(k.length ? `Supprimer « ${e.title} » et ses ${k.length} étapes ?` : `Supprimer « ${e.title} » ?`)) return;
-  mutate(() => { db.events = db.events.filter(x => x.id !== e.id && x.parentId !== e.id); });
+  mutate(() => {
+    for (const t of db.territories) if (t.periodId && (t.periodId === e.id || k.some(x => x.id === t.periodId))) delete t.periodId;
+    db.events = db.events.filter(x => x.id !== e.id && x.parentId !== e.id);
+  });
   sel = e.parentId ? { type: "event", id: e.parentId } : null;
   renderAll();
 }
@@ -3057,34 +3137,6 @@ function entrySections(list, ctx, roleOf) {
 }
 const personRows = ps => ps.map(p => ({ t: p.name, c: "#6b4f8a", s: personSpan(p) + (p.title ? " · " + p.title : ""), on: () => select("person", p.id) }));
 
-function descCiv(c) {
-  const h = head("Civilisation", c.color, c.name, fmtSpan(c.start, c.end), c.region);
-  if (alive(c)) h.querySelector(".kind").append(el("span", { class: "pill live" }, "en " + fmtYear(year, false)));
-  const nowSubj = subjAt(c.id);
-  if (nowSubj) h.querySelector(".kind").append(el("span", { class: "pill", style: `border-color:${civ(nowSubj.overId)?.color};color:${civ(nowSubj.overId)?.color}` }, subjWord(nowSubj)));
-  const ts = terrOf(c.id);
-  h.append(el("div", { class: "row" }, [
-    el("button", { class: "btn", onclick: () => { const t = ts.find(t => alive(t)) || ts[0]; t ? fitTo(t.rings) : toast("Aucun territoire tracé"); } }, "Cadrer"),
-    el("button", { class: "btn", onclick: () => { tlEnt = { type: "civ", id: c.id }; tlFocus(c.start, c.end ?? Y1); } }, "Cadrer la frise")
-  ]));
-  panel.append(h);
-  const fig = figureBlock(c); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
-  panel.append(proseBlock(c.description, c.links));
-  const role = e => { const r = evRole(e, c.id); return r !== "principal" ? " · " + CIV_ROLES[r] : ""; };
-  const rel = [
-    ...linksIn(c.id).map(l => ({ t: "← issue de " + (civ(l.from)?.name || "?"), s: l.label || "", on: () => select("civ", l.from) })),
-    ...linksOut(c.id).map(l => ({ t: "→ donne naissance à " + (civ(l.to)?.name || "?"), s: l.label || "", on: () => select("civ", l.to) })),
-    ...subjAs(c.id).map(x => ({ t: "⤓ " + (civ(x.overId)?.name || "?"), s: (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end), on: () => select("civ", x.overId) })),
-    ...subjOver(c.id).map(x => ({ t: "⤒ " + (civ(x.civId)?.name || "?"), s: (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end), on: () => select("civ", x.civId) }))
-  ];
-  sections([
-    ...entrySections(evOf(c.id), { civId: c.id }, role),
-    ["Personnages", personRows(personsOfCiv(c.id)), () => openPersonForm(null, { civIds: [c.id] })],
-    ["Relations", rel],
-    ["Lieux", poisOf(c.id).map(p => ({ t: p.name, s: KINDS[p.kind] + " · " + fmtSpan(p.start, p.end), on: () => select("poi", p.id, { fit: true }) })), () => setMode("placePoi"), 8],
-    ["Emprises", ts.map(t => ({ t: t.label || fmtSpan(t.start, t.end), s: fmtSpan(t.start, t.end) + (alive(t) ? " · affichée" : ""), on: () => select("terr", t.id) }))]
-  ]);
-}
 function descPoi(p) {
   const c = p.civId ? civ(p.civId) : null;
   const h = head(KINDS[p.kind] || "Lieu", c?.color, p.name, fmtSpan(p.start, p.end),
@@ -3151,6 +3203,499 @@ function delPerson(p) {
   sel = null; renderAll();
 }
 
+/* =====================  FICHE CIVILISATION (v2.6.0)  =====================
+   Le panneau affiche un résumé ; « Fiche complète » ouvre une vue large à
+   onglets (Aperçu, Chronologie, Relations, Géographie) au-dessus de la carte,
+   la frise restant visible. Tout s'y modifie bloc par bloc ou ligne par ligne. */
+let full = null;               // { civId, tab, block, row, add, filt, q, kids, cur }
+const fullSheet = $("#fullSheet");
+const FULL_TABS = [["apercu", "Aperçu"], ["chrono", "Chronologie"], ["rel", "Relations"], ["geo", "Géographie"]];
+const fullBusy = () => !!(full && (full.block || full.row || full.add));
+const pl = (n, one, many) => n + " " + (n > 1 ? many : one);
+const shortSpan = (a, b) => (b === null || b === undefined || b === a) ? fmtYear(a, false) : fmtYear(a, false) + " → " + fmtYear(b, false);
+const setF = (scope, k, v) => { const i = scope.querySelector("#f-" + k); if (i) i.value = v; };
+function refresh() { renderMap(); renderTimeline(); renderPanel(); renderFull(true); }
+
+/* --- périodes et emprises : deux objets indépendants, reliables (territoire.periodId) --- */
+const periodsOf = cid => evOf(cid).filter(e => e.kind === "periode").sort((a, b) => a.year - b.year);
+const terrsOfPeriod = pid => db.territories.filter(t => t.periodId === pid);
+const normName = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+function nearPair(t, p) {
+  if (t.periodId || (t.periodNo || []).includes(p.id)) return false;
+  if (t.label && normName(t.label) === normName(p.title)) return true;
+  const tol = Math.max(10, (evEnd(p) - p.year) * .05);
+  return Math.abs(t.start - p.year) <= tol && Math.abs((t.end ?? Y1) - evEnd(p)) <= tol;
+}
+function dupPairs(cid) {
+  const ps = periodsOf(cid), out = [];
+  for (const t of terrOf(cid)) for (const p of ps) if (nearPair(t, p)) out.push([t, p]);
+  return out;
+}
+function attachTerr(t, p) { mutate(() => { t.periodId = p.id; }); refresh(); toast(`Emprise rattachée à « ${p.title} »`); }
+function detachTerr(t) { mutate(() => { delete t.periodId; }); refresh(); }
+function dismissPair(t, p) { mutate(() => { t.periodNo = [...new Set([...(t.periodNo || []), p.id])]; }); refresh(); }
+/* champ de formulaire : choisir un élément, recopier son nom et ses dates, et le rattacher si on le souhaite */
+function takeField(st, kPick, kLink, opts, linkLabel, take) {
+  if (!opts.length) return el("div", { class: "help", style: "margin:0" }, "Rien à reprendre pour cette civilisation.");
+  const s = selectEl(opts, st[kPick], "— choisir —"); s.onchange = () => { st[kPick] = s.value; };
+  const cb = el("input", { type: "checkbox" }); cb.checked = !!st[kLink]; cb.onchange = () => { st[kLink] = cb.checked; };
+  const b = el("button", { type: "button", class: "btn", onclick: () => { if (!st[kPick]) return toast("Choisissez d'abord dans la liste"); take(st[kPick], b.closest(".body") || document); } }, "Reprendre nom et dates");
+  return el("div", { class: "takef" }, [el("div", { class: "takef-r" }, [s, b]), el("label", { class: "chk" }, [cb, " " + linkLabel])]);
+}
+
+/* --- couverture des emprises, suggestions --- */
+function coverGaps(c, ts) {
+  if (!ts.length) return [];
+  const a = c.start, b = c.end ?? Y1, gaps = [];
+  const iv = ts.map(t => [Math.max(a, t.start), Math.min(b, t.end ?? Y1)]).filter(x => x[1] >= x[0]).sort((x, y) => x[0] - y[0]);
+  let cur = a;
+  for (const [s, e] of iv) { if (s > cur + 1) gaps.push([cur + 1, s - 1]); cur = Math.max(cur, e); }
+  if (b > cur + 1) gaps.push([cur + 1, b]);
+  return gaps;
+}
+function filSuggest(c) {
+  const k = continuity(c), no = c.noFil || [];
+  return [...k.before.filter(x => !x.sure).map(x => ({ c: x.c, dir: "in" })), ...k.after.filter(x => !x.sure).map(x => ({ c: x.c, dir: "out" }))]
+    .filter(x => x.c && !no.includes(x.c.id));
+}
+function marksOf(c) {
+  const L = evOf(c.id).filter(e => !e.parentId && e.kind !== "periode" && e.kind !== "regne").sort((a, b) => a.year - b.year);
+  if (L.length <= 5) return L;
+  const n = L.length - 1, idx = new Set([0, Math.round(n / 4), Math.round(n / 2), Math.round(3 * n / 4), n]);
+  return L.filter((e, i) => idx.has(i));
+}
+const plainText = s => String(s || "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/^#+\s*/gm, "").replace(/[*_`>]/g, "").replace(/\s*\n+\s*/g, " ").trim();
+
+/* =====  résumé dans le panneau  ===== */
+function sumCiv(c) {
+  const ts = terrOf(c.id), evs = evOf(c.id), ps = poisOf(c.id), pers = personsOfCiv(c.id);
+  const nRel = linksIn(c.id).length + linksOut(c.id).length + subjAs(c.id).length + subjOver(c.id).length;
+  const sg = filSuggest(c), dups = dupPairs(c.id), gaps = coverGaps(c, ts);
+  const dur = (c.end ?? Y1) - c.start;
+  const h = head("Civilisation", c.color, c.name, fmtSpan(c.start, c.end) + " · " + dur.toLocaleString("fr-FR") + " ans", c.region);
+  h.querySelector("h2").classList.add("h2ed");
+  h.querySelector("h2").append(el("button", { class: "iconbtn ed", title: "Modifier nom, dates, aire, couleur", onclick: () => openFull(c.id, "apercu", "ident") }, icon("pen")));
+  if (alive(c)) h.querySelector(".kind").append(el("span", { class: "pill live" }, "en " + fmtYear(year, false)));
+  const nowSubj = subjAt(c.id);
+  if (nowSubj) h.querySelector(".kind").append(el("span", { class: "pill", style: `border-color:${civ(nowSubj.overId)?.color};color:${civ(nowSubj.overId)?.color}` }, subjWord(nowSubj)));
+  h.append(el("div", { class: "row" }, [
+    el("button", { class: "btn", onclick: () => { const t = ts.find(t => alive(t)) || ts[0]; t ? fitTo(t.rings) : toast("Aucun territoire tracé"); } }, "Cadrer"),
+    el("button", { class: "btn", onclick: () => { tlEnt = { type: "civ", id: c.id }; tlFocus(c.start, c.end ?? Y1); } }, "Cadrer la frise"),
+    el("button", { class: "btn prim", onclick: () => openFull(c.id) }, "Fiche complète ⤢")
+  ]));
+  panel.append(h);
+  const fig = figureBlock(c); if (fig) { fig.classList.add("fig-sm"); panel.append(el("div", { class: "sect figwrap" }, fig)); }
+
+  const txt = plainText(c.description);
+  if (txt) panel.append(el("div", { class: "sect" }, [el("p", { class: "clamp" }, txt),
+    txt.length > 230 ? el("button", { class: "linkbtn", onclick: () => openFull(c.id) }, "Lire la suite") : null]));
+
+  const mk = marksOf(c);
+  if (mk.length) {
+    const ul = el("ul", { class: "marks" });
+    mk.forEach(e => ul.append(el("li", {}, el("button", { onclick: () => select("event", e.id) }, [
+      el("span", { class: "y" }, fmtYear(e.year, false)), el("span", { class: "t" }, e.title)]))));
+    panel.append(el("div", { class: "sect" }, [el("div", { class: "sect-h" }, [el("span", { class: "eyebrow" }, "Repères"),
+      el("button", { class: "linkbtn", onclick: () => openFull(c.id, "chrono") }, "Toute la chronologie →")]), ul]));
+  }
+
+  const cnt = (n, label, tab, sub) => el("button", { class: "count" + (n ? "" : " zero"), onclick: () => openFull(c.id, tab) }, [
+    el("span", { class: "n" }, String(n)), el("span", { class: "l" }, label + (sub ? " · " + sub : ""))]);
+  panel.append(el("div", { class: "sect" }, [el("div", { class: "sect-h" }, el("span", { class: "eyebrow" }, "Contenu de la fiche")),
+    el("div", { class: "counts" }, [
+      cnt(evs.length, evs.length > 1 ? "entrées chronologiques" : "entrée chronologique", "chrono"),
+      cnt(pers.length, pers.length > 1 ? "personnages" : "personnage", "apercu"),
+      cnt(nRel, nRel > 1 ? "relations" : "relation", "rel", sg.length ? pl(sg.length, "suggérée", "suggérées") : ""),
+      cnt(ts.length, ts.length > 1 ? "emprises" : "emprise", "geo", gaps.length ? pl(gaps.length, "trou", "trous") : ""),
+      cnt(ps.length, ps.length > 1 ? "lieux" : "lieu", "geo")
+    ])]));
+
+  if (canEdit()) {
+    const chips = [];
+    const chip = (t, fn) => chips.push(el("button", { onclick: fn }, t));
+    if (!c.description) chip("+ description", () => openFull(c.id, "apercu", "desc"));
+    if (!c.image) chip("+ image", () => openFull(c.id, "apercu", "img"));
+    if (dups.length) chip(pl(dups.length, "rapprochement période / emprise", "rapprochements période / emprise"), () => openFull(c.id, "geo"));
+    sg.forEach(x => chip(`filiation : ${x.c.name} ?`, () => openFull(c.id, "rel")));
+    if (gaps.length) chip(pl(gaps.length, "période sans emprise", "périodes sans emprise"), () => openFull(c.id, "geo"));
+    if (!ts.length) chip("+ territoire", () => setMode("drawTerr", { civId: c.id }));
+    if (chips.length) panel.append(el("div", { class: "sect todo ed" }, [el("div", { class: "sect-h" }, el("span", { class: "eyebrow" }, "À compléter")),
+      el("div", { class: "chips" }, chips)]));
+  }
+}
+
+/* =====  fiche complète  ===== */
+function openFull(cid, tab = "apercu", block = null) {
+  full = { civId: cid, tab, block, row: null, add: null, filt: "all", q: "", kids: true, cur: null };
+  renderFull(true);
+}
+function closeFull() { full = null; renderFull(true); }
+function renderFull(force) {
+  if (full && sel) {
+    if (sel.type === "civ" || sel.type === "terr") { const s = selCiv(); if (s && s.id !== full.civId) Object.assign(full, { civId: s.id, block: null, row: null, add: null, cur: null }); }
+    else full = null;
+  }
+  const c = full && civ(full.civId);
+  if (full && !c) full = null;
+  if (document.body.classList.contains("full-on") !== !!full) {
+    document.body.classList.toggle("full-on", !!full);
+    requestAnimationFrame(() => { renderTimeline(); scheduleMap(); });
+  }
+  if (!full) { fullSheet.hidden = true; fullSheet.textContent = ""; return; }
+  if (fullBusy() && !force && fullSheet.childElementCount) return;
+  const prev = fullSheet.querySelector(".fbody"), sc = prev && full.lastTab === full.tab ? prev.scrollTop : 0;
+  fullSheet.hidden = false; fullSheet.textContent = "";
+  const nRel = linksIn(c.id).length + linksOut(c.id).length + subjAs(c.id).length + subjOver(c.id).length;
+  const counts = { chrono: evOf(c.id).length, rel: nRel, geo: terrOf(c.id).length + poisOf(c.id).length };
+  fullSheet.append(el("div", { class: "fhead" }, [
+    el("div", { class: "fid" }, [
+      el("div", { class: "kind" }, [el("span", { class: "dot", style: `background:${c.color}` }), el("span", { class: "eyebrow" }, "Civilisation"),
+        el("span", { class: "fmeta" }, fmtSpan(c.start, c.end) + (c.region ? " · " + c.region : ""))]),
+      el("h2", {}, c.name)]),
+    el("nav", { class: "ftabs", role: "tablist" }, FULL_TABS.map(([k, t]) => el("button", {
+      class: k === full.tab ? "on" : "", role: "tab", onclick: () => { Object.assign(full, { tab: k, block: null, row: null, add: null }); renderFull(true); }
+    }, [t, counts[k] !== undefined ? el("span", { class: "c" }, String(counts[k])) : null]))),
+    el("div", { class: "facts" }, [
+      el("button", { class: "btn", onclick: () => { const ts = terrOf(c.id), t = ts.find(t => alive(t)) || ts[0]; closeFull(); t ? fitTo(t.rings) : toast("Aucun territoire tracé"); } }, "Voir sur la carte"),
+      el("button", { class: "btn", onclick: () => { tlEnt = { type: "civ", id: c.id }; tlFocus(c.start, c.end ?? Y1); } }, "Cadrer la frise"),
+      el("button", { class: "btn danger ed", onclick: () => { full = null; delCiv(c); } }, "Supprimer"),
+      el("button", { class: "btn", title: "Fermer (Échap)", onclick: closeFull }, "✕ Fermer")])
+  ]));
+  const body = el("div", { class: "fbody" });
+  body.append(full.tab === "chrono" ? fullChrono(c) : full.tab === "rel" ? fullRel(c) : full.tab === "geo" ? fullGeo(c) : fullApercu(c));
+  fullSheet.append(body);
+  body.scrollTop = sc; full.lastTab = full.tab;
+}
+
+/* --- Aperçu : blocs modifiables sur place --- */
+function fblock(key, title, view, edit, tools) {
+  const editing = !!edit && full.block === key;
+  const b = el("div", { class: "fblock" + (editing ? " editing" : ""), "data-k": key });
+  b.append(el("div", { class: "fbh" }, [el("span", { class: "eyebrow" }, title), ...(editing ? [] : tools || []),
+    edit && !editing ? el("button", { class: "iconbtn ed", title: "Modifier", onclick: () => { full.block = key; renderFull(true); } }, icon("pen")) : null]));
+  const bb = el("div", { class: "fbb" + (editing ? " iform" : "") }); b.append(bb);
+  editing ? edit(bb) : view(bb);
+  return b;
+}
+function inlineForm(box, fields, values, onSave) {
+  FORM_TARGET = box;
+  try {
+    openForm("", fields, values, v => { if (onSave(v) === false) return false; full.block = null; refresh(); },
+      el("button", { class: "btn", onclick: () => { full.block = null; renderFull(true); } }, "Annuler"));
+  } finally { FORM_TARGET = null; }
+  setTimeout(() => { const f = box.querySelector("input,textarea"); f && f.focus(); }, 0);
+}
+function linksEd(st) {
+  const box = el("div", { class: "linksed" });
+  if (!st.links.length) st.links.push({ label: "", url: "" });
+  const draw = () => {
+    box.textContent = "";
+    st.links.forEach((l, i) => {
+      const a = el("input", { type: "text", placeholder: "Libellé", value: l.label || "" }), u = el("input", { type: "text", placeholder: "https://…", value: l.url || "" });
+      a.oninput = () => { l.label = a.value; }; u.oninput = () => { l.url = u.value; };
+      box.append(el("div", { class: "linkrow" }, [a, u, el("button", { type: "button", class: "iconbtn", title: "Retirer", onclick: () => { st.links.splice(i, 1); draw(); } }, "✕")]));
+    });
+    box.append(el("button", { type: "button", class: "btn sm", onclick: () => { st.links.push({ label: "", url: "" }); draw(); const r = box.querySelectorAll(".linkrow input"); r[r.length - 2]?.focus(); } }, "+ Lien"));
+  };
+  draw(); return box;
+}
+function fullApercu(c) {
+  const pers = personsOfCiv(c.id);
+  const left = el("div", {}, [
+    fblock("ident", "Identité", bb => bb.append(el("dl", { class: "kv" }, [
+      el("dt", {}, "Nom"), el("dd", {}, c.name),
+      el("dt", {}, "Période"), el("dd", {}, fmtSpan(c.start, c.end)),
+      el("dt", {}, "Aire"), el("dd", {}, c.region || "—"),
+      el("dt", {}, "Couleur"), el("dd", {}, [el("span", { class: "dot", style: `background:${c.color};display:inline-block;vertical-align:-1px;margin-right:6px` }), el("span", { class: "fmeta" }, c.color)])])),
+      bb => inlineForm(bb, [
+        { key: "name", label: "Nom" },
+        { type: "row", fields: [{ key: "start", label: "Début", type: "number", help: "Négatif = av. J.-C." }, { key: "end", label: "Fin", type: "number" }] },
+        { key: "region", label: "Aire", ph: "Méditerranée · Europe" },
+        { key: "color", label: "Couleur", type: "color" }
+      ], { name: c.name, start: c.start, end: c.end ?? "", region: c.region || "", color: c.color }, v => {
+        if (!v.name.trim()) { toast("Le nom est obligatoire"); return false; }
+        if (v.start === null) { toast("Date de début manquante"); return false; }
+        if (v.end !== null && v.end < v.start) { toast("La fin précède le début"); return false; }
+        mutate(() => Object.assign(c, { name: v.name.trim(), start: v.start, end: v.end === null ? Y1 : v.end, region: v.region.trim(), color: v.color }));
+      })),
+    fblock("desc", "Description", bb => {
+      const p = el("div", { class: "prose" });
+      p.innerHTML = c.description ? md(c.description) : `<p class="muted">Aucune description pour l'instant.</p>`;
+      bb.append(p);
+    }, bb => inlineForm(bb, [
+      { key: "description", label: "Texte", type: "textarea", rows: 10, help: "Mise en forme simple : **gras**, *italique*, - liste, ## titre, [texte](url)",
+        after: (ctrl, st) => {
+          const prev = el("div", { class: "prose mdprev" }), upd = () => { prev.innerHTML = ctrl.value.trim() ? md(ctrl.value) : `<p class="muted">Aperçu</p>`; };
+          ctrl.addEventListener("input", upd); upd();
+          return el("div", {}, [wikiField()(ctrl, st), el("div", { class: "eyebrow", style: "margin:10px 0 4px" }, "Aperçu"), prev]);
+        } }
+    ], { description: c.description || "" }, v => { mutate(() => { c.description = v.description; }); }))
+  ]);
+  const right = el("div", {}, [
+    fblock("img", "Image", bb => {
+      const fig = figureBlock(c);
+      bb.append(fig || el("div", { class: "imgph" }, [el("span", {}, "Pas d'image"),
+        el("button", { class: "btn sm ed", onclick: () => { full.block = "img"; renderFull(true); } }, "+ Ajouter une image (Wikimedia Commons)")]));
+    }, bb => inlineForm(bb, IMG_FIELDS, imgVals(c), v => { const im = imgOut(v); if (!im) return false; mutate(() => Object.assign(c, im)); })),
+    fblock("links", `Liens et sources · ${(c.links || []).length}`, bb => {
+      if (!(c.links || []).length) return bb.append(el("div", { class: "muted" }, "Aucun lien."));
+      const L = el("div", { class: "links" }); (c.links || []).forEach(l => L.append(el("a", { href: l.url, target: "_blank", rel: "noopener" }, l.label || l.url))); bb.append(L);
+    }, bb => inlineForm(bb, [{ type: "custom", key: "links", label: "Libellé et adresse", render: st => linksEd(st) }], { links: clone(c.links || []) }, v => {
+      const ls = v.links.map(l => ({ label: String(l.label || "").trim(), url: String(l.url || "").trim() })).filter(l => l.url);
+      if (ls.some(l => !/^https?:\/\//i.test(l.url))) { toast("Chaque adresse doit commencer par https://"); return false; }
+      mutate(() => { c.links = ls.map(l => ({ label: l.label || l.url.replace(/^https?:\/\/(www\.)?/, "").slice(0, 42), url: l.url })); });
+    })),
+    fblock("pers", `Personnages · ${pers.length}`, bb => {
+      if (!pers.length) return bb.append(el("div", { class: "muted" }, "Aucun personnage rattaché."));
+      bb.append(el("div", { class: "tags" }, pers.map(p => el("button", { class: "tag", onclick: () => select("person", p.id) }, [p.name, el("span", { class: "r" }, personSpan(p))]))));
+    }, null, [el("button", { class: "btn sm ed", onclick: () => openPersonForm(null, { civIds: [c.id] }) }, "+ Personnage")]),
+    el("div", { class: "meta idline" }, `Identifiant : ${c.id}${c.source ? " · source : " + c.source : ""}`)
+  ]);
+  return el("div", { class: "fpane fcols ov" }, [left, right]);
+}
+
+/* --- Chronologie : un tableau filtrable, modifiable ligne par ligne --- */
+function setRole(e, cid, role) {
+  if (e.civId === cid) e.civRole = role === "principal" ? undefined : role;
+  else { const p = (e.parts || []).find(x => x.civId === cid); if (p) p.role = role; }
+}
+function delEntry(e) {
+  if (!requireEdit()) return;
+  const k = evKids(e.id);
+  if (!confirm(k.length ? `Supprimer « ${e.title} » et ses ${k.length} étapes ?` : `Supprimer « ${e.title} » ?`)) return;
+  const gone = new Set([e.id, ...k.map(x => x.id)]);
+  mutate(() => {
+    db.events = db.events.filter(x => !gone.has(x.id));
+    for (const t of db.territories) if (t.periodId && gone.has(t.periodId)) delete t.periodId;
+  });
+  refresh();
+}
+function fullChrono(c) {
+  const wrap = el("div", { class: "fpane" }), all = evOf(c.id);
+  const tbody = el("tbody");
+  const byY = (a, b) => a.year - b.year || evEnd(a) - evEnd(b);
+  const drawRows = () => {
+    tbody.textContent = "";
+    const trk = full.filt === "all" ? null : TRACKS.find(t => t[0] === full.filt);
+    const q = normName(full.q);
+    const match = e => (!trk || trk[2].includes(e.kind || "jalon")) && (!q || normName(e.title).includes(q));
+    const list = all.filter(match);
+    let rows;
+    if (trk || q) rows = list.sort(byY).map(e => [e, 0]);
+    else {
+      const ids = new Set(list.map(e => e.id)); rows = [];
+      for (const e of list.filter(e => !e.parentId || !ids.has(e.parentId)).sort(byY)) {
+        rows.push([e, 0]); if (full.kids) for (const k of evKids(e.id)) rows.push([k, 1]);
+      }
+    }
+    if (full.add) tbody.append(editTr(c, full.add, null));
+    for (const [e, lvl] of rows) tbody.append(full.row === e.id ? editTr(c, { year: e.year, end: evLong(e) ? evEnd(e) : "", title: e.title, kind: e.kind || "jalon", role: evRole(e, c.id) }, e) : chronoTr(c, e, lvl));
+    if (!rows.length && !full.add) tbody.append(el("tr", {}, el("td", { colspan: 9, class: "muted empty" }, all.length ? "Aucune entrée ne correspond au filtre." : "Aucune entrée. « + Entrée » en ajoute une ici, ou utilisez les boutons + de la frise.")));
+  };
+  const chips = el("div", { class: "chipsf" }, [["all", "Toutes", all.length], ...TRACKS.map(([k, t, kinds]) => [k, t, all.filter(e => kinds.includes(e.kind || "jalon")).length])].map(([k, t, n]) =>
+    el("button", { class: (full.filt === k ? "on" : "") + (n ? "" : " empty"), onclick: () => { full.filt = k; full.row = null; renderFull(true); } }, [t, el("span", { class: "c" }, String(n))])));
+  const qi = el("input", { type: "search", class: "srch", placeholder: "Filtrer par intitulé…", value: full.q });
+  qi.addEventListener("input", () => { full.q = qi.value; drawRows(); });
+  const kc = el("input", { type: "checkbox" }); kc.checked = full.kids; kc.onchange = () => { full.kids = kc.checked; drawRows(); };
+  wrap.append(el("div", { class: "toolbar" }, [chips, qi, el("label", { class: "chk" }, [kc, " étapes"]), el("span", { class: "spacer" }),
+    el("button", { class: "btn prim ed", onclick: () => {
+      const trk = full.filt === "all" ? null : TRACKS.find(t => t[0] === full.filt);
+      full.row = null; full.add = { year: c.start, end: "", title: "", kind: trk ? trk[2][0] : "jalon", role: "principal" }; drawRows();
+    } }, "+ Entrée")]));
+  wrap.append(el("div", { class: "tscroll" }, el("table", { class: "t tchrono" }, [el("thead", {}, el("tr", {}, [
+    el("th", {}, "Date"), el("th", {}, "Intitulé"), el("th", {}, "Nature"), el("th", {}, "Rôle de « " + c.name + " »"),
+    el("th", { class: "opt" }, "Autres civilisations"), el("th", { class: "opt" }, "Lieux"), el("th", { class: "opt" }, "Personnages"), el("th", { class: "opt", title: "Placé sur la carte" }, "Carte"), el("th", {})])), tbody])));
+  wrap.append(el("div", { class: "fnote" }, "Clic sur une ligne : la frise et la carte vont à sa date · ↗ ou double-clic : sa fiche" + (canEdit() ? " · ✎ : correction dans la ligne · ⋯ : formulaire complet (liens, lieux, personnages, description, carte)" : "")));
+  drawRows();
+  return wrap;
+}
+function chronoTr(c, e, lvl) {
+  const tagL = arr => el("div", { class: "tags" }, arr);
+  const others = evCivIds(e).filter(id => id !== c.id).map(id => civ(id)).filter(Boolean)
+    .map(x => el("span", { class: "tag" }, [el("span", { class: "dot", style: `background:${x.color}` }), x.name, el("span", { class: "r" }, (CIV_ROLES[evRole(e, x.id)] || "").toLowerCase())]));
+  const places = evPoiIds(e).map(id => byId(db.pois, id)).filter(Boolean).map(p => el("span", { class: "tag" }, p.name));
+  const people = evPeople(e).map(x => person(x.personId)).filter(Boolean).map(p => el("span", { class: "tag" }, p.name));
+  const role = evRole(e, c.id), kids = lvl ? 0 : evKids(e.id).length;
+  const sub = [];
+  if (kids && !full.kids) sub.push(el("span", {}, pl(kids, "étape", "étapes")));
+  if (e.kind === "periode") {
+    const tt = terrsOfPeriod(e.id);
+    if (tt.length) sub.push(el("button", { class: "linkbtn", onclick: ev => { ev.stopPropagation(); full.tab = "geo"; renderFull(true); } }, pl(tt.length, "emprise", "emprises")));
+    for (const t of terrOf(c.id).filter(t => nearPair(t, e))) sub.push(el("span", { class: "dup ed" }, ["≈ emprise « " + (t.label || shortSpan(t.start, t.end)) + " »",
+      el("button", { class: "btn sm ed", onclick: ev => { ev.stopPropagation(); attachTerr(t, e); } }, "Rattacher"),
+      el("button", { class: "btn sm ed", onclick: ev => { ev.stopPropagation(); dismissPair(t, e); } }, "Écarter")]));
+  }
+  const tr = el("tr", { class: (lvl ? "kid" : "") + (full.cur === e.id ? " cur" : "") }, [
+    el("td", { class: "y" }, shortSpan(e.year, evLong(e) ? evEnd(e) : null)),
+    el("td", { class: "tt" }, [el("div", {}, e.title), sub.length ? el("div", { class: "tsub" }, sub) : null]),
+    el("td", {}, el("span", { class: "kindb" }, [el("i", { style: `background:${KIND_COL[e.kind] || KIND_COL.jalon}` }), EVKINDS[e.kind] || "Jalon"])),
+    el("td", { class: role === "principal" ? "muted" : "" }, (CIV_ROLES[role] || role).toLowerCase()),
+    el("td", { class: "opt" }, tagL(others)), el("td", { class: "opt" }, tagL(places)), el("td", { class: "opt" }, tagL(people)),
+    el("td", { class: "opt geo" }, evHasGeo(e) ? "●" : ""),
+    el("td", { class: "ac" }, [
+      iconBtn("open", "Ouvrir sa fiche", () => select("event", e.id)),
+      el("button", { class: "iconbtn ed", title: "Corriger dans la ligne", onclick: ev => { ev.stopPropagation(); full.add = null; full.row = e.id; renderFull(true); } }, icon("pen")),
+      el("button", { class: "iconbtn ed", title: "Formulaire complet", onclick: ev => { ev.stopPropagation(); openEventForm(e); } }, "⋯"),
+      iconBtn("trash", "Supprimer", () => delEntry(e), "danger ed")])
+  ]);
+  tr.addEventListener("click", () => { full.cur = e.id; tr.parentNode.querySelectorAll("tr.cur").forEach(x => x.classList.remove("cur")); tr.classList.add("cur"); setYear(e.year); });
+  tr.addEventListener("dblclick", () => select("event", e.id));
+  return tr;
+}
+function editTr(c, st, e) {
+  const isNew = !e;
+  const y = el("input", { type: "text", value: st.year ?? "", placeholder: "année", "aria-label": "Début" });
+  const en = el("input", { type: "text", value: st.end ?? "", placeholder: "fin", "aria-label": "Fin (facultatif)" });
+  const ti = el("input", { type: "text", value: st.title || "", placeholder: "Intitulé", "aria-label": "Intitulé" });
+  const ki = selectEl(Object.entries(EVKINDS), st.kind), ro = selectEl(Object.entries(CIV_ROLES), st.role);
+  const cancel = () => { full.row = null; full.add = null; renderFull(true); };
+  const ok = () => {
+    const v = { year: parseYear(y.value), end: parseYear(en.value), title: ti.value.trim(), kind: ki.value, role: ro.value };
+    if (!v.title || v.year === null) { toast("Intitulé et année sont requis"); return; }
+    if (v.end !== null && v.end < v.year) { toast("La fin précède le début"); return; }
+    if (!requireEdit()) return;
+    if (isNew) {
+      mutate(() => {
+        const o = { id: uid("evt"), civId: c.id, year: v.year, end: v.end === null ? v.year : v.end, kind: v.kind, title: v.title, parentId: null, description: "", links: [], arrows: [], lon: null, lat: null };
+        if (v.role !== "principal") o.civRole = v.role;
+        db.events.push(o);
+      });
+      full.add = { year: v.year, end: "", title: "", kind: v.kind, role: v.role };
+      toast("Entrée ajoutée — saisissez la suivante");
+    } else {
+      mutate(() => { Object.assign(e, { year: v.year, end: v.end === null ? v.year : v.end, title: v.title, kind: v.kind }); setRole(e, c.id, v.role); });
+      full.row = null;
+    }
+    refresh();
+  };
+  const tr = el("tr", { class: "editrow" }, [
+    el("td", { class: "y" }, el("div", { class: "yy" }, [y, en])),
+    el("td", {}, ti), el("td", {}, ki), el("td", {}, ro),
+    el("td", { colspan: 4, class: "muted hintc" }, isNew ? "Entrée : enregistrer et saisir la suivante · Échap : arrêter" : "Civilisations, lieux, personnages : formulaire complet ⋯"),
+    el("td", { class: "ac" }, [el("button", { class: "btn sm prim", title: "Enregistrer (Entrée)", onclick: ok }, "✓"), el("button", { class: "btn sm", title: "Annuler (Échap)", onclick: cancel }, "✕")])
+  ]);
+  tr.addEventListener("keydown", ev => {
+    if (ev.key === "Enter") { ev.preventDefault(); ok(); }
+    else if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); cancel(); }
+  });
+  setTimeout(() => { ti.focus(); }, 0);
+  return tr;
+}
+
+/* --- Relations : filiations (avec suggestions) et tutelles --- */
+function relItem(arr, name, sub, open, acts, cls = "") {
+  return el("div", { class: "relitem " + cls }, [el("span", { class: "arr" }, arr),
+    el("button", { class: "grow", onclick: open }, [el("div", { class: "t" }, name), el("div", { class: "s" }, sub)]), ...acts]);
+}
+function fullRel(c) {
+  const ins = linksIn(c.id), outs = linksOut(c.id), sg = filSuggest(c);
+  const delLink = l => { mutate(() => { db.links = db.links.filter(x => x.id !== l.id); }); refresh(); };
+  const lk = (l, dir) => {
+    const o = civ(dir === "in" ? l.from : l.to);
+    return relItem(dir === "in" ? "←" : "→", o?.name || "?", (l.label || (dir === "in" ? "dont elle procède" : "à laquelle elle donne naissance")) + (linkYear(l) !== null ? " · " + fmtYear(linkYear(l), true) : ""),
+      () => o && select("civ", o.id), [iconBtn("pen", "Modifier", () => openLinkForm(l, { from: c.id }), "ed"), iconBtn("trash", "Supprimer", () => delLink(l), "danger ed")]);
+  };
+  const fil = el("div", { class: "fcol" }, [el("div", { class: "fcol-h" }, [el("h4", {}, "Filiations"),
+    el("span", { class: "fmeta" }, pl(ins.length + outs.length, "déclarée", "déclarées") + (sg.length ? " · " + pl(sg.length, "suggérée", "suggérées") : "")),
+    el("span", { class: "spacer" }), el("button", { class: "btn sm ed", onclick: () => openLinkForm(null, { from: c.id }) }, "+ Filiation")])]);
+  ins.forEach(l => fil.append(lk(l, "in")));
+  sg.filter(x => x.dir === "in").forEach(x => fil.append(sugItem(c, x)));
+  outs.forEach(l => fil.append(lk(l, "out")));
+  sg.filter(x => x.dir === "out").forEach(x => fil.append(sugItem(c, x)));
+  if (!ins.length && !outs.length && !sg.length) fil.append(el("div", { class: "emptyrel" }, "Aucune filiation."));
+  fil.append(el("div", { class: "fnote" }, "← dont elle procède · → à laquelle elle donne naissance. Le lien se dessine sur la frise ; les suggestions viennent des civilisations qui se succèdent sur le même territoire."));
+
+  const asSub = subjAs(c.id), asOver = subjOver(c.id);
+  const delSubj = x => { mutate(() => { db.subjections = db.subjections.filter(y => y.id !== x.id); }); refresh(); };
+  const tut = el("div", { class: "fcol" }, [el("div", { class: "fcol-h" }, [el("h4", {}, "Tutelles"), el("span", { class: "fmeta" }, String(asSub.length + asOver.length)),
+    el("span", { class: "spacer" }), el("button", { class: "btn sm ed", onclick: () => openSubjForm(null, { civId: c.id }) }, "+ Tutelle")])]);
+  asSub.forEach(x => tut.append(relItem("⤓", civ(x.overId)?.name || "?", (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end) + (subjAt(c.id) === x ? " · en cours" : ""),
+    () => { setYear(clamp(year, x.start, x.end)); }, [iconBtn("pen", "Modifier", () => openSubjForm(x, { civId: c.id }), "ed"), iconBtn("trash", "Supprimer", () => delSubj(x), "danger ed")])));
+  asOver.forEach(x => tut.append(relItem("⤒", civ(x.civId)?.name || "?", (SUBJ[x.kind] || SUBJ.tutelle)[0] + " · " + fmtSpan(x.start, x.end),
+    () => select("civ", x.civId), [iconBtn("pen", "Modifier", () => openSubjForm(x, { civId: c.id }), "ed"), iconBtn("trash", "Supprimer", () => delSubj(x), "danger ed")])));
+  if (!asSub.length && !asOver.length) tut.append(el("div", { class: "emptyrel" }, "Aucune tutelle."));
+  tut.append(el("div", { class: "fnote" }, "⤓ elle passe sous le contrôle d'une autre · ⤒ elle en domine une autre. La carte et la frise le montrent sur la période."));
+  return el("div", { class: "fpane fcols" }, [fil, tut]);
+}
+function sugItem(c, x) {
+  const arr = x.dir === "in" ? "←" : "→";
+  return relItem(arr, x.c.name, "suggestion : " + (x.dir === "in" ? "la précède" : "lui succède") + " sur le même territoire · non déclarée", () => select("civ", x.c.id), [
+    el("button", { class: "btn sm ed", onclick: () => { mutate(() => db.links.push({ id: uid("lnk"), from: x.dir === "in" ? x.c.id : c.id, to: x.dir === "in" ? c.id : x.c.id, label: "", eventId: null })); refresh(); toast("Filiation déclarée"); } }, "Déclarer"),
+    el("button", { class: "btn sm ed", title: "Ne plus suggérer", onclick: () => { mutate(() => { c.noFil = [...new Set([...(c.noFil || []), x.c.id])]; }); refresh(); } }, "Écarter")], "sugg");
+}
+
+/* --- Géographie : couverture, emprises (avec leur période), lieux --- */
+function fullGeo(c) {
+  const ts = terrOf(c.id), ps = poisOf(c.id), pers = periodsOf(c.id), gaps = coverGaps(c, ts);
+  const A = c.start, B = Math.max(c.end ?? Y1, A + 1), pct = y => clamp((y - A) / (B - A) * 100, 0, 100);
+  /* une rangée par chevauchement, pour que les tracés superposés restent lisibles */
+  const covRow = (list, cls, lab) => {
+    const ends = [], row = el("div", { class: "covrow " + cls });
+    list.forEach(o => {
+      const a = o.start ?? o.year, b = (o.year !== undefined ? evEnd(o) : (o.end ?? Y1)) + 1;
+      let i = ends.findIndex(e => e <= a); if (i < 0) { i = ends.length; ends.push(b); } else ends[i] = b;
+      row.append(el("button", { class: "seg", style: `top:${i * 21}px;left:${pct(a)}%;width:max(3px,calc(${pct(b) - pct(a)}% - 1px))`, title: lab(o), onclick: () => setYear(Math.round((a + b) / 2)) }, lab(o)));
+    });
+    row.style.height = Math.max(1, ends.length) * 21 - 1 + "px";
+    return row;
+  };
+  const cov = el("div", { class: "cov" });
+  if (pers.length) cov.append(covRow(pers, "per", p => p.title + " · " + shortSpan(p.year, evEnd(p))));
+  const tr = covRow(ts, "ter", t => (t.label || "emprise") + " · " + shortSpan(t.start, t.end));
+  gaps.forEach(([a, b]) => tr.append(el("span", { class: "gap", style: `left:${pct(a)}%;width:max(4px,${pct(b + 1) - pct(a)}%)`, title: "Sans emprise : " + shortSpan(a, b) })));
+  cov.append(tr);
+  const ax = el("div", { class: "covax" }, [0, .25, .5, .75, 1].map(f => el("span", {}, fmtYear(Math.round(A + f * (B - A)), false))));
+
+  const emp = el("tbody");
+  ts.forEach(t => {
+    const p = t.periodId ? byId(db.events, t.periodId) : null;
+    const cands = p ? [] : pers.filter(q => nearPair(t, q));
+    const perCell = p ? [el("button", { class: "linkbtn", onclick: () => { Object.assign(full, { tab: "chrono", cur: p.id }); renderFull(true); } }, p.title),
+        iconBtn("unlink", "Détacher de la période", () => detachTerr(t), "ed")]
+      : cands.length ? cands.map(q => el("span", { class: "dup ed" }, ["≈ « " + q.title + " »",
+        el("button", { class: "btn sm ed", onclick: () => attachTerr(t, q) }, "Rattacher"), el("button", { class: "btn sm ed", onclick: () => dismissPair(t, q) }, "Écarter")]))
+      : [el("span", { class: "muted" }, "—")];
+    const hb = /historical-basemaps/.test(t.source || "");
+    emp.append(el("tr", { class: alive(t) ? "cur" : "" }, [
+      el("td", { class: "y" }, fmtYear(t.start, false)), el("td", { class: "y" }, fmtYear(t.end ?? Y1, false)),
+      el("td", { class: "tt" }, [t.label || el("span", { class: "muted" }, "sans intitulé"), hb ? el("span", { class: "src", title: t.source }, " historical-basemaps") : null]),
+      el("td", {}, el("div", { class: "tsub" }, perCell)),
+      el("td", { class: "y opt" }, terrArea(t) ? "≈ " + fmtArea(terrArea(t)) : "—"),
+      el("td", { class: "ac" }, [
+        iconBtn("eye", "Voir sur la carte", () => { closeFull(); select("terr", t.id); }),
+        iconBtn("target", "Modifier le tracé", () => { closeFull(); editTerrId = t.id; editArrow = null; fitTo(t.rings); setMode("editGeom"); }, "ed"),
+        iconBtn("copy", "Reprendre ce tracé pour une autre période", () => openTerrCopy(c.id, t.id), "ed"),
+        iconBtn("pen", "Modifier", () => openTerrForm(t), "ed"),
+        iconBtn("trash", "Supprimer", () => { if (confirm(`Supprimer le territoire « ${t.label || fmtSpan(t.start, t.end)} » ?`)) { mutate(() => db.territories = db.territories.filter(x => x.id !== t.id)); refresh(); } }, "danger ed")])
+    ]));
+  });
+  if (!ts.length) emp.append(el("tr", {}, el("td", { colspan: 6, class: "muted empty" }, "Aucune emprise tracée.")));
+
+  const lieux = el("tbody");
+  ps.forEach(p => lieux.append(el("tr", {}, [
+    el("td", { class: "tt" }, p.name), el("td", {}, KINDS[p.kind] || "Lieu"), el("td", { class: "y" }, shortSpan(p.start, p.end)),
+    el("td", { class: "ac" }, [iconBtn("eye", "Voir sur la carte", () => { closeFull(); select("poi", p.id, { fit: true }); }),
+      iconBtn("pen", "Modifier", () => openPoiForm(p), "ed"),
+      iconBtn("trash", "Supprimer", () => { if (confirm(`Supprimer « ${p.name} » ?`)) { mutate(() => db.pois = db.pois.filter(x => x.id !== p.id)); refresh(); } }, "danger ed")])])));
+  if (!ps.length) lieux.append(el("tr", {}, el("td", { colspan: 4, class: "muted empty" }, "Aucun lieu.")));
+
+  return el("div", { class: "fpane fcols geo2" }, [
+    el("div", {}, [
+      el("div", { class: "fcol-h" }, [el("span", { class: "eyebrow" }, `Emprises · ${ts.length}`), el("span", { class: "spacer" }),
+        el("button", { class: "btn sm ed", onclick: () => openTerrCopy(c.id) }, "Reprendre un tracé"),
+        el("button", { class: "btn sm prim ed", onclick: () => { closeFull(); select("civ", c.id, { keepYear: true }); setMode("drawTerr", { civId: c.id }); } }, "+ Tracer")]),
+      ts.length || pers.length ? el("div", { class: "covwrap" }, [pers.length ? el("div", { class: "covleg" }, [el("span", { class: "lp" }, "périodes"), el("span", { class: "lt" }, "emprises"), gaps.length ? el("span", { class: "lg" }, "sans emprise") : null]) : null, cov, ax]) : null,
+      gaps.length ? el("div", { class: "fnote warn" }, "Sans emprise : " + gaps.map(([a, b]) => shortSpan(a, b)).join(" · ")) : null,
+      el("div", { class: "tscroll" }, el("table", { class: "t" }, [el("thead", {}, el("tr", {}, [el("th", {}, "Début"), el("th", {}, "Fin"), el("th", {}, "Intitulé"), el("th", {}, "Période"), el("th", { class: "opt" }, "Surface"), el("th", {})])), emp]))
+    ]),
+    el("div", {}, [
+      el("div", { class: "fcol-h" }, [el("span", { class: "eyebrow" }, `Lieux · ${ps.length}`), el("span", { class: "spacer" }),
+        el("button", { class: "btn sm prim ed", onclick: () => { closeFull(); select("civ", c.id, { keepYear: true }); setMode("placePoi"); } }, "+ Placer")]),
+      el("div", { class: "tscroll" }, el("table", { class: "t" }, [el("thead", {}, el("tr", {}, [el("th", {}, "Lieu"), el("th", {}, "Nature"), el("th", {}, "Période"), el("th", {})])), lieux]))
+    ])
+  ]);
+}
+
 /* --- formulaires --- */
 const civOpts = () => db.civs.slice().sort((a, b) => a.name.localeCompare(b.name, "fr")).map(c => [c.id, c.name]);
 const poiOpts = () => db.pois.slice().sort((a, b) => a.name.localeCompare(b.name, "fr")).map(p => [p.id, p.name + (p.civId && civ(p.civId) ? " — " + civ(p.civId).name : "")]);
@@ -3176,6 +3721,8 @@ function openEventForm(e, init = {}) {
   const isNew = !e;
   const parents = db.events.filter(x => !x.parentId && evLong(x) && (!e || x.id !== e.id)).sort((a, b) => a.year - b.year)
     .map(x => [x.id, `${x.title} (${fmtYear(x.year, false)})`]);
+  const ctxCiv = e ? (e.civId || "") : (init.civId || "");
+  const linked = e ? terrsOfPeriod(e.id)[0] : null;
   const st = {
     parts: clone((e ? e.parts : init.parts) || []),
     pois: ((e ? e.poiIds : init.poiIds) || []).map(id => ({ poiId: id })),
@@ -3186,6 +3733,9 @@ function openEventForm(e, init = {}) {
     { type: "row", fields: [{ key: "kind", label: "Nature", type: "select", options: Object.entries(EVKINDS) },
       { key: "parentId", label: "Fait partie de", type: "select", options: [["", "— rien —"]].concat(parents) }] },
     { type: "row", fields: [{ key: "year", label: "Début", type: "number" }, { key: "end", label: "Fin (facultatif)", type: "number", help: "Vide = fait ponctuel" }] },
+    { type: "custom", key: "epick", label: "Reprendre d'une emprise (facultatif)", help: "Pratique pour une période : recopie l'intitulé et les dates d'une emprise de la civilisation, modifiables ensuite. La case relie l'emprise à cette entrée.",
+      render: st => takeField(st, "epick", "elink", terrOf(ctxCiv).map(t => [t.id, (t.label || "sans intitulé") + " (" + shortSpan(t.start, t.end) + ")"]), "Rattacher cette emprise à l'entrée",
+        (tid, scope) => { const t = byId(db.territories, tid); if (!t) return; if (t.label) setF(scope, "title", t.label); setF(scope, "year", String(t.start)); setF(scope, "end", String(t.end ?? "")); }) },
     { type: "row", fields: [{ key: "civId", label: "Civilisation principale", type: "select", options: [["", "— aucune —"]].concat(civOpts()) },
       { key: "civRole", label: "Son rôle", type: "select", options: Object.entries(CIV_ROLES) }] },
     { type: "custom", key: "parts", label: "Autres civilisations impliquées", render: () => rowsEditor(st, "parts", [{ k: "civId", opts: civOpts, empty: "— civilisation —" }, { k: "role", opts: () => Object.entries(CIV_ROLES) }], { civId: "", role: "concerne" }, "+ Civilisation") },
@@ -3197,7 +3747,7 @@ function openEventForm(e, init = {}) {
   ], {
     title: e?.title || "", year: e ? e.year : (init.year ?? year), end: e && evLong(e) ? e.end : "",
     kind: e?.kind || init.kind || (init.parentId ? "bataille" : "jalon"), parentId: e ? (e.parentId || "") : (init.parentId || ""),
-    civId: e ? (e.civId || "") : (init.civId || ""), civRole: e?.civRole || "principal",
+    civId: e ? (e.civId || "") : (init.civId || ""), civRole: e?.civRole || "principal", epick: linked ? linked.id : "", elink: !!linked,
     description: e?.description || "", linksText: linksToText(e?.links), ...imgVals(e)
   }, v => {
     if (!v.title.trim() || v.year === null) { toast("Intitulé et année sont requis"); return false; }
@@ -3219,7 +3769,10 @@ function openEventForm(e, init = {}) {
         description: v.description, links: textToLinks(v.linksText), ...im
       });
       if (isNew) db.events.push(o);
-      sel = { type: "event", id: o.id };
+      const tk = v.epick ? byId(db.territories, v.epick) : null;
+      if (v.elink && tk) tk.periodId = o.id;
+      else if (linked && linked.periodId === o.id && (!v.elink || (tk && tk.id !== linked.id))) delete linked.periodId;
+      if (!full) sel = { type: "event", id: o.id };
     });
     setYear(v.year, true); renderAll();
   });
@@ -3249,7 +3802,7 @@ function openPersonForm(p, init = {}) {
       Object.assign(o, { name: v.name.trim(), title: v.title.trim() || undefined, start: v.start, end: v.end, civIds: civIds.length ? civIds : undefined,
         description: v.description, links: textToLinks(v.linksText), ...im });
       if (isNew) db.persons.push(o);
-      sel = { type: "person", id: o.id };
+      if (!full) sel = { type: "person", id: o.id };
     });
     renderAll();
   });
@@ -3367,6 +3920,7 @@ function wikiField() {
         if (!r.ok) throw 0;
         const j = await r.json();
         descCtrl.value = (descCtrl.value ? descCtrl.value + "\n\n" : "") + j.extract;
+        descCtrl.dispatchEvent(new Event("input"));
         const scope = descCtrl.closest(".body") || document;
         const lk = scope.querySelector("#f-linksText");
         const url = j.content_urls?.desktop?.page || v;
@@ -3513,16 +4067,21 @@ function openTerrForm(t, init) {
       type: "row", fields: [
         { key: "start", label: "Valable à partir de", type: "number" },
         { key: "end", label: "Jusqu'à", type: "number" }]
-    }
+    },
+    { type: "custom", key: "tpick", label: "Période de la chronologie (facultatif)", help: "« Reprendre » recopie le nom et les dates de la période, modifiables ensuite. La case relie l'emprise à cette période.",
+      render: st => takeField(st, "tpick", "tlink", periodsOf(st.civId).map(p => [p.id, p.title + " (" + shortSpan(p.year, evEnd(p)) + ")"]), "Rattacher l'emprise à cette période",
+        (pid, scope) => { const p = byId(db.events, pid); if (!p) return; setF(scope, "label", p.title); setF(scope, "start", String(p.year)); setF(scope, "end", String(evEnd(p))); }) }
   ], {
     civId: t?.civId || init?.civId || db.civs[0]?.id, label: t?.label || "",
-    start: t ? t.start : year, end: t ? t.end : year + 100
+    start: t ? t.start : year, end: t ? t.end : year + 100,
+    tpick: t?.periodId || "", tlink: !!t?.periodId
   }, v => {
     if (!v.civId) { toast("Créez d'abord une civilisation"); return false; }
     if (v.start === null || v.end === null) { toast("Dates incomplètes"); return false; }
     mutate(() => {
       const o = t || { id: uid("ter"), rings };
       Object.assign(o, { civId: v.civId, label: v.label.trim(), start: v.start, end: Math.max(v.end, v.start) });
+      if (v.tlink && v.tpick && byId(db.events, v.tpick)) o.periodId = v.tpick; else delete o.periodId;
       if (isNew) db.territories.push(o);
       sel = { type: "civ", id: o.civId };
       if (year < o.start || year > o.end) year = o.start;
@@ -3668,7 +4227,7 @@ function openPoiForm(p, init) {
         start: v.start ?? Y0, end: v.end ?? Y1, description: v.description, links: textToLinks(v.linksText), ...im
       });
       if (isNew) db.pois.push(o);
-      sel = { type: "poi", id: o.id };
+      if (!full) sel = { type: "poi", id: o.id };
     });
     renderAll();
   });
@@ -3782,8 +4341,15 @@ Cliquer une civilisation, un lieu ou un personnage n'affiche plus que **sa frise
 
 Une entrée (règne, guerre, traité…) n'existe qu'une fois mais peut être reliée à **plusieurs civilisations, chacune avec son rôle** (vainqueur, vaincu, allié, signataire…), à **plusieurs lieux** et à **plusieurs personnages** : elle apparaît dans la frise et la fiche de chacun. Les boutons **+** des pistes et des sections créent une entrée déjà reliée à l'élément affiché.
 
-## Fiche et onglet Technique
-Chaque élément s'ouvre sur sa **Description** : image, texte, repères chronologiques, relations, lieux et emprises, sans aucun bouton d'édition. Les comptes autorisés disposent en plus de l'onglet **Technique** : toutes les propriétés y sont modifiables sur place (nom, dates, couleur, texte, liens, image), ainsi que les territoires, tutelles, filiations, événements et lieux rattachés.
+## Fiche d'une civilisation
+Le panneau en donne le **résumé** : dates, début du texte, quelques repères et le nombre d'entrées, de relations, d'emprises et de lieux. Un clic sur un compteur, ou sur **Fiche complète**, ouvre la vue large au-dessus de la carte (la frise reste visible), en quatre onglets : **Aperçu** (identité, texte, image, liens, personnages), **Chronologie** (toutes les entrées dans un tableau filtrable), **Relations** (filiations, suggestions, tutelles) et **Géographie** (couverture dans le temps, emprises, lieux). **Échap** la referme.
+
+Les comptes autorisés modifient chaque bloc avec son crayon ✎, sans quitter la fiche. Dans la Chronologie, ✎ corrige une entrée dans sa ligne et **+ Entrée** en saisit plusieurs à la suite (Entrée enregistre et ouvre la ligne suivante, Échap arrête) ; ⋯ ouvre le formulaire complet. Le bloc **À compléter** du résumé signale ce qui manque.
+
+## Périodes et emprises
+Une **période** (entrée de la chronologie) et une **emprise** (tracé sur la carte) restent indépendantes, mais une emprise peut être rattachée à une période. Les formulaires proposent **Reprendre nom et dates** de l'une vers l'autre, avec une case pour les relier. Quand une période et une emprise portent le même nom ou presque les mêmes dates, la fiche propose de les **rattacher** ou d'**écarter** le rapprochement.
+
+Les autres éléments (lieux, entrées, personnages) gardent leur fiche **Description** et leur onglet **Technique**.
 
 L'image est une simple adresse https, de préférence sur Wikimedia Commons ; l'import d'un résumé Wikipédia la remplit lorsqu'il en trouve une.
 
@@ -3812,6 +4378,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") {
     const scrims = $$(".scrim");
     if (scrims.length) { scrims[scrims.length - 1].remove(); return; }
+    if (full && mode === "select") { closeFull(); return; }
     if (mode !== "select") setMode("select"); else select(null);
   }
   if (e.key === "Enter" && (mode === "drawTerr" || mode === "drawArrow")) finishDraft();
@@ -4014,7 +4581,7 @@ $("#tlFilter").addEventListener("click", e => {
 });
 $$(".tabs button").forEach(b => b.onclick = () => { if (b.dataset.tab === "props") propDetail = null; tab = b.dataset.tab; renderPanel(); });
 
-function renderAll() { renderMap(); renderTimeline(); renderPanel(); }
+function renderAll() { renderMap(); renderTimeline(); renderPanel(); renderFull(); }
 
 /* =====================  DÉMARRAGE  ===================== */
 (async function init() {

@@ -1,4 +1,4 @@
-# Atlas des civilisations — v2.5.0
+# Atlas des civilisations — v2.6.0
 
 Atlas historique interactif (5000 av. J.-C. → 1900) : carte et frise synchronisées, territoires, lieux, événements, filiations, tutelles.
 
@@ -53,6 +53,11 @@ Si `config.js` est laissé vide, l'atlas fonctionne en **mode fichier** : lectur
 
 Les rôles des autres comptes se gèrent ensuite depuis *Données › Comptes et rôles…*.
 
+## Mise à jour vers la v2.6.0
+
+1. Aucun script SQL : les nouveautés (rattachement d'une emprise à une période, rapprochements et suggestions écartés) sont de simples champs facultatifs des données existantes. Il suffit que la migration v2.4.0 ci-dessous ait déjà été exécutée.
+2. Copier `index.html` et `README.md`, commit, push.
+
 ## Mise à jour vers la v2.4.0
 
 1. **D'abord**, dans Supabase › *SQL Editor*, exécuter `supabase/migration_v2.4.0.sql` (rejouable sans risque). Sans cette étape, la publication d'un personnage est refusée par la base.
@@ -67,19 +72,26 @@ L'enrichissement v2.1.0 (civilisations supplémentaires, emprises datées) est d
 ## Interface
 
 - **Frise d'une entité** : cliquer une civilisation, un lieu ou un personnage n'affiche que sa frise, cadrée sur sa durée — pistes Périodes, Règnes, Guerres et batailles, Traités, Événements, Personnages ; pour une civilisation, la courbe de son étendue territoriale (calculée sur les emprises) et ses tutelles ; pour un lieu, qui le contrôlait (calculé à partir des territoires tracés). **← Toutes** revient à l'ensemble.
-- **Priorité au contenu** : dans la frise comme dans la fiche, seules les pistes et sections remplies s'affichent, dans l'ordre ; les vides sont regroupées en bas sur une seule ligne (*Ajouter* dans la frise, *Compléter* dans la fiche), visible des seuls comptes autorisés. Le titre d'une piste est incrusté sur sa première rangée.
+- **Priorité au contenu** : dans la frise, seules les pistes remplies s'affichent, dans l'ordre ; les vides sont regroupées en bas sur une seule ligne (*Ajouter*), visible des seuls comptes autorisés. Le titre d'une piste est incrusté sur sa première rangée. Les fiches de lieu, d'entrée et de personnage suivent la même règle (*Compléter*).
 - **Continuité** : dans la frise d'une civilisation, de courtes amorces montrent ce qui la précède (← à gauche) et la suit (→ à droite), sans allonger la frise. Elles viennent des filiations déclarées ; à défaut, des civilisations qui se succèdent à quelques décennies près sur le même territoire (trait pointillé, « filiation non déclarée »). Un clic ouvre la civilisation.
 - **Navigation dans la frise** : molette = défiler les bandes ; **Ctrl** + molette (ou pincement du pavé tactile) = zoom ; **Maj** + molette = avancer ou reculer dans le temps ; une barre fine sous la frise montre la fenêtre affichée et se fait glisser. La molette seule continue de zoomer la carte.
 - **Entrées croisées** : une entrée n'existe qu'une fois mais se relie à plusieurs civilisations (chacune avec son rôle : principal, vainqueur, vaincu, allié, belligérant, signataire, fondateur, concerné), à plusieurs lieux et à plusieurs personnages (souverain, commandant, fondateur, auteur, signataire, participant) ; elle apparaît dans la frise et la fiche de chacun. Une entrée peut faire partie d'une autre (une bataille dans une guerre). Les boutons **+** des pistes et des sections créent une entrée déjà reliée à l'élément affiché.
 - **Personnages** : fiches à part (dates, titre, biographie, image, civilisations de rattachement), recherchables.
 - **Lieux** : *Technique › Rattacher les entrées proches* propose les entrées localisées à moins de 30 km.
 - Supprimer une civilisation conserve les entrées partagées : la civilisation suivante devient principale.
-- **Fiche › Description** : présentation en lecture (image, texte, repères, relations, lieux, emprises), seule vue offerte aux visiteurs.
-- **Fiche › Technique** (comptes autorisés) : toutes les propriétés modifiables sur place, image comprise, et les listes de territoires, tutelles, filiations, événements et lieux avec leurs actions.
+- **Civilisation › résumé** (panneau) : dates et durée, début du texte, cinq repères, compteurs (entrées, personnages, relations, emprises, lieux) qui ouvrent la fiche complète sur le bon onglet ; pour les comptes autorisés, un bloc *À compléter* (image, description, rapprochements période / emprise, filiations suggérées, périodes sans emprise).
+- **Civilisation › fiche complète** (bouton *Fiche complète*, ou un compteur) : vue large au-dessus de la carte, la frise restant visible et suivant la sélection ; **Échap** la referme. Quatre onglets :
+  - *Aperçu* : identité, description (avec aperçu de la mise en forme et import Wikipédia), image, liens et sources (une ligne libellé / adresse par lien), personnages ;
+  - *Chronologie* : toutes les entrées dans un tableau (date, nature, rôle de la civilisation, autres civilisations, lieux, personnages), filtrable par piste et par intitulé, étapes rangées sous leur épisode ; un clic amène la frise et la carte à sa date, ↗ ou un double-clic ouvre sa fiche ;
+  - *Relations* : filiations déclarées et suggérées (*Déclarer* ou *Écarter*), tutelles ;
+  - *Géographie* : bande de couverture dans le temps (périodes, emprises, trous), tableau des emprises avec leur période et leur surface, lieux.
+- **Édition sur place** (comptes autorisés) : chaque bloc de l'Aperçu a son crayon ✎ et son propre *Enregistrer* ; dans la Chronologie, ✎ corrige une entrée dans sa ligne (dates, intitulé, nature, rôle) et **+ Entrée** permet la saisie en série (Entrée enregistre et ouvre la ligne suivante avec la même nature et la même année, Échap arrête) ; ⋯ ouvre le formulaire complet. L'onglet *Technique* n'existe plus pour les civilisations.
+- **Périodes et emprises** : une période (entrée de la chronologie) et une emprise (tracé) restent indépendantes ; une emprise peut être rattachée à une période. Les formulaires proposent *Reprendre nom et dates* de l'une vers l'autre, avec une case pour les relier. Une période et une emprise de même nom, ou de dates presque identiques, sont signalées : *Rattacher* ou *Écarter*. Supprimer une période détache ses emprises sans les toucher.
+- **Lieu, entrée, personnage › Description** : présentation en lecture, seule vue offerte aux visiteurs ; **› Technique** (comptes autorisés) : propriétés modifiables sur place.
 - Sans sélection, la fiche liste les civilisations présentes à l'année du curseur.
 - **Panneau latéral et frise** repliables (bouton *Panneau*, flèche ▾ de la frise, touches **P**, **F**, **C** pour la carte seule) et redimensionnables en glissant leur bord (double-clic : taille d'origine). Réglages conservés dans le navigateur.
 - Sélectionner un élément rouvre le panneau et centre la frise sur sa période, en ramenant sa bande au milieu.
-- **Téléphone et tablette en portrait** (largeur ≤ 900 px) : carte plein écran, pincement à deux doigts pour zoomer et se déplacer ; la fiche s'ouvre en volet depuis le bas (poignée : vers le haut pour l'agrandir, vers le bas pour la réduire puis la fermer, ✕ pour la fermer) ; la frise se réduit à un curseur d'années, dépliable par ▴ ; le bouton *Calques* regroupe les affichages ; les fenêtres passent en plein écran.
+- **Téléphone et tablette en portrait** (largeur ≤ 900 px) : carte plein écran, pincement à deux doigts pour zoomer et se déplacer ; la fiche s'ouvre en volet depuis le bas (poignée : vers le haut pour l'agrandir, vers le bas pour la réduire puis la fermer, ✕ pour la fermer) et la fiche complète en plein écran, ses tableaux présentés en cartes ; la frise se réduit à un curseur d'années, dépliable par ▴ ; le bouton *Calques* regroupe les affichages ; les fenêtres passent en plein écran.
 - Carte : boutons **+ / −**, touches **+ / −**, double-clic pour zoomer (Maj + double-clic pour dézoomer). La légende des civilisations affichées est supprimée au profit de la carte.
 - Les images sont de simples adresses `https://` (Wikimedia Commons de préférence) ; rien n'est stocké dans la base.
 
@@ -105,6 +117,7 @@ python3 tools/build_relief_v2.1.0.py shadedrelief.jpg ./ne/ne_50m_land.geojson .
 
 ## Historique
 
+- **2.6.0** — fiche civilisation refondue : résumé dans le panneau, fiche complète à onglets (Aperçu, Chronologie, Relations, Géographie) modifiable bloc par bloc, tableau des entrées avec correction dans la ligne et saisie en série, suggestions de filiation à déclarer, bande de couverture des emprises ; périodes et emprises reliables (*Reprendre nom et dates*, rapprochements à rattacher ou écarter). Pas de migration SQL.
 - **2.5.0** — frise d'entité compacte (titres incrustés, pistes vides regroupées), sections remplies en priorité dans la fiche, amorces de continuité avant/après, molette de frise : Ctrl = zoom, Maj = déplacement, barre de navigation.
 - **2.4.0** — chronologie croisée : frise propre à chaque civilisation, lieu et personnage ; entrées typées (période, règne, guerre, bataille, traité…) reliées à plusieurs civilisations avec rôle, lieux et personnages ; fiches Personnage ; courbe d'étendue ; contrôle d'un lieu calculé ; migration SQL v2.4.0.
 - **2.3.1** — correctif : après un déplacement de la carte, les clics de placement (lieu, point d'événement) et de tracé étaient ignorés ; la carte se fait désormais glisser dans tous les modes.

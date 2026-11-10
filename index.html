@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- Atlas des civilisations — v2.6.0 -->
+<!-- Atlas des civilisations — v2.7.0 -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="generator" content="Atlas des civilisations 2.6.0">
+<meta name="generator" content="Atlas des civilisations 2.7.0">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Atlas des civilisations · 5000 av. J.-C. → 1900</title>
 <style>
@@ -478,9 +478,13 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
 .subtabs button:last-child{border:none}
 .subtabs button.on{background:var(--accent);color:#fff}
 .figwrap{padding-top:10px;padding-bottom:10px}
-.fig{margin:0}
-.fig img{display:block;width:100%;max-height:300px;object-fit:cover;border-radius:var(--r);border:1px solid var(--line);background:var(--surface-2)}
-.fig figcaption{font-size:11.5px;color:var(--ink-2);margin-top:5px;line-height:1.4}
+.fig{margin:0;display:flex;gap:10px;align-items:flex-start}
+.figbtn{flex:0 0 auto;padding:0;border-radius:var(--r);cursor:zoom-in}
+.fig img{display:block;width:auto;height:auto;max-width:132px;max-height:96px;object-fit:cover;border-radius:var(--r);border:1px solid var(--line);background:var(--surface-2)}
+.fig figcaption{font-size:11.5px;color:var(--ink-2);line-height:1.4;margin:0;min-width:0}
+.fblock .fig img{max-width:200px;max-height:140px}
+.lightbox .body{text-align:center}
+.lb-img{display:block;margin:0 auto;max-width:100%;max-height:68vh;border-radius:var(--r)}
 .fig .cr{color:var(--muted)}
 .roitem{display:block;width:100%;text-align:left;margin:0;padding:5px 6px;border-radius:2px}
 .roitem:hover{background:var(--surface-2)}
@@ -490,12 +494,22 @@ body.resizing,body.resizing *{cursor:inherit;user-select:none}
 .iform textarea{min-height:90px}
 .iform-acts{justify-content:flex-end;margin-top:4px}
 .idline{font-family:var(--mono);font-size:10px;margin-top:10px;overflow-wrap:anywhere}
-/* ---------- v2.6.0 : fiche civilisation (résumé + fiche complète) ---------- */
+/* ---------- v2.6.0 / v2.7.0 : fiches (résumé + fiche complète) ---------- */
+.stepnav{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px}
+.stepnav .btn{max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.stepnav .btn[disabled]{opacity:.45;cursor:default}
+.stepnav.compact{margin:8px 0 0}
+.fid .stepnav{margin:4px 0 0}
+.fid .back{margin-right:4px;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.addrow{display:flex;gap:6px;margin:6px 0 4px}
+.addrow select{flex:1;min-width:0;border:1px solid var(--line-2);border-radius:var(--r);padding:3px 6px;font-size:12px;background:#fff}
+.addrow select+select{flex:0 0 130px}
+.relitem select{border:1px solid var(--line-2);border-radius:var(--r);padding:2px 4px;font-size:11.5px;background:#fff;max-width:130px}
+.applybar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 12px;margin-bottom:14px;background:#fbf6ea;border:1px solid #ecdcb4;border-radius:4px;font-size:12.5px;color:#5a4410}
 .muted{color:var(--muted)}
 .linkbtn{color:var(--accent);font-size:12px;text-decoration:underline;text-underline-offset:2px}
 .h2ed{display:flex;align-items:center;gap:6px}
 .h2ed .iconbtn{margin-left:auto}
-.fig-sm img{max-height:170px}
 .clamp{font-size:13.5px;line-height:1.6;color:#22272b;margin:0 0 4px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .marks{list-style:none;margin:0;padding:0}
 .marks button{display:grid;grid-template-columns:62px 1fr;gap:8px;width:100%;text-align:left;padding:3px 4px;border-radius:2px;font-size:12.5px}
@@ -628,7 +642,7 @@ tr.editrow td.hintc{font-size:11.5px;vertical-align:middle}
   table.t thead{display:none}
   table.t,table.t tbody{display:block}
   table.t tr{display:grid;grid-template-columns:74px 1fr auto;grid-auto-flow:row dense;gap:2px 8px;padding:8px 2px;border-bottom:1px solid var(--line);align-items:center}
-  table.t td.y{grid-column:1;grid-row:1}
+  table.t td.y{grid-column:1;grid-row:1;white-space:normal;word-break:break-word}
   table.t td.y+td.y{grid-row:2}
   table.t td{display:block;border:none;padding:0}
   table.t td.opt{display:none}
@@ -775,7 +789,7 @@ tr.editrow td.hintc{font-size:11.5px;vertical-align:middle}
 
 "use strict";
 /* =====================================================================
-   ATLAS DES CIVILISATIONS — v2.6.0
+   ATLAS DES CIVILISATIONS — v2.7.0
    Données : base partagée Supabase (lecture publique, écriture par rôle)
              ou, à défaut, data/atlas.json + brouillon local
    Fond de carte : data/geo (Natural Earth 1:50M + tuiles 1:10M, relief ombré)
@@ -905,7 +919,7 @@ const EVKINDS = { periode: "Période", regne: "Règne", guerre: "Guerre", batail
      envoient des propositions soumises à validation ;
    - « fichier » (pas de configuration) : lecture de data/atlas.json, modifications
      conservées dans ce navigateur, export pour mise à jour du dépôt. */
-const APP_VERSION = "2.6.0";
+const APP_VERSION = "2.7.0";
 const COLLS = ["civs", "territories", "events", "pois", "links", "subjections", "persons"];
 const COLL_LABEL = { persons: "Personnage", civs: "Civilisation", territories: "Territoire", events: "Événement", pois: "Lieu", links: "Filiation", subjections: "Tutelle" };
 const ROLE_LABEL = { viewer: "Visiteur", contributor: "Contributeur", editor: "Éditeur", admin: "Administrateur", local: "Local" };
@@ -2524,24 +2538,14 @@ function renderPanel() {
 }
 
 /* ---- onglet Fiche : vue « Description » (lecture) et « Technique » (édition) ---- */
-let sheetMode = "fiche";
 let FORM_TARGET = null;        // conteneur d'un formulaire affiché dans le panneau plutôt qu'en fenêtre
 function renderSheet() {
-  if (!sel) return sheetEmpty();
-  let o = null;
-  if (sel.type === "poi") o = byId(db.pois, sel.id);
-  else if (sel.type === "event") o = byId(db.events, sel.id);
-  else if (sel.type === "person") o = person(sel.id);
-  else o = selCiv();
-  if (!o) { sel = null; return sheetEmpty(); }
-  /* v2.6.0 : une civilisation s'ouvre sur son résumé ; tout se lit et se modifie dans la fiche complète */
-  if (sel.type === "civ" || sel.type === "terr") return sumCiv(o);
-  const tech = sheetMode === "tech" && canEdit();
-  if (canEdit()) panel.append(el("div", { class: "subtabs" }, [["fiche", "Description"], ["tech", "Technique"]].map(([k, t]) =>
-    el("button", { class: (tech ? k === "tech" : k === "fiche") ? "on" : "", onclick: () => { sheetMode = k; renderPanel(); } }, t))));
-  if (sel.type === "person") return tech ? sheetPerson(o) : descPerson(o);
-  if (sel.type === "poi") return tech ? sheetPoi(o) : descPoi(o);
-  return tech ? sheetEvent(o) : descEvent(o);
+  const t = entOfSel();
+  if (!t) { sel = null; return sheetEmpty(); }
+  if (t.type === "civ") return sumCiv(t.o);
+  if (t.type === "poi") return sumPoi(t.o);
+  if (t.type === "person") return sumPerson(t.o);
+  return sumEvent(t.o);
 }
 function sheetEmpty() {
   const live = db.civs.filter(c => alive(c)).sort((a, b) => a.name.localeCompare(b.name, "fr"));
@@ -2559,19 +2563,18 @@ function figureBlock(o) {
   if (!o || !o.image || !/^https:\/\//i.test(o.image)) return null;
   const img = el("img", { src: o.image, alt: o.imageCaption || o.name || o.title || "", loading: "lazy", referrerpolicy: "no-referrer" });
   const cap = (o.imageCaption || o.imageCredit) ? el("figcaption", {}, [o.imageCaption || "", o.imageCredit ? el("span", { class: "cr" }, (o.imageCaption ? " · " : "") + o.imageCredit) : null]) : null;
-  const fig = el("figure", { class: "fig" }, [el("a", { href: o.image, target: "_blank", rel: "noopener" }, img), cap]);
+  const fig = el("figure", { class: "fig" }, [el("button", { class: "figbtn", title: "Agrandir l'image", onclick: () => imgLightbox(o) }, img), cap]);
   img.addEventListener("error", () => fig.remove());
   return fig;
 }
-/* propriétés éditables directement dans le panneau (onglet Technique) */
-function techProps(o, fn) {
-  const s = el("div", { class: "sect" }, el("div", { class: "sect-h" }, el("span", { class: "eyebrow" }, "Propriétés")));
-  const box = el("div", { class: "iform" }); s.append(box);
-  FORM_TARGET = box;
-  try { fn(); } finally { FORM_TARGET = null; }
-  s.append(el("div", { class: "meta idline" }, `Identifiant : ${o.id}${o.source ? " · source : " + o.source : ""}`));
-  return s;
+/* l'image s'affiche en vignette discrète ; un clic l'ouvre en grand */
+function imgLightbox(o) {
+  const m = modalShell(o.imageCaption || o.name || o.title || "Image", [
+    el("img", { class: "lb-img", src: o.image, alt: o.imageCaption || "", referrerpolicy: "no-referrer" }),
+    o.imageCredit ? el("div", { class: "meta", style: "margin-top:6px" }, o.imageCredit) : null
+  ], [el("a", { class: "btn", href: o.image, target: "_blank", rel: "noopener" }, "Ouvrir l'original"), el("button", { class: "btn prim", onclick: () => m.close() }, "Fermer")], "wide lightbox");
 }
+/* propriétés éditables directement dans le panneau (onglet Technique) */
 /* champs d'image communs aux fiches */
 const IMG_FIELDS = [
   { key: "image", label: "Image (adresse https)", ph: "https://upload.wikimedia.org/…", help: "Une image en ligne, de préférence sur Wikimedia Commons. L'import Wikipédia la renseigne s'il en trouve une." },
@@ -2611,21 +2614,6 @@ function proseBlock(text, links) {
   return wrap;
 }
 
-function sheetPoi(p) {
-  if (!p) { sel = null; return renderSheet(); }
-  const c = p.civId ? civ(p.civId) : null;
-  const h = head(KINDS[p.kind] || "Lieu", c?.color, p.name, fmtSpan(p.start, p.end),
-    `${Math.abs(p.lat).toFixed(2)}°${p.lat >= 0 ? "N" : "S"} · ${Math.abs(p.lon).toFixed(2)}°${p.lon >= 0 ? "E" : "O"}`);
-  if (c) h.append(el("div", { class: "meta" }, [el("button", { class: "btn sm", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name)]));
-  h.append(el("div", { class: "row" }, [
-    el("button", { class: "btn", onclick: () => fitTo([[[p.lon - 5, p.lat - 4], [p.lon + 5, p.lat + 4]]]) }, "Cadrer"),
-    el("button", { class: "btn ed", onclick: () => linkNearby(p) }, "Rattacher les entrées proches"),
-    el("button", { class: "btn danger ed", onclick: () => { if (confirm(`Supprimer « ${p.name} » ?`)) { mutate(() => db.pois = db.pois.filter(x => x.id !== p.id)); sel = null; renderAll(); } } }, "Supprimer")
-  ]));
-  panel.append(h);
-  panel.append(techProps(p, () => openPoiForm(p)));
-}
-
 function delEvent(e) {
   if (!requireEdit()) return;
   const k = evKids(e.id);
@@ -2645,79 +2633,6 @@ function evPts(e) {
     if (k.lon !== null && k.lon !== undefined) pts.push([k.lon, k.lat]);
   }
   return pts;
-}
-
-function sheetEvent(e) {
-  if (!e) { sel = null; return renderSheet(); }
-  const c = e.civId ? civ(e.civId) : null;
-  const parent = e.parentId ? byId(db.events, e.parentId) : null;
-  const kids = evKids(e.id);
-  const long = evLong(e);
-  const h = head(parent ? "Étape" : long ? "Épisode" : "Événement", c?.color, e.title,
-    long ? fmtSpan(e.year, evEnd(e)) : fmtYear(e.year, true),
-    [e.kind && e.kind !== "jalon" ? EVKINDS[e.kind] : null, c?.name].filter(Boolean).join(" · "));
-  if (evAlive(e) && long) h.querySelector(".kind").append(el("span", { class: "pill live" }, "en cours"));
-  h.append(el("div", { class: "row" }, [
-    evPts(e).length ? el("button", { class: "btn", onclick: () => fitTo([evPts(e)]) }, "Cadrer") : null,
-    parent ? el("button", { class: "btn", onclick: () => select("event", parent.id) }, "↑ " + parent.title) : null,
-    c && !parent ? el("button", { class: "btn", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name) : null,
-    el("button", { class: "btn danger ed", onclick: () => delEvent(e) }, "Supprimer")
-  ]));
-  panel.append(h);
-  panel.append(techProps(e, () => openEventForm(e)));
-
-  /* lieu */
-  const loc = el("div", { class: "sect" });
-  const placed = e.lon !== null && e.lon !== undefined;
-  loc.append(el("div", { class: "sect-h" }, [
-    el("span", { class: "eyebrow" }, "Lieu"),
-    el("button", { class: "btn sm ed", onclick: () => { select("event", e.id, { keepYear: true }); setMode("placeEvPt", { target: e.id }); } },
-      placed ? "Déplacer" : "+ Placer")
-  ]));
-  if (!placed) loc.append(el("div", { class: "meta" }, "Aucun point sur la carte. Utile pour une bataille, un siège, la signature d'un traité."));
-  else loc.append(el("div", { class: "item" }, [
-    el("button", { class: "main", onclick: () => fitTo([[[e.lon - 5, e.lat - 4], [e.lon + 5, e.lat + 4]]]) }, [
-      el("span", { class: "t" }, EVKINDS[e.kind] || "Point"),
-      el("span", { class: "s" }, `${Math.abs(e.lat).toFixed(2)}°${e.lat >= 0 ? "N" : "S"} · ${Math.abs(e.lon).toFixed(2)}°${e.lon >= 0 ? "E" : "O"}`)
-    ]),
-    el("div", { class: "acts" }, iconBtn("trash", "Retirer le point", () => { mutate(() => { e.lon = null; e.lat = null; }); renderAll(); }, "danger"))
-  ]));
-  panel.append(loc);
-
-  /* mouvements */
-  const arrows = e.arrows || [];
-  panel.append(listSection(`Mouvements · ${arrows.length}`, "Tracer",
-    () => { select("event", e.id, { keepYear: true }); setMode("drawArrow", { target: e.id }); },
-    arrows.map((a, i) => ({
-      t: a.label || "Mouvement " + (i + 1),
-      s: `${a.pts.length} points${a.dash ? " · trait discontinu" : ""}`,
-      on: () => fitTo([a.pts]),
-      geom: () => { editArrow = { evId: e.id, i }; editTerrId = null; fitTo([a.pts]); setMode("editGeom"); },
-      edit: () => openArrowForm(e, i),
-      del: () => { mutate(() => e.arrows.splice(i, 1)); renderAll(); }
-    })),
-    "Une flèche par déplacement d'armée, migration ou expédition : cliquez les étapes sur la carte, du départ vers l'arrivée."));
-
-  /* étapes */
-  if (!parent) panel.append(listSection(`Étapes · ${kids.length}`, "Ajouter",
-    () => openEventForm(null, { civId: e.civId, year: e.year, parentId: e.id }),
-    kids.map(k => ({
-      t: k.title,
-      s: (evLong(k) ? fmtSpan(k.year, evEnd(k)) : fmtYear(k.year, true)) + (evHasGeo(k) ? " · cartographié" : ""),
-      on: () => select("event", k.id),
-      edit: () => openEventForm(k),
-      del: () => delEvent(k)
-    })),
-    "Découpez un épisode long en batailles, sièges ou traités successifs."));
-  else {
-    const sib = evKids(parent.id).filter(k => k.id !== e.id);
-    if (sib.length) panel.append(listSection(`Autres étapes · ${sib.length}`, "Ajouter",
-      () => openEventForm(null, { civId: e.civId, year: e.year, parentId: parent.id }),
-      sib.map(k => ({
-        t: k.title, s: fmtYear(k.year, true),
-        on: () => select("event", k.id), edit: () => openEventForm(k), del: () => delEvent(k)
-      }))));
-  }
 }
 
 function listSection(title, addLabel, addFn, rows, help) {
@@ -2949,10 +2864,12 @@ const terrArea = t => { let a = AREA.get(t); if (a === undefined) { a = (t.rings
 const fmtArea = a => a >= 1e6 ? (a / 1e6).toFixed(a >= 1e7 ? 0 : 1).replace(".", ",") + " M km²" : Math.round(a / 1e3) + " 000 km²";
 
 /* --- frise focalisée --- */
-let tlEnt = null;            // entité dont la frise est affichée : { type: "civ" | "poi" | "person", id }
+let tlEnt = null;            // entité dont la frise est affichée : { type: "civ" | "poi" | "person" | "event", id }
 function focusEnt() {
   if (!tlEnt) return null;
-  const o = tlEnt.type === "civ" ? civ(tlEnt.id) : tlEnt.type === "poi" ? byId(db.pois, tlEnt.id) : person(tlEnt.id);
+  let o = tlEnt.type === "civ" ? civ(tlEnt.id) : tlEnt.type === "poi" ? byId(db.pois, tlEnt.id) : tlEnt.type === "event" ? byId(db.events, tlEnt.id) : person(tlEnt.id);
+  /* une entrée (épisode) se présente comme une entité datée */
+  if (o && tlEnt.type === "event") o = { id: o.id, name: o.title, start: o.year, end: evEnd(o), civId: o.civId, kind: o.kind, ev: o };
   if (!o) tlEnt = null;
   return o || null;
 }
@@ -2964,14 +2881,16 @@ function focusFromSel() {
   else if (sel.type === "person") tlEnt = { type: "person", id: sel.id };
   else if (sel.type === "event") {
     const e = byId(db.events, sel.id); if (!e) return;
+    if (isEpisode(e)) { tlEnt = { type: "event", id: e.id }; return; }
     const f = tlEnt, keep = f && ((f.type === "civ" && evCivIds(e).includes(f.id)) || (f.type === "poi" && evPoiIds(e).includes(f.id)) || (f.type === "person" && evPeople(e).some(x => x.personId === f.id)));
-    if (!keep) tlEnt = e.civId ? { type: "civ", id: e.civId } : null;
+    if (!keep) tlEnt = e.parentId && byId(db.events, e.parentId) ? { type: "event", id: e.parentId } : e.civId ? { type: "civ", id: e.civId } : null;
   }
 }
 function focusEntries() {
   const f = tlEnt;
   if (f.type === "civ") return evOf(f.id);
   if (f.type === "poi") return evOfPoi(f.id);
+  if (f.type === "event") return evKids(f.id);
   return evOfPerson(f.id);
 }
 /* continuité : filiations déclarées, sinon civilisations qui se succèdent sur le même sol */
@@ -3002,12 +2921,14 @@ function continuity(c) {
 function renderFocusTL(w) {
   const o = focusEnt(), f = tlEnt;
   const span = f.type === "person" ? personSpan(o) : fmtSpan(o.start, o.end);
-  const label = { civ: "Civilisation", poi: KINDS[o.kind] || "Lieu", person: "Personnage" }[f.type];
+  const label = { civ: "Civilisation", poi: KINDS[o.kind] || "Lieu", person: "Personnage", event: (EVKINDS[o.kind] || "Entrée") + " · épisode" }[f.type];
+  const up = f.type === "event" && o.civId && civ(o.civId) ? civ(o.civId) : null;
   evBand.textContent = "";
   evBand.append(el("div", { class: "tl-focus-h" }, [
     el("button", { class: "btn sm", title: "Revenir à toutes les civilisations", onclick: ev => { ev.stopPropagation(); tlEnt = null; renderTimeline(); } }, "← Toutes"),
     el("span", { class: "eyebrow" }, label),
-    el("b", {}, o.name), el("span", { class: "yr" }, span)
+    el("b", {}, o.name), el("span", { class: "yr" }, span),
+    up ? el("button", { class: "btn sm", title: "Frise de " + up.name, onclick: ev => { ev.stopPropagation(); tlEnt = { type: "civ", id: up.id }; renderTimeline(); } }, "↑ " + up.name) : null
   ]));
   laneIn.textContent = "";
   const selEv = sel && sel.type === "event" ? sel.id : null;
@@ -3052,7 +2973,8 @@ function renderFocusTL(w) {
     on: () => select("event", e.id)
   });
   const entries = focusEntries();
-  const ctx = f.type === "civ" ? { civId: f.id } : f.type === "poi" ? { poiIds: [f.id], civId: o.civId || "" } : { people: [{ personId: f.id, role: "participant" }] };
+  const ctx = f.type === "civ" ? { civId: f.id } : f.type === "poi" ? { poiIds: [f.id], civId: o.civId || "" }
+    : f.type === "event" ? { parentId: o.id, civId: o.civId || "", parts: clone(o.ev.parts || []) } : { people: [{ personId: f.id, role: "participant" }] };
 
   if (f.type === "civ") {
     /* étendue territoriale, titre incrusté */
@@ -3085,12 +3007,14 @@ function renderFocusTL(w) {
   } else if (f.type === "poi") {
     track("Existence", [{ a: o.start, b: o.end ?? Y1, t: o.name, c: civ(o.civId)?.color || "#7a6a5a", s: fmtSpan(o.start, o.end), on: () => select("poi", o.id) }]);
     track("Contrôle", ownersOf(o).map(([a, b, cid]) => ({ a, b, t: civ(cid).name, c: civ(cid).color, s: fmtSpan(a, b) + " · d'après les territoires", on: () => select("civ", cid) })));
+  } else if (f.type === "event") {
+    track(null, [{ a: o.start, b: o.end, t: o.name, c: KIND_COL[o.kind] || civ(o.civId)?.color || "#7a6a5a", s: evSpan(o.ev) + " · " + (EVKINDS[o.kind] || ""), sel: sel && sel.type === "event" && sel.id === o.id, on: () => select("event", o.id) }]);
   } else {
     track("Vie", o.start === null || o.start === undefined ? [] : [{ a: o.start, b: o.end ?? o.start, t: o.name, c: "#6b4f8a", s: personSpan(o), on: () => select("person", o.id) }]);
   }
   for (const [key, title, kinds] of TRACKS)
     track(title, entries.filter(e => kinds.includes(e.kind || "jalon")).map(evItem), () => openEventForm(null, Object.assign({ kind: kinds[0] }, clone(ctx))));
-  const ps = f.type === "civ" ? personsOfCiv(o.id) : f.type === "poi" ? personsOfPoi(o.id) : [];
+  const ps = f.type === "civ" ? personsOfCiv(o.id) : f.type === "poi" ? personsOfPoi(o.id) : f.type === "event" ? evPersons(o.ev) : [];
   if (f.type !== "person") track("Personnages", ps.filter(p => p.start !== null && p.start !== undefined).map(p => ({ a: p.start, b: p.end ?? p.start, t: p.name, c: "#6b4f8a", s: personSpan(p) + (p.title ? " · " + p.title : ""), on: () => select("person", p.id) })),
     f.type === "civ" ? () => openPersonForm(null, { civIds: [o.id] }) : null);
   if (empties.length && canEdit()) {
@@ -3137,62 +3061,6 @@ function entrySections(list, ctx, roleOf) {
 }
 const personRows = ps => ps.map(p => ({ t: p.name, c: "#6b4f8a", s: personSpan(p) + (p.title ? " · " + p.title : ""), on: () => select("person", p.id) }));
 
-function descPoi(p) {
-  const c = p.civId ? civ(p.civId) : null;
-  const h = head(KINDS[p.kind] || "Lieu", c?.color, p.name, fmtSpan(p.start, p.end),
-    `${Math.abs(p.lat).toFixed(2)}°${p.lat >= 0 ? "N" : "S"} · ${Math.abs(p.lon).toFixed(2)}°${p.lon >= 0 ? "E" : "O"}`);
-  h.append(el("div", { class: "row" }, [
-    el("button", { class: "btn", onclick: () => fitTo([[[p.lon - 3, p.lat - 2], [p.lon + 3, p.lat + 2]]]) }, "Cadrer"),
-    c ? el("button", { class: "btn", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name) : null
-  ]));
-  panel.append(h);
-  const fig = figureBlock(p); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
-  panel.append(proseBlock(p.description, p.links));
-  sections([
-    ["Contrôlé par", ownersOf(p).map(([a, b, cid]) => ({ t: civ(cid).name, c: civ(cid).color, s: fmtSpan(a, b), on: () => select("civ", cid) })), null, 8],
-    ...entrySections(evOfPoi(p.id), { poiIds: [p.id], civId: p.civId || "" }),
-    ["Personnages", personRows(personsOfPoi(p.id))]
-  ]);
-}
-function descEvent(e) {
-  const c = e.civId ? civ(e.civId) : null, parent = e.parentId ? byId(db.events, e.parentId) : null;
-  const h = head(EVKINDS[e.kind] || "Événement", KIND_COL[e.kind] || c?.color, e.title, evSpan(e), parent ? "dans « " + parent.title + " »" : "");
-  if (evAlive(e) && evLong(e)) h.querySelector(".kind").append(el("span", { class: "pill live" }, "en cours"));
-  h.append(el("div", { class: "row" }, [
-    evPts(e).length ? el("button", { class: "btn", onclick: () => fitTo([evPts(e)]) }, "Cadrer") : null,
-    parent ? el("button", { class: "btn", onclick: () => select("event", parent.id) }, "↑ " + parent.title) : null
-  ]));
-  panel.append(h);
-  const fig = figureBlock(e); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
-  panel.append(proseBlock(e.description, e.links));
-  sections([
-    ["Civilisations", evCivIds(e).map(civ).filter(Boolean).map(x => ({ t: x.name, c: x.color, s: CIV_ROLES[evRole(e, x.id)], on: () => select("civ", x.id, { keepYear: true }) })), null, 12],
-    ["Lieux", evPoiIds(e).map(id => byId(db.pois, id)).filter(Boolean).map(p => ({ t: p.name, s: KINDS[p.kind] || "", on: () => select("poi", p.id, { fit: true }) })), null, 12],
-    ["Personnages", evPeople(e).map(x => ({ p: person(x.personId), r: x.role })).filter(x => x.p).map(x => ({ t: x.p.name, c: "#6b4f8a", s: PERSON_ROLES[x.r] || "", on: () => select("person", x.p.id) })), null, 12],
-    ["Étapes", evKids(e.id).map(k => ({ t: k.title, c: KIND_COL[k.kind], s: evSpan(k) + " · " + (EVKINDS[k.kind] || ""), on: () => select("event", k.id) })),
-      () => openEventForm(null, { parentId: e.id, kind: e.kind === "guerre" ? "bataille" : "jalon", civId: e.civId || "", parts: clone(e.parts || []) }), 8]
-  ]);
-}
-function descPerson(p) {
-  const cs = (p.civIds || []).map(civ).filter(Boolean);
-  const h = head("Personnage", cs[0]?.color || "#6b4f8a", p.name, personSpan(p), p.title || "");
-  h.append(el("div", { class: "row" }, cs.slice(0, 3).map(c => el("button", { class: "btn", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name))));
-  panel.append(h);
-  const fig = figureBlock(p); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
-  panel.append(proseBlock(p.description, p.links));
-  const role = e => { const x = evPeople(e).find(q => q.personId === p.id); return x && PERSON_ROLES[x.role] ? " · " + PERSON_ROLES[x.role] : ""; };
-  const civsLinked = [...new Set([...(p.civIds || []), ...evOfPerson(p.id).flatMap(evCivIds)])].map(civ).filter(Boolean);
-  sections([
-    ...entrySections(evOfPerson(p.id), { people: [{ personId: p.id, role: "participant" }], civId: (p.civIds || [])[0] || "" }, role),
-    ["Civilisations", civsLinked.map(c => ({ t: c.name, c: c.color, s: fmtSpan(c.start, c.end), on: () => select("civ", c.id) })), null, 8]
-  ]);
-}
-function sheetPerson(p) {
-  const h = head("Personnage", "#6b4f8a", p.name, personSpan(p), p.title || "");
-  h.append(el("div", { class: "row" }, [el("button", { class: "btn danger ed", onclick: () => delPerson(p) }, "Supprimer")]));
-  panel.append(h);
-  panel.append(techProps(p, () => openPersonForm(p)));
-}
 function delPerson(p) {
   if (!requireEdit()) return;
   if (!confirm(`Supprimer « ${p.name} » ? Les entrées qui le citent sont conservées.`)) return;
@@ -3203,13 +3071,13 @@ function delPerson(p) {
   sel = null; renderAll();
 }
 
-/* =====================  FICHE CIVILISATION (v2.6.0)  =====================
-   Le panneau affiche un résumé ; « Fiche complète » ouvre une vue large à
-   onglets (Aperçu, Chronologie, Relations, Géographie) au-dessus de la carte,
-   la frise restant visible. Tout s'y modifie bloc par bloc ou ligne par ligne. */
-let full = null;               // { civId, tab, block, row, add, filt, q, kids, cur }
+/* =====================  FICHES (v2.7.0)  =====================
+   Civilisation, lieu, entrée, personnage : le panneau affiche un résumé ;
+   « Fiche complète » ouvre une vue large à onglets au-dessus de la carte, la
+   frise restant visible. Tout s'y modifie bloc par bloc ou ligne par ligne, et
+   chaque nom ouvre la fiche correspondante (← Retour pour revenir). */
+let full = null;               // { type, id, tab, block, row, add, filt, q, kids, cur, hist }
 const fullSheet = $("#fullSheet");
-const FULL_TABS = [["apercu", "Aperçu"], ["chrono", "Chronologie"], ["rel", "Relations"], ["geo", "Géographie"]];
 const fullBusy = () => !!(full && (full.block || full.row || full.add));
 const pl = (n, one, many) => n + " " + (n > 1 ? many : one);
 const shortSpan = (a, b) => (b === null || b === undefined || b === a) ? fmtYear(a, false) : fmtYear(a, false) + " → " + fmtYear(b, false);
@@ -3266,105 +3134,701 @@ function marksOf(c) {
 }
 const plainText = s => String(s || "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/^#+\s*/gm, "").replace(/[*_`>]/g, "").replace(/\s*\n+\s*/g, " ").trim();
 
-/* =====  résumé dans le panneau  ===== */
+/* =====  types de fiche  ===== */
+const ENT = {
+  civ: { get: id => civ(id), label: () => "Civilisation" },
+  poi: { get: id => byId(db.pois, id), label: o => KINDS[o.kind] || "Lieu" },
+  event: { get: id => byId(db.events, id), label: o => EVKINDS[o.kind] || "Entrée" },
+  person: { get: id => person(id), label: () => "Personnage" }
+};
+const entName = (type, o) => type === "event" ? o.title : o.name;
+function entOfSel() {
+  if (!sel) return null;
+  if (sel.type === "terr") { const t = byId(db.territories, sel.id), c = t && civ(t.civId); return c ? { type: "civ", id: c.id, o: c } : null; }
+  const d = ENT[sel.type], o = d && d.get(sel.id);
+  return o ? { type: sel.type, id: sel.id, o } : null;
+}
+/* une entrée longue, une période, un règne, une guerre, ou une entrée qui a des étapes : un « épisode » */
+const isEpisode = e => !e.parentId && (evKids(e.id).length > 0 || evLong(e) || ["periode", "regne", "guerre"].includes(e.kind));
+const coordTxt = o => `${Math.abs(o.lat).toFixed(2)}°${o.lat >= 0 ? "N" : "S"} · ${Math.abs(o.lon).toFixed(2)}°${o.lon >= 0 ? "E" : "O"}`;
+const civsOfPerson = p => [...new Set([...(p.civIds || []), ...evOfPerson(p.id).flatMap(evCivIds)])].map(civ).filter(Boolean);
+function poisOfPerson(p) {
+  const n = new Map();
+  for (const e of evOfPerson(p.id)) for (const id of evPoiIds(e)) n.set(id, (n.get(id) || 0) + 1);
+  return [...n].map(([id, k]) => [byId(db.pois, id), k]).filter(x => x[0]).sort((a, b) => b[1] - a[1]);
+}
+function peersOfPerson(p) {
+  const n = new Map();
+  for (const e of evOfPerson(p.id)) for (const x of evPeople(e)) if (x.personId !== p.id) n.set(x.personId, (n.get(x.personId) || 0) + 1);
+  return [...n].map(([id, k]) => [person(id), k]).filter(x => x[0]).sort((a, b) => b[1] - a[1]);
+}
+const evPersons = e => [...new Set([e, ...evKids(e.id)].flatMap(x => evPeople(x).map(y => y.personId)))].map(person).filter(Boolean);
+function nearbyEntries(p, km = 30) {
+  const R = 6371, rad = Math.PI / 180;
+  const dist = (a, b) => 2 * R * Math.asin(Math.sqrt(Math.sin((b[1] - a[1]) * rad / 2) ** 2 + Math.cos(a[1] * rad) * Math.cos(b[1] * rad) * Math.sin((b[0] - a[0]) * rad / 2) ** 2));
+  return db.events.filter(e => e.lon !== null && e.lon !== undefined && !evPoiIds(e).includes(p.id))
+    .map(e => ({ e, d: dist([p.lon, p.lat], [e.lon, e.lat]) })).filter(x => x.d <= km).sort((a, b) => a.d - b.d);
+}
+function delPoi(p) {
+  if (!requireEdit() || !confirm(`Supprimer « ${p.name} » ?`)) return;
+  mutate(() => {
+    db.pois = db.pois.filter(x => x.id !== p.id);
+    for (const e of db.events) if (evPoiIds(e).includes(p.id)) e.poiIds = e.poiIds.filter(id => id !== p.id);
+  });
+  sel = null; renderAll();
+}
+function marksFrom(list) {
+  const L = list.slice().sort((a, b) => a.year - b.year);
+  if (L.length <= 5) return L;
+  const n = L.length - 1, idx = new Set([0, Math.round(n / 4), Math.round(n / 2), Math.round(3 * n / 4), n]);
+  return L.filter((e, i) => idx.has(i));
+}
+
+/* =====  résumé dans le panneau (tous les types)  ===== */
+function sumShell(type, o, x) {
+  const go = (tab, block) => () => openFull(type, o.id, tab, block);
+  const h = head(x.kind, x.color, entName(type, o), x.sub, x.meta);
+  h.querySelector("h2").classList.add("h2ed");
+  h.querySelector("h2").append(el("button", { class: "iconbtn ed", title: "Modifier", onclick: go("apercu", "ident") }, icon("pen")));
+  (x.pills || []).forEach(p => h.querySelector(".kind").append(p));
+  if (x.nav) h.append(x.nav);
+  h.append(el("div", { class: "row" }, [...(x.acts || []), el("button", { class: "btn prim", onclick: go("apercu") }, "Fiche complète ⤢")]));
+  panel.append(h);
+  const fig = figureBlock(o); if (fig) panel.append(el("div", { class: "sect figwrap" }, fig));
+  const txt = plainText(o.description);
+  if (txt) panel.append(el("div", { class: "sect" }, [el("p", { class: "clamp" }, txt),
+    txt.length > 230 ? el("button", { class: "linkbtn", onclick: go("apercu") }, "Lire la suite") : null]));
+  if (x.marks && x.marks.length) {
+    const ul = el("ul", { class: "marks" });
+    x.marks.forEach(e => ul.append(el("li", {}, el("button", { onclick: () => select("event", e.id) }, [
+      el("span", { class: "y" }, fmtYear(e.year, false)), el("span", { class: "t" }, e.title)]))));
+    panel.append(el("div", { class: "sect" }, [el("div", { class: "sect-h" }, [el("span", { class: "eyebrow" }, x.marksTitle || "Repères"),
+      el("button", { class: "linkbtn", onclick: go("chrono") }, "Toute la chronologie →")]), ul]));
+  }
+  if (x.counts && x.counts.length) panel.append(el("div", { class: "sect" }, [el("div", { class: "sect-h" }, el("span", { class: "eyebrow" }, "Contenu de la fiche")),
+    el("div", { class: "counts" }, x.counts.map(([n, one, many, tab, sub]) => el("button", { class: "count" + (n ? "" : " zero"), onclick: go(tab) }, [
+      el("span", { class: "n" }, String(n)), el("span", { class: "l" }, (n > 1 ? many : one) + (sub ? " · " + sub : ""))])))]));
+  if (canEdit() && x.todo && x.todo.length) panel.append(el("div", { class: "sect todo ed" }, [el("div", { class: "sect-h" }, el("span", { class: "eyebrow" }, "À compléter")),
+    el("div", { class: "chips" }, x.todo.map(([t, fn]) => el("button", { onclick: fn }, t)))]));
+}
 function sumCiv(c) {
   const ts = terrOf(c.id), evs = evOf(c.id), ps = poisOf(c.id), pers = personsOfCiv(c.id);
   const nRel = linksIn(c.id).length + linksOut(c.id).length + subjAs(c.id).length + subjOver(c.id).length;
   const sg = filSuggest(c), dups = dupPairs(c.id), gaps = coverGaps(c, ts);
-  const dur = (c.end ?? Y1) - c.start;
-  const h = head("Civilisation", c.color, c.name, fmtSpan(c.start, c.end) + " · " + dur.toLocaleString("fr-FR") + " ans", c.region);
-  h.querySelector("h2").classList.add("h2ed");
-  h.querySelector("h2").append(el("button", { class: "iconbtn ed", title: "Modifier nom, dates, aire, couleur", onclick: () => openFull(c.id, "apercu", "ident") }, icon("pen")));
-  if (alive(c)) h.querySelector(".kind").append(el("span", { class: "pill live" }, "en " + fmtYear(year, false)));
+  const go = (tab, block) => () => openFull("civ", c.id, tab, block);
+  const pills = [];
+  if (alive(c)) pills.push(el("span", { class: "pill live" }, "en " + fmtYear(year, false)));
   const nowSubj = subjAt(c.id);
-  if (nowSubj) h.querySelector(".kind").append(el("span", { class: "pill", style: `border-color:${civ(nowSubj.overId)?.color};color:${civ(nowSubj.overId)?.color}` }, subjWord(nowSubj)));
-  h.append(el("div", { class: "row" }, [
-    el("button", { class: "btn", onclick: () => { const t = ts.find(t => alive(t)) || ts[0]; t ? fitTo(t.rings) : toast("Aucun territoire tracé"); } }, "Cadrer"),
-    el("button", { class: "btn", onclick: () => { tlEnt = { type: "civ", id: c.id }; tlFocus(c.start, c.end ?? Y1); } }, "Cadrer la frise"),
-    el("button", { class: "btn prim", onclick: () => openFull(c.id) }, "Fiche complète ⤢")
-  ]));
-  panel.append(h);
-  const fig = figureBlock(c); if (fig) { fig.classList.add("fig-sm"); panel.append(el("div", { class: "sect figwrap" }, fig)); }
-
-  const txt = plainText(c.description);
-  if (txt) panel.append(el("div", { class: "sect" }, [el("p", { class: "clamp" }, txt),
-    txt.length > 230 ? el("button", { class: "linkbtn", onclick: () => openFull(c.id) }, "Lire la suite") : null]));
-
-  const mk = marksOf(c);
-  if (mk.length) {
-    const ul = el("ul", { class: "marks" });
-    mk.forEach(e => ul.append(el("li", {}, el("button", { onclick: () => select("event", e.id) }, [
-      el("span", { class: "y" }, fmtYear(e.year, false)), el("span", { class: "t" }, e.title)]))));
-    panel.append(el("div", { class: "sect" }, [el("div", { class: "sect-h" }, [el("span", { class: "eyebrow" }, "Repères"),
-      el("button", { class: "linkbtn", onclick: () => openFull(c.id, "chrono") }, "Toute la chronologie →")]), ul]));
-  }
-
-  const cnt = (n, label, tab, sub) => el("button", { class: "count" + (n ? "" : " zero"), onclick: () => openFull(c.id, tab) }, [
-    el("span", { class: "n" }, String(n)), el("span", { class: "l" }, label + (sub ? " · " + sub : ""))]);
-  panel.append(el("div", { class: "sect" }, [el("div", { class: "sect-h" }, el("span", { class: "eyebrow" }, "Contenu de la fiche")),
-    el("div", { class: "counts" }, [
-      cnt(evs.length, evs.length > 1 ? "entrées chronologiques" : "entrée chronologique", "chrono"),
-      cnt(pers.length, pers.length > 1 ? "personnages" : "personnage", "apercu"),
-      cnt(nRel, nRel > 1 ? "relations" : "relation", "rel", sg.length ? pl(sg.length, "suggérée", "suggérées") : ""),
-      cnt(ts.length, ts.length > 1 ? "emprises" : "emprise", "geo", gaps.length ? pl(gaps.length, "trou", "trous") : ""),
-      cnt(ps.length, ps.length > 1 ? "lieux" : "lieu", "geo")
-    ])]));
-
-  if (canEdit()) {
-    const chips = [];
-    const chip = (t, fn) => chips.push(el("button", { onclick: fn }, t));
-    if (!c.description) chip("+ description", () => openFull(c.id, "apercu", "desc"));
-    if (!c.image) chip("+ image", () => openFull(c.id, "apercu", "img"));
-    if (dups.length) chip(pl(dups.length, "rapprochement période / emprise", "rapprochements période / emprise"), () => openFull(c.id, "geo"));
-    sg.forEach(x => chip(`filiation : ${x.c.name} ?`, () => openFull(c.id, "rel")));
-    if (gaps.length) chip(pl(gaps.length, "période sans emprise", "périodes sans emprise"), () => openFull(c.id, "geo"));
-    if (!ts.length) chip("+ territoire", () => setMode("drawTerr", { civId: c.id }));
-    if (chips.length) panel.append(el("div", { class: "sect todo ed" }, [el("div", { class: "sect-h" }, el("span", { class: "eyebrow" }, "À compléter")),
-      el("div", { class: "chips" }, chips)]));
-  }
+  if (nowSubj) pills.push(el("span", { class: "pill", style: `border-color:${civ(nowSubj.overId)?.color};color:${civ(nowSubj.overId)?.color}` }, subjWord(nowSubj)));
+  const todo = [];
+  if (!c.description) todo.push(["+ description", go("apercu", "desc")]);
+  if (!c.image) todo.push(["+ image", go("apercu", "img")]);
+  if (dups.length) todo.push([pl(dups.length, "rapprochement période / emprise", "rapprochements période / emprise"), go("geo")]);
+  sg.forEach(x => todo.push([`filiation : ${x.c.name} ?`, go("rel")]));
+  if (gaps.length) todo.push([pl(gaps.length, "période sans emprise", "périodes sans emprise"), go("geo")]);
+  if (!ts.length) todo.push(["+ territoire", () => setMode("drawTerr", { civId: c.id })]);
+  sumShell("civ", c, {
+    kind: "Civilisation", color: c.color, sub: fmtSpan(c.start, c.end) + " · " + ((c.end ?? Y1) - c.start).toLocaleString("fr-FR") + " ans", meta: c.region, pills,
+    acts: [el("button", { class: "btn", onclick: () => { const t = ts.find(t => alive(t)) || ts[0]; t ? fitTo(t.rings) : toast("Aucun territoire tracé"); } }, "Cadrer"),
+      el("button", { class: "btn", onclick: () => { tlEnt = { type: "civ", id: c.id }; tlFocus(c.start, c.end ?? Y1); } }, "Cadrer la frise")],
+    marks: marksOf(c),
+    counts: [[evs.length, "entrée chronologique", "entrées chronologiques", "chrono"], [pers.length, "personnage", "personnages", "apercu"],
+      [nRel, "relation", "relations", "rel", sg.length ? pl(sg.length, "suggérée", "suggérées") : ""],
+      [ts.length, "emprise", "emprises", "geo", gaps.length ? pl(gaps.length, "trou", "trous") : ""], [ps.length, "lieu", "lieux", "geo"]],
+    todo
+  });
+}
+function sumPoi(p) {
+  const c = p.civId ? civ(p.civId) : null, evs = evOfPoi(p.id), own = ownersOf(p), pers = personsOfPoi(p.id);
+  const go = (tab, block) => () => openFull("poi", p.id, tab, block);
+  const near = canEdit() ? nearbyEntries(p).length : 0;
+  const todo = [];
+  if (!p.description) todo.push(["+ description", go("apercu", "desc")]);
+  if (!p.image) todo.push(["+ image", go("apercu", "img")]);
+  if (near) todo.push([pl(near, "entrée proche à rattacher", "entrées proches à rattacher"), go("geo")]);
+  sumShell("poi", p, {
+    kind: KINDS[p.kind] || "Lieu", color: c?.color, sub: fmtSpan(p.start, p.end), meta: coordTxt(p) + (c ? " · " + c.name : ""),
+    acts: [el("button", { class: "btn", onclick: () => fitTo([[[p.lon - 3, p.lat - 2], [p.lon + 3, p.lat + 2]]]) }, "Cadrer"),
+      c ? el("button", { class: "btn", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name) : null].filter(Boolean),
+    marks: marksFrom(evs),
+    counts: [[evs.length, "entrée", "entrées", "chrono"], [new Set(own.map(x => x[2])).size, "civilisation l'a contrôlé", "civilisations l'ont contrôlé", "ctrl"],
+      [pers.length, "personnage", "personnages", "apercu"]],
+    todo
+  });
+}
+function stepNav(e, compact) {
+  const par = e.parentId ? byId(db.events, e.parentId) : null;
+  if (!par) return null;
+  const sib = evKids(par.id), i = sib.findIndex(k => k.id === e.id), prev = sib[i - 1], next = sib[i + 1];
+  return el("div", { class: "stepnav" + (compact ? " compact" : "") }, [
+    el("button", { class: "btn sm", disabled: prev ? null : "", title: prev ? prev.title : "", onclick: () => prev && select("event", prev.id) }, "← " + (prev ? prev.title : "début")),
+    el("button", { class: "btn sm up", title: "Ouvrir l'épisode", onclick: () => select("event", par.id) }, "↑ " + par.title),
+    el("button", { class: "btn sm", disabled: next ? null : "", title: next ? next.title : "", onclick: () => next && select("event", next.id) }, (next ? next.title : "fin") + " →")]);
+}
+function sumEvent(e) {
+  const ep = isEpisode(e), kids = evKids(e.id), civs = evCivIds(e).map(civ).filter(Boolean), pts = evPts(e);
+  const go = (tab, block) => () => openFull("event", e.id, tab, block);
+  const pills = [];
+  if (evAlive(e) && evLong(e)) pills.push(el("span", { class: "pill live" }, "en cours"));
+  const todo = [];
+  if (ep && (e.kind || "jalon") === "jalon") todo.push(["préciser la nature (guerre, période…)", go("apercu", "ident")]);
+  if (["guerre", "bataille", "siege", "traite"].includes(e.kind) && civs.length < 2) todo.push(["+ participants", go("parts")]);
+  if (["bataille", "siege"].includes(e.kind) && (e.lon === null || e.lon === undefined) && !evPoiIds(e).length) todo.push(["+ point ou lieu", go("geo")]);
+  if (!e.description) todo.push(["+ description", go("apercu", "desc")]);
+  if (!e.image) todo.push(["+ image", go("apercu", "img")]);
+  sumShell("event", e, {
+    kind: (EVKINDS[e.kind] || "Entrée") + (ep ? " · épisode" : ""), color: KIND_COL[e.kind] || civs[0]?.color, sub: evSpan(e),
+    meta: civs.map(c => c.name).join(" · "), pills, nav: stepNav(e, true),
+    acts: [pts.length ? el("button", { class: "btn", onclick: () => fitTo([pts]) }, "Cadrer") : null].filter(Boolean),
+    marks: ep ? marksFrom(kids) : null, marksTitle: "Étapes",
+    counts: [...(ep ? [[kids.length, "étape", "étapes", "chrono"]] : []), [civs.length, "civilisation", "civilisations", "parts"],
+      [evPeople(e).length, "personnage", "personnages", "parts"], [evPoiIds(e).length, "lieu", "lieux", "geo"], [(e.arrows || []).length, "mouvement", "mouvements", "geo"]],
+    todo
+  });
+}
+function sumPerson(p) {
+  const cs = civsOfPerson(p), evs = evOfPerson(p.id), ls = poisOfPerson(p);
+  const go = (tab, block) => () => openFull("person", p.id, tab, block);
+  const todo = [];
+  if (p.start === null || p.start === undefined) todo.push(["+ dates", go("apercu", "ident")]);
+  if (!(p.civIds || []).length) todo.push(["+ civilisation", go("rel")]);
+  if (!p.description) todo.push(["+ biographie", go("apercu", "desc")]);
+  if (!p.image) todo.push(["+ image", go("apercu", "img")]);
+  sumShell("person", p, {
+    kind: "Personnage", color: cs[0]?.color || "#6b4f8a", sub: personSpan(p), meta: p.title || "",
+    acts: cs.slice(0, 2).map(c => el("button", { class: "btn", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name)),
+    marks: marksFrom(evs),
+    counts: [[evs.length, "entrée", "entrées", "chrono"], [cs.length, "civilisation", "civilisations", "rel"], [ls.length, "lieu", "lieux", "rel"]],
+    todo
+  });
 }
 
-/* =====  fiche complète  ===== */
-function openFull(cid, tab = "apercu", block = null) {
-  full = { civId: cid, tab, block, row: null, add: null, filt: "all", q: "", kids: true, cur: null };
-  renderFull(true);
+/* =====  fiche complète : ouverture, navigation de fiche en fiche, ← Retour  ===== */
+let fullBack = false, fullTabNext = null;
+function openFull(type, id, tab = null, block = null) {
+  const hist = full ? full.hist : [];
+  if (full && (full.type !== type || full.id !== id)) hist.push({ type: full.type, id: full.id, tab: full.tab });
+  full = { type, id, tab: tab || "apercu", block, row: null, add: null, filt: "all", q: "", kids: true, cur: null, hist };
+  const s = entOfSel();
+  if (!s || s.type !== type || s.id !== id) select(type, id, { keepYear: true }); else renderFull(true);
 }
 function closeFull() { full = null; renderFull(true); }
+function fullGoBack() {
+  const h = full && full.hist.pop(); if (!h) return;
+  fullBack = true; fullTabNext = h.tab;
+  try { select(h.type, h.id, { keepYear: true }); } finally { fullBack = false; fullTabNext = null; }
+}
+function fullTabs(type, o) {
+  if (type === "civ") return [["apercu", "Aperçu"], ["chrono", "Chronologie", evOf(o.id).length],
+    ["rel", "Relations", linksIn(o.id).length + linksOut(o.id).length + subjAs(o.id).length + subjOver(o.id).length], ["geo", "Géographie", terrOf(o.id).length + poisOf(o.id).length]];
+  if (type === "poi") return [["apercu", "Aperçu"], ["chrono", "Chronologie", evOfPoi(o.id).length], ["ctrl", "Contrôle", new Set(ownersOf(o).map(x => x[2])).size], ["geo", "Géographie"]];
+  if (type === "person") return [["apercu", "Aperçu"], ["chrono", "Chronologie", evOfPerson(o.id).length], ["rel", "Relations", civsOfPerson(o).length]];
+  return [["apercu", "Aperçu"], ...(isEpisode(o) ? [["chrono", "Chronologie", evKids(o.id).length]] : []),
+    ["parts", "Participants", evCivIds(o).length + evPeople(o).length], ["geo", "Géographie", evPoiIds(o).length + (o.arrows || []).length + (o.lon !== null && o.lon !== undefined ? 1 : 0)]];
+}
+function fullHeadInfo(type, o) {
+  if (type === "civ") return { color: o.color, meta: fmtSpan(o.start, o.end) + (o.region ? " · " + o.region : "") };
+  if (type === "poi") return { color: civ(o.civId)?.color, meta: fmtSpan(o.start, o.end) + " · " + coordTxt(o) + (civ(o.civId) ? " · " + civ(o.civId).name : "") };
+  if (type === "person") return { color: civsOfPerson(o)[0]?.color || "#6b4f8a", meta: personSpan(o) + (o.title ? " · " + o.title : "") };
+  return { color: KIND_COL[o.kind] || civ(o.civId)?.color, meta: evSpan(o) + (isEpisode(o) ? " · épisode" : "") };
+}
+function fullMapPts(type, o) {
+  if (type === "civ") { const ts = terrOf(o.id), t = ts.find(t => alive(t)) || ts[0]; return t ? t.rings : null; }
+  if (type === "poi") return [[[o.lon - 3, o.lat - 2], [o.lon + 3, o.lat + 2]]];
+  if (type === "event") { const p = evPts(o); for (const id of evPoiIds(o)) { const q = byId(db.pois, id); if (q) p.push([q.lon, q.lat]); } return p.length ? [p] : null; }
+  const p = poisOfPerson(o).map(([q]) => [q.lon, q.lat]); evOfPerson(o.id).forEach(e => p.push(...evPts(e)));
+  return p.length ? [p] : null;
+}
+function fullFrise(type, o) {
+  if (type === "civ") { tlEnt = { type: "civ", id: o.id }; tlFocus(o.start, o.end ?? Y1); }
+  else if (type === "poi") { tlEnt = { type: "poi", id: o.id }; tlFocus(Math.max(o.start, Y0), Math.min(o.end ?? Y1, Y1)); }
+  else if (type === "person") { tlEnt = { type: "person", id: o.id }; if (o.start !== null && o.start !== undefined) tlFocus(o.start, Math.max(o.end ?? o.start, o.start + 20)); }
+  else { const ep = isEpisode(o) ? o : o.parentId ? byId(db.events, o.parentId) : null; if (ep) tlEnt = { type: "event", id: ep.id }; tlFocus(o.year - 2, Math.max(evEnd(o), o.year) + 2); }
+  renderTimeline();
+}
+function fullDelete(type, o) {
+  if (type === "civ") { delCiv(o); return; }
+  if (type === "poi") return delPoi(o);
+  if (type === "person") return delPerson(o);
+  delEvent(o);
+}
 function renderFull(force) {
-  if (full && sel) {
-    if (sel.type === "civ" || sel.type === "terr") { const s = selCiv(); if (s && s.id !== full.civId) Object.assign(full, { civId: s.id, block: null, row: null, add: null, cur: null }); }
-    else full = null;
+  if (full) {
+    const s = entOfSel();
+    if (s && (s.type !== full.type || s.id !== full.id)) {
+      if (!fullBack) full.hist.push({ type: full.type, id: full.id, tab: full.tab });
+      Object.assign(full, { type: s.type, id: s.id, tab: fullTabNext || "apercu", block: null, row: null, add: null, cur: null, filt: "all", q: "" });
+      fullTabNext = null;
+    }
   }
-  const c = full && civ(full.civId);
-  if (full && !c) full = null;
+  const o = full && ENT[full.type].get(full.id);
+  if (full && !o) full = null;
   if (document.body.classList.contains("full-on") !== !!full) {
     document.body.classList.toggle("full-on", !!full);
     requestAnimationFrame(() => { renderTimeline(); scheduleMap(); });
   }
   if (!full) { fullSheet.hidden = true; fullSheet.textContent = ""; return; }
   if (fullBusy() && !force && fullSheet.childElementCount) return;
-  const prev = fullSheet.querySelector(".fbody"), sc = prev && full.lastTab === full.tab ? prev.scrollTop : 0;
+  const type = full.type, tabs = fullTabs(type, o);
+  if (!tabs.some(t => t[0] === full.tab)) full.tab = "apercu";
+  const prev = fullSheet.querySelector(".fbody"), sc = prev && full.lastKey === type + o.id + full.tab ? prev.scrollTop : 0;
   fullSheet.hidden = false; fullSheet.textContent = "";
-  const nRel = linksIn(c.id).length + linksOut(c.id).length + subjAs(c.id).length + subjOver(c.id).length;
-  const counts = { chrono: evOf(c.id).length, rel: nRel, geo: terrOf(c.id).length + poisOf(c.id).length };
+  const info = fullHeadInfo(type, o), pts = fullMapPts(type, o), back = full.hist[full.hist.length - 1];
+  const backO = back && ENT[back.type].get(back.id);
   fullSheet.append(el("div", { class: "fhead" }, [
     el("div", { class: "fid" }, [
-      el("div", { class: "kind" }, [el("span", { class: "dot", style: `background:${c.color}` }), el("span", { class: "eyebrow" }, "Civilisation"),
-        el("span", { class: "fmeta" }, fmtSpan(c.start, c.end) + (c.region ? " · " + c.region : ""))]),
-      el("h2", {}, c.name)]),
-    el("nav", { class: "ftabs", role: "tablist" }, FULL_TABS.map(([k, t]) => el("button", {
+      el("div", { class: "kind" }, [
+        backO ? el("button", { class: "btn sm back", title: "Revenir à « " + entName(back.type, backO) + " »", onclick: fullGoBack }, "← " + entName(back.type, backO)) : null,
+        el("span", { class: "dot", style: `background:${info.color || "#7a6a5a"}` }), el("span", { class: "eyebrow" }, ENT[type].label(o)),
+        el("span", { class: "fmeta" }, info.meta)]),
+      el("h2", {}, entName(type, o)),
+      type === "event" ? stepNav(o) : null]),
+    el("nav", { class: "ftabs", role: "tablist" }, tabs.map(([k, t, n]) => el("button", {
       class: k === full.tab ? "on" : "", role: "tab", onclick: () => { Object.assign(full, { tab: k, block: null, row: null, add: null }); renderFull(true); }
-    }, [t, counts[k] !== undefined ? el("span", { class: "c" }, String(counts[k])) : null]))),
+    }, [t, n !== undefined ? el("span", { class: "c" }, String(n)) : null]))),
     el("div", { class: "facts" }, [
-      el("button", { class: "btn", onclick: () => { const ts = terrOf(c.id), t = ts.find(t => alive(t)) || ts[0]; closeFull(); t ? fitTo(t.rings) : toast("Aucun territoire tracé"); } }, "Voir sur la carte"),
-      el("button", { class: "btn", onclick: () => { tlEnt = { type: "civ", id: c.id }; tlFocus(c.start, c.end ?? Y1); } }, "Cadrer la frise"),
-      el("button", { class: "btn danger ed", onclick: () => { full = null; delCiv(c); } }, "Supprimer"),
+      pts ? el("button", { class: "btn", onclick: () => { closeFull(); fitTo(pts); } }, "Voir sur la carte") : null,
+      el("button", { class: "btn", onclick: () => fullFrise(type, o) }, "Cadrer la frise"),
+      el("button", { class: "btn danger ed", onclick: () => fullDelete(type, o) }, "Supprimer"),
       el("button", { class: "btn", title: "Fermer (Échap)", onclick: closeFull }, "✕ Fermer")])
   ]));
   const body = el("div", { class: "fbody" });
-  body.append(full.tab === "chrono" ? fullChrono(c) : full.tab === "rel" ? fullRel(c) : full.tab === "geo" ? fullGeo(c) : fullApercu(c));
+  const t = full.tab;
+  body.append(t === "apercu" ? fullApercu(type, o)
+    : t === "chrono" ? chronoTable(chronoCfg(type, o))
+    : type === "civ" ? (t === "rel" ? fullRel(o) : fullGeo(o))
+    : type === "poi" ? (t === "ctrl" ? fullPoiCtrl(o) : fullPoiGeo(o))
+    : type === "person" ? fullPersonRel(o)
+    : t === "parts" ? fullParts(o) : fullEvGeo(o));
   fullSheet.append(body);
-  body.scrollTop = sc; full.lastTab = full.tab;
+  body.scrollTop = sc; full.lastKey = type + o.id + t;
+}
+
+/* =====  Aperçu (tous les types)  ===== */
+function identBlock(type, o) {
+  const kv = rows => el("dl", { class: "kv" }, rows.flatMap(([k, v]) => [el("dt", {}, k), el("dd", {}, v ?? "—")]));
+  const link = (t, id, name) => name ? el("button", { class: "linkbtn", onclick: () => select(t, id) }, name) : "—";
+  let view, fields, values, save;
+  if (type === "civ") {
+    view = kv([["Nom", o.name], ["Période", fmtSpan(o.start, o.end)], ["Aire", o.region || "—"],
+      ["Couleur", [el("span", { class: "dot", style: `background:${o.color};display:inline-block;vertical-align:-1px;margin-right:6px` }), el("span", { class: "fmeta" }, o.color)]]]);
+    fields = [{ key: "name", label: "Nom" },
+      { type: "row", fields: [{ key: "start", label: "Début", type: "number", help: "Négatif = av. J.-C." }, { key: "end", label: "Fin", type: "number" }] },
+      { key: "region", label: "Aire", ph: "Méditerranée · Europe" }, { key: "color", label: "Couleur", type: "color" }];
+    values = { name: o.name, start: o.start, end: o.end ?? "", region: o.region || "", color: o.color };
+    save = v => {
+      if (!v.name.trim()) { toast("Le nom est obligatoire"); return false; }
+      if (v.start === null) { toast("Date de début manquante"); return false; }
+      if (v.end !== null && v.end < v.start) { toast("La fin précède le début"); return false; }
+      mutate(() => Object.assign(o, { name: v.name.trim(), start: v.start, end: v.end === null ? Y1 : v.end, region: v.region.trim(), color: v.color }));
+    };
+  } else if (type === "poi") {
+    const c = civ(o.civId);
+    view = kv([["Nom", o.name], ["Type", KINDS[o.kind] || "Lieu"], ["Civilisation", link("civ", o.civId, c?.name)], ["Coordonnées", coordTxt(o)], ["Visible", fmtSpan(o.start, o.end)]]);
+    fields = [{ key: "name", label: "Nom" },
+      { type: "row", fields: [{ key: "kind", label: "Type", type: "select", options: Object.entries(KINDS) }, { key: "civId", label: "Civilisation", type: "select", options: [["", "— aucune —"]].concat(civOpts()) }] },
+      { type: "row", fields: [{ key: "lat", label: "Latitude", type: "number" }, { key: "lon", label: "Longitude", type: "number" }] },
+      { type: "row", fields: [{ key: "start", label: "Visible à partir de", type: "number" }, { key: "end", label: "Jusqu'à", type: "number" }] }];
+    values = { name: o.name, kind: o.kind || "ville", civId: o.civId || "", lat: o.lat, lon: o.lon, start: o.start, end: o.end ?? "" };
+    save = v => {
+      if (!v.name.trim()) { toast("Le nom est obligatoire"); return false; }
+      if (v.lat === null || v.lon === null) { toast("Coordonnées manquantes"); return false; }
+      mutate(() => Object.assign(o, { name: v.name.trim(), kind: v.kind, civId: v.civId || null, lat: clamp(v.lat, -85, 85), lon: clamp(v.lon, -180, 180), start: v.start ?? Y0, end: v.end ?? Y1 }));
+    };
+  } else if (type === "person") {
+    view = kv([["Nom", o.name], ["Titre", o.title || "—"], ["Naissance", o.start !== null && o.start !== undefined ? fmtYear(o.start, true) : "inconnue"],
+      ["Mort", o.end !== null && o.end !== undefined ? fmtYear(o.end, true) : "inconnue"]]);
+    fields = [{ key: "name", label: "Nom" }, { key: "title", label: "Titre ou fonction", ph: "Pharaon de la XIXe dynastie" },
+      { type: "row", fields: [{ key: "start", label: "Naissance", type: "number", help: "Vide si inconnue" }, { key: "end", label: "Mort", type: "number" }] }];
+    values = { name: o.name, title: o.title || "", start: o.start ?? "", end: o.end ?? "" };
+    save = v => {
+      if (!v.name.trim()) { toast("Le nom est requis"); return false; }
+      if (v.start !== null && v.end !== null && v.end < v.start) { toast("La mort précède la naissance"); return false; }
+      mutate(() => Object.assign(o, { name: v.name.trim(), title: v.title.trim() || undefined, start: v.start, end: v.end }));
+    };
+  } else {
+    const par = o.parentId ? byId(db.events, o.parentId) : null, kids = evKids(o.id);
+    view = kv([["Intitulé", o.title], ["Nature", EVKINDS[o.kind] || "Jalon"], ["Dates", evSpan(o)],
+      ["Fait partie de", par ? link("event", par.id, par.title) : "—"], ...(kids.length ? [["Étapes", String(kids.length)]] : [])]);
+    const parents = db.events.filter(x => !x.parentId && evLong(x) && x.id !== o.id).sort((a, b) => a.year - b.year).map(x => [x.id, `${x.title} (${fmtYear(x.year, false)})`]);
+    fields = [{ key: "title", label: "Intitulé" },
+      { type: "row", fields: [{ key: "kind", label: "Nature", type: "select", options: Object.entries(EVKINDS) },
+        kids.length ? { key: "parentNote", label: "Fait partie de", type: "select", options: [["", "— impossible : elle a des étapes —"]] }
+          : { key: "parentId", label: "Fait partie de", type: "select", options: [["", "— rien —"]].concat(parents) }] },
+      { type: "row", fields: [{ key: "year", label: "Début", type: "number" }, { key: "end", label: "Fin (facultatif)", type: "number", help: "Vide = fait ponctuel" }] }];
+    values = { title: o.title, kind: o.kind || "jalon", parentId: o.parentId || "", parentNote: "", year: o.year, end: evLong(o) ? evEnd(o) : "" };
+    save = v => {
+      if (!v.title.trim() || v.year === null) { toast("Intitulé et année sont requis"); return false; }
+      if (v.end !== null && v.end < v.year) { toast("La fin précède le début"); return false; }
+      mutate(() => Object.assign(o, { title: v.title.trim(), kind: v.kind, year: v.year, end: v.end === null ? v.year : v.end, parentId: kids.length ? null : (v.parentId || null) }));
+    };
+  }
+  return fblock("ident", "Identité", bb => bb.append(view), bb => inlineForm(bb, fields, values, save));
+}
+function fullApercu(type, o) {
+  const descLabel = type === "person" ? "Biographie" : "Description";
+  const left = el("div", {}, [identBlock(type, o),
+    fblock("desc", descLabel, bb => {
+      const p = el("div", { class: "prose" });
+      p.innerHTML = o.description ? md(o.description) : `<p class="muted">Aucun texte pour l'instant.</p>`;
+      bb.append(p);
+    }, bb => inlineForm(bb, [
+      { key: "description", label: "Texte", type: "textarea", rows: 10, help: "Mise en forme simple : **gras**, *italique*, - liste, ## titre, [texte](url)",
+        after: (ctrl, st) => {
+          const prev = el("div", { class: "prose mdprev" }), upd = () => { prev.innerHTML = ctrl.value.trim() ? md(ctrl.value) : `<p class="muted">Aperçu</p>`; };
+          ctrl.addEventListener("input", upd); upd();
+          return el("div", {}, [wikiField()(ctrl, st), el("div", { class: "eyebrow", style: "margin:10px 0 4px" }, "Aperçu"), prev]);
+        } }
+    ], { description: o.description || "" }, v => { mutate(() => { o.description = v.description; }); }))]);
+  const right = el("div", {}, [
+    fblock("img", "Image", bb => {
+      const fig = figureBlock(o);
+      bb.append(fig || el("div", { class: "imgph" }, [el("span", {}, "Pas d'image"),
+        el("button", { class: "btn sm ed", onclick: () => { full.block = "img"; renderFull(true); } }, "+ Ajouter une image (Wikimedia Commons)")]));
+    }, bb => inlineForm(bb, IMG_FIELDS, imgVals(o), v => { const im = imgOut(v); if (!im) return false; mutate(() => Object.assign(o, im)); })),
+    fblock("links", `Liens et sources · ${(o.links || []).length}`, bb => {
+      if (!(o.links || []).length) return bb.append(el("div", { class: "muted" }, "Aucun lien."));
+      const L = el("div", { class: "links" }); (o.links || []).forEach(l => L.append(el("a", { href: l.url, target: "_blank", rel: "noopener" }, l.label || l.url))); bb.append(L);
+    }, bb => inlineForm(bb, [{ type: "custom", key: "links", label: "Libellé et adresse", render: st => linksEd(st) }], { links: clone(o.links || []) }, v => {
+      const ls = v.links.map(l => ({ label: String(l.label || "").trim(), url: String(l.url || "").trim() })).filter(l => l.url);
+      if (ls.some(l => !/^https?:\/\//i.test(l.url))) { toast("Chaque adresse doit commencer par https://"); return false; }
+      mutate(() => { o.links = ls.map(l => ({ label: l.label || l.url.replace(/^https?:\/\/(www\.)?/, "").slice(0, 42), url: l.url })); });
+    }))]);
+  const persTags = (list, sub) => list.length ? el("div", { class: "tags" }, list.map(p => el("button", { class: "tag", onclick: () => select("person", p.id) }, [p.name, el("span", { class: "r" }, personSpan(p))])))
+    : el("div", { class: "muted" }, sub);
+  if (type === "civ") { const ps = personsOfCiv(o.id); right.append(fblock("pers", `Personnages · ${ps.length}`, bb => bb.append(persTags(ps, "Aucun personnage rattaché.")), null,
+    [el("button", { class: "btn sm ed", onclick: () => openPersonForm(null, { civIds: [o.id] }) }, "+ Personnage")])); }
+  if (type === "poi") { const ps = personsOfPoi(o.id); right.append(fblock("pers", `Personnages · ${ps.length}`, bb => bb.append(persTags(ps, "Aucun personnage dans les entrées de ce lieu.")))); }
+  right.append(el("div", { class: "meta idline" }, `Identifiant : ${o.id}${o.source ? " · source : " + o.source : ""}`));
+  return el("div", { class: "fpane fcols ov" }, [left, right]);
+}
+
+/* =====  Chronologie (tous les types) : un tableau filtrable, modifiable ligne par ligne  ===== */
+function chronoCfg(type, o) {
+  if (type === "civ") return { all: evOf(o.id), civ: o.id, role: { label: `Rôle de « ${o.name} »`, opts: CIV_ROLES, def: "principal", get: e => evRole(e, o.id), set: (e, r) => setRole(e, o.id, r) }, hide: [], defaults: { civId: o.id } };
+  if (type === "poi") return { all: evOfPoi(o.id), hide: ["lieux"], defaults: { civId: o.civId || null, poiIds: [o.id] } };
+  if (type === "person") return {
+    all: evOfPerson(o.id), hide: ["pers"], defaults: { civId: (o.civIds || [])[0] || null, people: [{ personId: o.id, role: "participant" }] },
+    role: { label: `Rôle de « ${o.name} »`, opts: PERSON_ROLES, def: "participant", get: e => (evPeople(e).find(x => x.personId === o.id) || {}).role || "participant",
+      set: (e, r) => { const x = (e.people || []).find(x => x.personId === o.id); if (x) x.role = r; else (e.people = e.people || []).push({ personId: o.id, role: r }); } }
+  };
+  return { all: evKids(o.id), hide: [], step: true, newKind: o.kind === "guerre" ? "bataille" : "jalon",
+    defaults: { civId: o.civId || null, civRole: o.civRole, parts: clone(o.parts || []), parentId: o.id } };
+}
+function chronoTable(cfg) {
+  const wrap = el("div", { class: "fpane" }), all = cfg.all;
+  const cols = ["date", "title", "kind", ...(cfg.role ? ["role"] : []), "civs", ...(cfg.hide.includes("lieux") ? [] : ["lieux"]), ...(cfg.hide.includes("pers") ? [] : ["pers"]), "carte", "ac"];
+  const tbody = el("tbody");
+  const byY = (a, b) => a.year - b.year || evEnd(a) - evEnd(b);
+  const hasKids = all.some(e => evKids(e.id).length);
+  const drawRows = () => {
+    tbody.textContent = "";
+    const trk = full.filt === "all" ? null : TRACKS.find(t => t[0] === full.filt);
+    const q = normName(full.q);
+    const match = e => (!trk || trk[2].includes(e.kind || "jalon")) && (!q || normName(e.title).includes(q));
+    const list = all.filter(match);
+    let rows;
+    if (trk || q) rows = list.sort(byY).map(e => [e, 0]);
+    else {
+      const ids = new Set(list.map(e => e.id)); rows = [];
+      for (const e of list.filter(e => !e.parentId || !ids.has(e.parentId)).sort(byY)) {
+        rows.push([e, 0]); if (full.kids && !cfg.step) for (const k of evKids(e.id)) rows.push([k, 1]);
+      }
+    }
+    if (full.add) tbody.append(editTr(cfg, cols, full.add, null));
+    for (const [e, lvl] of rows) tbody.append(full.row === e.id
+      ? editTr(cfg, cols, { year: e.year, end: evLong(e) ? evEnd(e) : "", title: e.title, kind: e.kind || "jalon", role: cfg.role ? cfg.role.get(e) : "" }, e)
+      : chronoTr(cfg, cols, e, lvl));
+    if (!rows.length && !full.add) tbody.append(el("tr", {}, el("td", { colspan: cols.length, class: "muted empty" },
+      all.length ? "Aucune entrée ne correspond au filtre." : cfg.step ? "Aucune étape. « + Étape » en ajoute une ici." : "Aucune entrée. « + Entrée » en ajoute une ici.")));
+  };
+  const chips = el("div", { class: "chipsf" }, [["all", "Toutes", all.length], ...TRACKS.map(([k, t, kinds]) => [k, t, all.filter(e => kinds.includes(e.kind || "jalon")).length])].map(([k, t, n]) =>
+    el("button", { class: (full.filt === k ? "on" : "") + (n ? "" : " empty"), onclick: () => { full.filt = k; full.row = null; renderFull(true); } }, [t, el("span", { class: "c" }, String(n))])));
+  const qi = el("input", { type: "search", class: "srch", placeholder: "Filtrer par intitulé…", value: full.q });
+  qi.addEventListener("input", () => { full.q = qi.value; drawRows(); });
+  const kc = el("input", { type: "checkbox" }); kc.checked = full.kids; kc.onchange = () => { full.kids = kc.checked; drawRows(); };
+  wrap.append(el("div", { class: "toolbar" }, [chips, qi, hasKids && !cfg.step ? el("label", { class: "chk" }, [kc, " étapes"]) : null, el("span", { class: "spacer" }),
+    el("button", { class: "btn prim ed", onclick: () => {
+      const trk = full.filt === "all" ? null : TRACKS.find(t => t[0] === full.filt);
+      const base = full.add || {};
+      full.row = null; full.add = { year: base.year ?? (all.length ? Math.max(...all.map(e => e.year)) : (cfg.defaults.parentId ? byId(db.events, cfg.defaults.parentId).year : year)), end: "", title: "",
+        kind: trk ? trk[2][0] : (cfg.newKind || "jalon"), role: cfg.role ? cfg.role.def : "" }; drawRows();
+    } }, cfg.step ? "+ Étape" : "+ Entrée")]));
+  const TH = { date: "Date", title: "Intitulé", kind: "Nature", role: cfg.role?.label, civs: cfg.civ ? "Autres civilisations" : "Civilisations", lieux: "Lieux", pers: "Personnages", carte: "Carte", ac: "" };
+  wrap.append(el("div", { class: "tscroll" }, el("table", { class: "t tchrono" }, [el("thead", {}, el("tr", {}, cols.map(k =>
+    el("th", { class: ["civs", "lieux", "pers", "carte"].includes(k) ? "opt" : "" }, TH[k])))), tbody])));
+  wrap.append(el("div", { class: "fnote" }, "Clic sur une ligne : la frise et la carte vont à sa date · ↗ ou double-clic : sa fiche" + (canEdit() ? " · ✎ : correction dans la ligne · ⋯ : formulaire complet (liens, lieux, personnages, description, carte)" : "")));
+  drawRows();
+  return wrap;
+}
+function chronoTr(cfg, cols, e, lvl) {
+  const tagL = arr => el("div", { class: "tags" }, arr);
+  const civTags = () => tagL(evCivIds(e).filter(id => id !== cfg.civ).map(id => civ(id)).filter(Boolean)
+    .map(x => el("span", { class: "tag" }, [el("span", { class: "dot", style: `background:${x.color}` }), x.name, el("span", { class: "r" }, (CIV_ROLES[evRole(e, x.id)] || "").toLowerCase())])));
+  const kids = lvl ? 0 : evKids(e.id).length;
+  const sub = [];
+  if (kids && !full.kids) sub.push(el("span", {}, pl(kids, "étape", "étapes")));
+  if (e.kind === "periode" && cfg.civ) {
+    const tt = terrsOfPeriod(e.id);
+    if (tt.length) sub.push(el("button", { class: "linkbtn", onclick: ev => { ev.stopPropagation(); full.tab = "geo"; renderFull(true); } }, pl(tt.length, "emprise", "emprises")));
+    for (const t of terrOf(cfg.civ).filter(t => nearPair(t, e))) sub.push(el("span", { class: "dup ed" }, ["≈ emprise « " + (t.label || shortSpan(t.start, t.end)) + " »",
+      el("button", { class: "btn sm ed", onclick: ev => { ev.stopPropagation(); attachTerr(t, e); } }, "Rattacher"),
+      el("button", { class: "btn sm ed", onclick: ev => { ev.stopPropagation(); dismissPair(t, e); } }, "Écarter")]));
+  }
+  const cell = {
+    date: () => el("td", { class: "y" }, shortSpan(e.year, evLong(e) ? evEnd(e) : null)),
+    title: () => el("td", { class: "tt" }, [el("div", {}, e.title), sub.length ? el("div", { class: "tsub" }, sub) : null]),
+    kind: () => el("td", {}, el("span", { class: "kindb" }, [el("i", { style: `background:${KIND_COL[e.kind] || KIND_COL.jalon}` }), EVKINDS[e.kind] || "Jalon"])),
+    role: () => { const r = cfg.role.get(e); return el("td", { class: r === cfg.role.def ? "muted" : "" }, (cfg.role.opts[r] || r || "").toLowerCase()); },
+    civs: () => el("td", { class: "opt" }, civTags()),
+    lieux: () => el("td", { class: "opt" }, tagL(evPoiIds(e).map(id => byId(db.pois, id)).filter(Boolean).map(p => el("span", { class: "tag" }, p.name)))),
+    pers: () => el("td", { class: "opt" }, tagL(evPeople(e).map(x => person(x.personId)).filter(Boolean).map(p => el("span", { class: "tag" }, p.name)))),
+    carte: () => el("td", { class: "opt geo" }, evHasGeo(e) ? "●" : ""),
+    ac: () => el("td", { class: "ac" }, [
+      iconBtn("open", "Ouvrir sa fiche", () => select("event", e.id)),
+      el("button", { class: "iconbtn ed", title: "Corriger dans la ligne", onclick: ev => { ev.stopPropagation(); full.add = null; full.row = e.id; renderFull(true); } }, icon("pen")),
+      el("button", { class: "iconbtn ed", title: "Formulaire complet", onclick: ev => { ev.stopPropagation(); openEventForm(e); } }, "⋯"),
+      iconBtn("trash", "Supprimer", () => delEntry(e), "danger ed")])
+  };
+  const tr = el("tr", { class: (lvl ? "kid" : "") + (full.cur === e.id ? " cur" : "") }, cols.map(k => cell[k]()));
+  tr.addEventListener("click", () => { full.cur = e.id; tr.parentNode.querySelectorAll("tr.cur").forEach(x => x.classList.remove("cur")); tr.classList.add("cur"); setYear(e.year); });
+  tr.addEventListener("dblclick", () => select("event", e.id));
+  return tr;
+}
+function editTr(cfg, cols, st, e) {
+  const isNew = !e;
+  const y = el("input", { type: "text", value: st.year ?? "", placeholder: "année", "aria-label": "Début" });
+  const en = el("input", { type: "text", value: st.end ?? "", placeholder: "fin", "aria-label": "Fin (facultatif)" });
+  const ti = el("input", { type: "text", value: st.title || "", placeholder: "Intitulé", "aria-label": "Intitulé" });
+  const ki = selectEl(Object.entries(EVKINDS), st.kind), ro = cfg.role ? selectEl(Object.entries(cfg.role.opts), st.role) : null;
+  const cancel = () => { full.row = null; full.add = null; renderFull(true); };
+  const ok = () => {
+    const v = { year: parseYear(y.value), end: parseYear(en.value), title: ti.value.trim(), kind: ki.value, role: ro ? ro.value : null };
+    if (!v.title || v.year === null) { toast("Intitulé et année sont requis"); return; }
+    if (v.end !== null && v.end < v.year) { toast("La fin précède le début"); return; }
+    if (!requireEdit()) return;
+    if (isNew) {
+      mutate(() => {
+        const o = Object.assign({ id: uid("evt"), civId: null, year: v.year, end: v.end === null ? v.year : v.end, kind: v.kind, title: v.title, parentId: null, description: "", links: [], arrows: [], lon: null, lat: null }, clone(cfg.defaults));
+        Object.assign(o, { year: v.year, end: v.end === null ? v.year : v.end, kind: v.kind, title: v.title });
+        if (o.civRole === undefined || o.civRole === "principal") delete o.civRole;
+        if (cfg.role) cfg.role.set(o, v.role);
+        db.events.push(o);
+      });
+      full.add = { year: v.year, end: "", title: "", kind: v.kind, role: v.role };
+      toast((cfg.step ? "Étape" : "Entrée") + " ajoutée — saisissez la suivante");
+    } else {
+      mutate(() => { Object.assign(e, { year: v.year, end: v.end === null ? v.year : v.end, title: v.title, kind: v.kind }); if (cfg.role) cfg.role.set(e, v.role); });
+      full.row = null;
+    }
+    refresh();
+  };
+  const rest = cols.length - (cfg.role ? 5 : 4);
+  const tr = el("tr", { class: "editrow" }, [
+    el("td", { class: "y" }, el("div", { class: "yy" }, [y, en])),
+    el("td", {}, ti), el("td", {}, ki), ro ? el("td", {}, ro) : null,
+    el("td", { colspan: rest, class: "muted hintc" }, isNew ? "Entrée : enregistrer et saisir la suivante · Échap : arrêter" : "Civilisations, lieux, personnages : formulaire complet ⋯"),
+    el("td", { class: "ac" }, [el("button", { class: "btn sm prim", title: "Enregistrer (Entrée)", onclick: ok }, "✓"), el("button", { class: "btn sm", title: "Annuler (Échap)", onclick: cancel }, "✕")])
+  ]);
+  tr.addEventListener("keydown", ev => {
+    if (ev.key === "Enter") { ev.preventDefault(); ok(); }
+    else if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); cancel(); }
+  });
+  setTimeout(() => { ti.focus(); }, 0);
+  return tr;
+}
+
+/* =====  petites listes de la fiche complète  ===== */
+function rowList(items, empty) {
+  if (!items.length) return el("div", { class: "emptyrel" }, empty);
+  return el("div", {}, items);
+}
+function addRow(opts, roleOpts, label, onAdd) {
+  if (!canEdit()) return null;
+  const s = selectEl(opts, "", "— choisir —"), r = roleOpts ? selectEl(roleOpts[0], roleOpts[1]) : null;
+  return el("div", { class: "addrow ed" }, [s, r, el("button", { class: "btn sm prim", onclick: () => { if (!s.value) return toast("Choisissez dans la liste"); onAdd(s.value, r ? r.value : null); } }, label)]);
+}
+function bandRows(A, B, groups) {
+  const pct = y => clamp((y - A) / Math.max(1, B - A) * 100, 0, 100);
+  const cov = el("div", { class: "cov" });
+  for (const g of groups) {
+    const ends = [], row = el("div", { class: "covrow " + (g.cls || "ter") });
+    g.items.forEach(it => {
+      let i = ends.findIndex(e => e <= it.a); if (i < 0) { i = ends.length; ends.push(it.b + 1); } else ends[i] = it.b + 1;
+      row.append(el("button", { class: "seg", style: `top:${i * 21}px;left:${pct(it.a)}%;width:max(3px,calc(${pct(it.b + 1) - pct(it.a)}% - 1px));${it.c ? `background:${it.c}33;border-color:${it.c};` : ""}`, title: it.t, onclick: it.on }, it.t));
+    });
+    row.style.height = Math.max(1, ends.length) * 21 - 1 + "px";
+    cov.append(row);
+  }
+  return el("div", { class: "covwrap" }, [cov, el("div", { class: "covax" }, [0, .25, .5, .75, 1].map(f => el("span", {}, fmtYear(Math.round(A + f * (B - A)), false))))]);
+}
+
+/* =====  Lieu : Contrôle, Géographie  ===== */
+function fullPoiCtrl(p) {
+  const own = ownersOf(p), c = civ(p.civId), ps = personsOfPoi(p.id);
+  const A = Math.min(p.start ?? Y0, ...own.map(x => x[0])), B = Math.max(Math.min(p.end ?? Y1, Y1), ...own.map(x => x[1]));
+  const left = el("div", {}, [
+    el("div", { class: "fcol-h" }, [el("h4", {}, "Qui le contrôlait"), el("span", { class: "fmeta" }, "d'après les territoires tracés")]),
+    own.length ? bandRows(Math.max(A, Y0), Math.min(B, Y1), [{ items: own.map(([a, b, cid]) => ({ a, b, t: civ(cid).name + " · " + shortSpan(a, b), c: civ(cid).color, on: () => setYear(Math.round((a + b) / 2)) })) }]) : null,
+    rowList(own.map(([a, b, cid]) => relItem("●", civ(cid).name, fmtSpan(a, b), () => select("civ", cid), [])),
+      "Aucun territoire tracé ne contient ce lieu."),
+    el("div", { class: "fnote" }, "Calculé à partir des emprises : il suffit de tracer ou corriger un territoire pour que ce tableau suive.")]);
+  own.forEach(([, , cid], i) => { const d = left.querySelectorAll(".relitem .arr")[i]; if (d) { d.textContent = "●"; d.style.color = civ(cid).color; } });
+  const right = el("div", {}, [
+    el("div", { class: "fcol-h" }, [el("h4", {}, "Civilisation de rattachement")]),
+    c ? relItem("●", c.name, fmtSpan(c.start, c.end) + " · modifiable dans Aperçu › Identité", () => select("civ", c.id), []) : el("div", { class: "emptyrel" }, "Aucune (Aperçu › Identité)."),
+    el("div", { class: "fcol-h", style: "margin-top:16px" }, [el("h4", {}, "Personnages"), el("span", { class: "fmeta" }, "via les entrées de ce lieu")]),
+    ps.length ? el("div", { class: "tags" }, ps.map(x => el("button", { class: "tag", onclick: () => select("person", x.id) }, [x.name, el("span", { class: "r" }, personSpan(x))])))
+      : el("div", { class: "emptyrel" }, "Aucun personnage.")]);
+  if (c) { const d = right.querySelector(".relitem .arr"); if (d) d.style.color = c.color; }
+  return el("div", { class: "fpane fcols" }, [left, right]);
+}
+function fullPoiGeo(p) {
+  const near = nearbyEntries(p);
+  const attach = list => { mutate(() => { for (const x of list) x.e.poiIds = [...evPoiIds(x.e), p.id]; }); refresh(); toast(pl(list.length, "entrée rattachée", "entrées rattachées")); };
+  return el("div", { class: "fpane fcols" }, [
+    el("div", {}, [
+      el("div", { class: "fcol-h" }, [el("h4", {}, "Position")]),
+      el("div", { class: "fblock" }, el("div", { class: "fbb" }, [el("dl", { class: "kv" }, [el("dt", {}, "Coordonnées"), el("dd", {}, coordTxt(p)), el("dt", {}, "Visible"), el("dd", {}, fmtSpan(p.start, p.end))]),
+        el("div", { class: "row" }, [el("button", { class: "btn", onclick: () => { closeFull(); select("poi", p.id, { fit: true }); } }, "Voir sur la carte"),
+          el("button", { class: "btn ed", onclick: () => { full.tab = "apercu"; full.block = "ident"; renderFull(true); } }, "Modifier les coordonnées")])]))]),
+    el("div", {}, [
+      el("div", { class: "fcol-h" }, [el("h4", {}, "Entrées proches"), el("span", { class: "fmeta" }, "localisées à moins de 30 km, pas encore rattachées"), el("span", { class: "spacer" }),
+        near.length > 1 ? el("button", { class: "btn sm ed", onclick: () => attach(near) }, "Tout rattacher") : null]),
+      rowList(near.map(x => relItem("◆", x.e.title, evSpan(x.e) + " · " + Math.round(x.d) + " km", () => select("event", x.e.id),
+        [el("button", { class: "btn sm ed", onclick: () => attach([x]) }, "Rattacher")])), "Aucune entrée localisée à proximité qui ne soit déjà rattachée.")])
+  ]);
+}
+
+/* =====  Personnage : Relations  ===== */
+function fullPersonRel(p) {
+  const mine = (p.civIds || []).map(civ).filter(Boolean), via = civsOfPerson(p).filter(c => !(p.civIds || []).includes(c.id));
+  const setCivs = ids => { mutate(() => { p.civIds = ids.length ? ids : undefined; }); refresh(); };
+  const nEv = cid => evOfPerson(p.id).filter(e => evCivIds(e).includes(cid)).length;
+  const col1 = el("div", {}, [
+    el("div", { class: "fcol-h" }, [el("h4", {}, "Civilisations")]),
+    rowList([
+      ...mine.map(c => relItem("●", c.name, "rattachée" + (nEv(c.id) ? " · " + pl(nEv(c.id), "entrée", "entrées") : ""), () => select("civ", c.id),
+        [iconBtn("trash", "Retirer", () => setCivs((p.civIds || []).filter(id => id !== c.id)), "danger ed")])),
+      ...via.map(c => relItem("○", c.name, "via " + pl(nEv(c.id), "entrée", "entrées"), () => select("civ", c.id),
+        [el("button", { class: "btn sm ed", onclick: () => setCivs([...(p.civIds || []), c.id]) }, "Rattacher")], "sugg"))
+    ], "Aucune civilisation."),
+    addRow(civOpts().filter(([id]) => !(p.civIds || []).includes(id)), null, "Rattacher", id => setCivs([...(p.civIds || []), id])),
+    el("div", { class: "fnote" }, "● rattachée sur sa fiche · ○ présente dans ses entrées seulement.")]);
+  [...col1.querySelectorAll(".relitem .arr")].forEach((d, i) => { const c = [...mine, ...via][i]; if (c) d.style.color = c.color; });
+  const ls = poisOfPerson(p), peers = peersOfPerson(p);
+  const col2 = el("div", {}, [
+    el("div", { class: "fcol-h" }, [el("h4", {}, "Lieux"), el("span", { class: "fmeta" }, "via ses entrées")]),
+    rowList(ls.map(([q, n]) => relItem("◉", q.name, (KINDS[q.kind] || "Lieu") + " · " + pl(n, "entrée", "entrées"), () => select("poi", q.id), [])), "Aucun lieu dans ses entrées."),
+    el("div", { class: "fcol-h", style: "margin-top:16px" }, [el("h4", {}, "Personnages croisés"), el("span", { class: "fmeta" }, "présents dans les mêmes entrées")]),
+    rowList(peers.map(([q, n]) => relItem("◇", q.name, personSpan(q) + " · " + pl(n, "entrée commune", "entrées communes"), () => select("person", q.id), [])), "Personne d'autre dans ses entrées.")]);
+  return el("div", { class: "fpane fcols" }, [col1, col2]);
+}
+
+/* =====  Entrée : Participants, Géographie  ===== */
+function fullParts(e) {
+  const civs = evCivIds(e).map(civ).filter(Boolean), ppl = evPeople(e).filter(x => person(x.personId));
+  const upd = fn => { mutate(fn); refresh(); };
+  const removeCiv = id => upd(() => {
+    if (e.civId === id) { const rest = e.parts || []; const n = rest.shift(); e.civId = n ? n.civId : null; if (n && n.role !== "concerne" && n.role !== "principal") e.civRole = n.role; else delete e.civRole; e.parts = rest; }
+    else e.parts = (e.parts || []).filter(x => x.civId !== id);
+  });
+  const makeMain = id => upd(() => {
+    const p = (e.parts || []).find(x => x.civId === id); if (!p) return;
+    e.parts = e.parts.filter(x => x.civId !== id);
+    if (e.civId) e.parts.unshift({ civId: e.civId, role: e.civRole || "concerne" });
+    e.civId = id; if (p.role && p.role !== "concerne" && p.role !== "principal") e.civRole = p.role; else delete e.civRole;
+  });
+  const roleSel = (opts, val, onCh) => { if (!canEdit()) return el("span", { class: "muted" }, (opts[val] || val || "").toLowerCase()); const s = selectEl(Object.entries(opts), val); s.onchange = () => onCh(s.value); s.onclick = ev => ev.stopPropagation(); return s; };
+  const col1 = el("div", {}, [
+    el("div", { class: "fcol-h" }, [el("h4", {}, "Civilisations"), el("span", { class: "fmeta" }, String(civs.length))]),
+    rowList(civs.map(c => relItem("●", c.name, e.civId === c.id ? "principale" : "", () => select("civ", c.id), [
+      roleSel(CIV_ROLES, evRole(e, c.id), r => upd(() => setRole(e, c.id, r))),
+      e.civId !== c.id ? el("button", { class: "btn sm ed", title: "En faire la civilisation principale", onclick: () => makeMain(c.id) }, "Principale") : null,
+      iconBtn("trash", "Retirer", () => removeCiv(c.id), "danger ed")])), "Aucune civilisation."),
+    addRow(civOpts().filter(([id]) => !evCivIds(e).includes(id)), [Object.entries(CIV_ROLES), "belligerant"], "Ajouter", (id, r) => upd(() => {
+      if (!e.civId) { e.civId = id; if (r !== "principal") e.civRole = r; } else (e.parts = e.parts || []).push({ civId: id, role: r });
+    }))]);
+  [...col1.querySelectorAll(".relitem .arr")].forEach((d, i) => { if (civs[i]) d.style.color = civs[i].color; });
+  const links = db.links.filter(l => l.eventId === e.id);
+  const kids = evKids(e.id);
+  const col2 = el("div", {}, [
+    el("div", { class: "fcol-h" }, [el("h4", {}, "Personnages"), el("span", { class: "fmeta" }, String(ppl.length)), el("span", { class: "spacer" }),
+      el("button", { class: "btn sm ed", onclick: () => openPersonForm(null, { civIds: e.civId ? [e.civId] : [] }) }, "+ Nouveau personnage")]),
+    rowList(ppl.map(x => { const q = person(x.personId); return relItem("◇", q.name, personSpan(q) + (q.title ? " · " + q.title : ""), () => select("person", q.id), [
+      roleSel(PERSON_ROLES, x.role, r => upd(() => { x.role = r; })),
+      iconBtn("trash", "Retirer", () => upd(() => { e.people = e.people.filter(y => y !== x); }), "danger ed")]); }), "Aucun personnage."),
+    addRow(personOpts().filter(([id]) => !evPeople(e).some(x => x.personId === id)), [Object.entries(PERSON_ROLES), "participant"], "Ajouter", (id, r) => upd(() => { (e.people = e.people || []).push({ personId: id, role: r }); })),
+    links.length ? el("div", { class: "fcol-h", style: "margin-top:16px" }, [el("h4", {}, "Filiations"), el("span", { class: "fmeta" }, "dont elle est l'événement de transition")]) : null,
+    ...links.map(l => relItem("→", (civ(l.from)?.name || "?") + " → " + (civ(l.to)?.name || "?"), l.label || "filiation", () => civ(l.to) && select("civ", l.to), [iconBtn("pen", "Modifier", () => openLinkForm(l, { from: l.from }), "ed")]))
+  ]);
+  const pane = el("div", { class: "fpane" }, [el("div", { class: "fcols" }, [col1, col2])]);
+  if (kids.length && canEdit()) pane.prepend(el("div", { class: "applybar ed" }, [
+    el("span", {}, `Cet épisode a ${pl(kids.length, "étape", "étapes")}. Reporter ses participants sur les étapes, sans rien retirer ni modifier :`),
+    el("button", { class: "btn sm prim", onclick: () => applyToSteps(e) }, "Appliquer aux étapes…")]));
+  return pane;
+}
+function applyToSteps(e) {
+  const kids = evKids(e.id), cs = evCivIds(e), ps = evPeople(e);
+  if (!cs.length && !ps.length) return toast("Ajoutez d'abord des participants à l'épisode");
+  const kb = kids.map(k => { const cb = el("input", { type: "checkbox" }); cb.checked = true; return { k, cb }; });
+  const cb1 = el("input", { type: "checkbox" }); cb1.checked = cs.length > 0;
+  const cb2 = el("input", { type: "checkbox" }); cb2.checked = ps.length > 0;
+  const m = modalShell("Appliquer aux étapes", [
+    el("p", { class: "note", style: "margin:0 0 8px" }, "Ajoute aux étapes cochées ce qui leur manque ; ce qu'elles ont déjà (y compris les rôles) n'est pas modifié."),
+    el("label", { class: "chk-row" }, [cb1, el("span", {}, "Civilisations : " + (cs.map(id => civ(id)?.name + " (" + (CIV_ROLES[evRole(e, id)] || "").toLowerCase() + ")").join(", ") || "aucune"))]),
+    el("label", { class: "chk-row" }, [cb2, el("span", {}, "Personnages : " + (ps.map(x => person(x.personId)?.name).filter(Boolean).join(", ") || "aucun"))]),
+    el("div", { class: "eyebrow", style: "margin:12px 0 4px" }, "Étapes"),
+    ...kb.map(({ k, cb }) => el("label", { class: "chk-row" }, [cb, el("span", {}, [k.title, el("span", { class: "meta" }, " · " + evSpan(k))])]))
+  ], [el("button", { class: "btn", onclick: () => m.close() }, "Annuler"), el("button", {
+    class: "btn prim", onclick: () => {
+      let n = 0;
+      mutate(() => {
+        for (const { k, cb } of kb) {
+          if (!cb.checked) continue;
+          if (cb1.checked) for (const id of cs) if (!evCivIds(k).includes(id)) {
+            const r = evRole(e, id) === "principal" ? "belligerant" : evRole(e, id);
+            if (!k.civId) { k.civId = id; if (r !== "principal") k.civRole = r; } else (k.parts = k.parts || []).push({ civId: id, role: r });
+            n++;
+          }
+          if (cb2.checked) for (const x of ps) if (!evPeople(k).some(y => y.personId === x.personId)) { (k.people = k.people || []).push({ personId: x.personId, role: x.role }); n++; }
+        }
+      });
+      m.close(); refresh(); toast(n ? pl(n, "ajout", "ajouts") + " sur les étapes" : "Rien à ajouter : les étapes avaient déjà tout");
+    }
+  }, "Appliquer")], "wide");
+}
+function fullEvGeo(e) {
+  const placed = e.lon !== null && e.lon !== undefined, arrows = e.arrows || [], kids = evKids(e.id);
+  const go = fn => () => { closeFull(); select("event", e.id, { keepYear: true }); fn(); };
+  const col1 = el("div", {}, [
+    el("div", { class: "fcol-h" }, [el("h4", {}, "Point sur la carte"), el("span", { class: "spacer" }),
+      el("button", { class: "btn sm ed", onclick: go(() => setMode("placeEvPt", { target: e.id })) }, placed ? "Déplacer" : "+ Placer")]),
+    placed ? relItem("◆", EVKINDS[e.kind] || "Point", coordTxt(e), () => { closeFull(); fitTo([[[e.lon - 5, e.lat - 4], [e.lon + 5, e.lat + 4]]]); },
+      [iconBtn("trash", "Retirer le point", () => { mutate(() => { e.lon = null; e.lat = null; }); refresh(); }, "danger ed")])
+      : el("div", { class: "emptyrel" }, "Aucun point. Utile pour une bataille, un siège, la signature d'un traité."),
+    el("div", { class: "fcol-h", style: "margin-top:16px" }, [el("h4", {}, "Mouvements"), el("span", { class: "fmeta" }, String(arrows.length)), el("span", { class: "spacer" }),
+      el("button", { class: "btn sm ed", onclick: go(() => setMode("drawArrow", { target: e.id })) }, "+ Tracer")]),
+    rowList(arrows.map((a, i) => relItem("➝", a.label || "Mouvement " + (i + 1), `${a.pts.length} points${a.dash ? " · trait discontinu" : ""}`, () => { closeFull(); fitTo([a.pts]); }, [
+      iconBtn("target", "Modifier le tracé", () => { closeFull(); select("event", e.id, { keepYear: true }); editArrow = { evId: e.id, i }; editTerrId = null; fitTo([a.pts]); setMode("editGeom"); }, "ed"),
+      iconBtn("pen", "Modifier", () => openArrowForm(e, i), "ed"),
+      iconBtn("trash", "Supprimer", () => { mutate(() => e.arrows.splice(i, 1)); refresh(); }, "danger ed")])),
+      "Aucun mouvement. Une flèche par déplacement d'armée, migration ou expédition.")]);
+  const pois = evPoiIds(e).map(id => byId(db.pois, id)).filter(Boolean);
+  const col2 = el("div", {}, [
+    el("div", { class: "fcol-h" }, [el("h4", {}, "Lieux"), el("span", { class: "fmeta" }, String(pois.length))]),
+    rowList(pois.map(q => relItem("◉", q.name, (KINDS[q.kind] || "Lieu") + (civ(q.civId) ? " · " + civ(q.civId).name : ""), () => select("poi", q.id), [
+      iconBtn("trash", "Retirer", () => { mutate(() => { e.poiIds = evPoiIds(e).filter(id => id !== q.id); }); refresh(); }, "danger ed")])), "Aucun lieu rattaché."),
+    addRow(poiOpts().filter(([id]) => !evPoiIds(e).includes(id)), null, "Rattacher", id => { mutate(() => { e.poiIds = [...evPoiIds(e), id]; }); refresh(); })]);
+  if (e.kind === "periode") {
+    const tt = terrsOfPeriod(e.id), cand = terrOf(e.civId || "").filter(t => !t.periodId);
+    col2.append(el("div", { class: "fcol-h", style: "margin-top:16px" }, [el("h4", {}, "Emprises rattachées"), el("span", { class: "fmeta" }, String(tt.length))]),
+      rowList(tt.map(t => relItem("▰", t.label || "emprise", shortSpan(t.start, t.end), () => { closeFull(); select("terr", t.id); }, [iconBtn("unlink", "Détacher", () => detachTerr(t), "ed")])), "Aucune emprise rattachée."),
+      addRow(cand.map(t => [t.id, (t.label || "sans intitulé") + " (" + shortSpan(t.start, t.end) + ")"]), null, "Rattacher", id => { const t = byId(db.territories, id); if (t) attachTerr(t, e); }));
+  }
+  if (kids.length) col1.append(el("div", { class: "fcol-h", style: "margin-top:16px" }, [el("h4", {}, "Étapes sur la carte"), el("span", { class: "fmeta" }, kids.filter(evHasGeo).length + " / " + kids.length + " placées")]),
+    rowList(kids.map(k => relItem(evHasGeo(k) ? "●" : "○", k.title, evSpan(k) + (evHasGeo(k) ? "" : " · sans point"), () => select("event", k.id), [])), ""));
+  return el("div", { class: "fpane fcols" }, [col1, col2]);
 }
 
 /* --- Aperçu : blocs modifiables sur place --- */
@@ -3399,62 +3863,8 @@ function linksEd(st) {
   };
   draw(); return box;
 }
-function fullApercu(c) {
-  const pers = personsOfCiv(c.id);
-  const left = el("div", {}, [
-    fblock("ident", "Identité", bb => bb.append(el("dl", { class: "kv" }, [
-      el("dt", {}, "Nom"), el("dd", {}, c.name),
-      el("dt", {}, "Période"), el("dd", {}, fmtSpan(c.start, c.end)),
-      el("dt", {}, "Aire"), el("dd", {}, c.region || "—"),
-      el("dt", {}, "Couleur"), el("dd", {}, [el("span", { class: "dot", style: `background:${c.color};display:inline-block;vertical-align:-1px;margin-right:6px` }), el("span", { class: "fmeta" }, c.color)])])),
-      bb => inlineForm(bb, [
-        { key: "name", label: "Nom" },
-        { type: "row", fields: [{ key: "start", label: "Début", type: "number", help: "Négatif = av. J.-C." }, { key: "end", label: "Fin", type: "number" }] },
-        { key: "region", label: "Aire", ph: "Méditerranée · Europe" },
-        { key: "color", label: "Couleur", type: "color" }
-      ], { name: c.name, start: c.start, end: c.end ?? "", region: c.region || "", color: c.color }, v => {
-        if (!v.name.trim()) { toast("Le nom est obligatoire"); return false; }
-        if (v.start === null) { toast("Date de début manquante"); return false; }
-        if (v.end !== null && v.end < v.start) { toast("La fin précède le début"); return false; }
-        mutate(() => Object.assign(c, { name: v.name.trim(), start: v.start, end: v.end === null ? Y1 : v.end, region: v.region.trim(), color: v.color }));
-      })),
-    fblock("desc", "Description", bb => {
-      const p = el("div", { class: "prose" });
-      p.innerHTML = c.description ? md(c.description) : `<p class="muted">Aucune description pour l'instant.</p>`;
-      bb.append(p);
-    }, bb => inlineForm(bb, [
-      { key: "description", label: "Texte", type: "textarea", rows: 10, help: "Mise en forme simple : **gras**, *italique*, - liste, ## titre, [texte](url)",
-        after: (ctrl, st) => {
-          const prev = el("div", { class: "prose mdprev" }), upd = () => { prev.innerHTML = ctrl.value.trim() ? md(ctrl.value) : `<p class="muted">Aperçu</p>`; };
-          ctrl.addEventListener("input", upd); upd();
-          return el("div", {}, [wikiField()(ctrl, st), el("div", { class: "eyebrow", style: "margin:10px 0 4px" }, "Aperçu"), prev]);
-        } }
-    ], { description: c.description || "" }, v => { mutate(() => { c.description = v.description; }); }))
-  ]);
-  const right = el("div", {}, [
-    fblock("img", "Image", bb => {
-      const fig = figureBlock(c);
-      bb.append(fig || el("div", { class: "imgph" }, [el("span", {}, "Pas d'image"),
-        el("button", { class: "btn sm ed", onclick: () => { full.block = "img"; renderFull(true); } }, "+ Ajouter une image (Wikimedia Commons)")]));
-    }, bb => inlineForm(bb, IMG_FIELDS, imgVals(c), v => { const im = imgOut(v); if (!im) return false; mutate(() => Object.assign(c, im)); })),
-    fblock("links", `Liens et sources · ${(c.links || []).length}`, bb => {
-      if (!(c.links || []).length) return bb.append(el("div", { class: "muted" }, "Aucun lien."));
-      const L = el("div", { class: "links" }); (c.links || []).forEach(l => L.append(el("a", { href: l.url, target: "_blank", rel: "noopener" }, l.label || l.url))); bb.append(L);
-    }, bb => inlineForm(bb, [{ type: "custom", key: "links", label: "Libellé et adresse", render: st => linksEd(st) }], { links: clone(c.links || []) }, v => {
-      const ls = v.links.map(l => ({ label: String(l.label || "").trim(), url: String(l.url || "").trim() })).filter(l => l.url);
-      if (ls.some(l => !/^https?:\/\//i.test(l.url))) { toast("Chaque adresse doit commencer par https://"); return false; }
-      mutate(() => { c.links = ls.map(l => ({ label: l.label || l.url.replace(/^https?:\/\/(www\.)?/, "").slice(0, 42), url: l.url })); });
-    })),
-    fblock("pers", `Personnages · ${pers.length}`, bb => {
-      if (!pers.length) return bb.append(el("div", { class: "muted" }, "Aucun personnage rattaché."));
-      bb.append(el("div", { class: "tags" }, pers.map(p => el("button", { class: "tag", onclick: () => select("person", p.id) }, [p.name, el("span", { class: "r" }, personSpan(p))]))));
-    }, null, [el("button", { class: "btn sm ed", onclick: () => openPersonForm(null, { civIds: [c.id] }) }, "+ Personnage")]),
-    el("div", { class: "meta idline" }, `Identifiant : ${c.id}${c.source ? " · source : " + c.source : ""}`)
-  ]);
-  return el("div", { class: "fpane fcols ov" }, [left, right]);
-}
 
-/* --- Chronologie : un tableau filtrable, modifiable ligne par ligne --- */
+/* --- Chronologie : rôle, suppression --- */
 function setRole(e, cid, role) {
   if (e.civId === cid) e.civRole = role === "principal" ? undefined : role;
   else { const p = (e.parts || []).find(x => x.civId === cid); if (p) p.role = role; }
@@ -3469,117 +3879,6 @@ function delEntry(e) {
     for (const t of db.territories) if (t.periodId && gone.has(t.periodId)) delete t.periodId;
   });
   refresh();
-}
-function fullChrono(c) {
-  const wrap = el("div", { class: "fpane" }), all = evOf(c.id);
-  const tbody = el("tbody");
-  const byY = (a, b) => a.year - b.year || evEnd(a) - evEnd(b);
-  const drawRows = () => {
-    tbody.textContent = "";
-    const trk = full.filt === "all" ? null : TRACKS.find(t => t[0] === full.filt);
-    const q = normName(full.q);
-    const match = e => (!trk || trk[2].includes(e.kind || "jalon")) && (!q || normName(e.title).includes(q));
-    const list = all.filter(match);
-    let rows;
-    if (trk || q) rows = list.sort(byY).map(e => [e, 0]);
-    else {
-      const ids = new Set(list.map(e => e.id)); rows = [];
-      for (const e of list.filter(e => !e.parentId || !ids.has(e.parentId)).sort(byY)) {
-        rows.push([e, 0]); if (full.kids) for (const k of evKids(e.id)) rows.push([k, 1]);
-      }
-    }
-    if (full.add) tbody.append(editTr(c, full.add, null));
-    for (const [e, lvl] of rows) tbody.append(full.row === e.id ? editTr(c, { year: e.year, end: evLong(e) ? evEnd(e) : "", title: e.title, kind: e.kind || "jalon", role: evRole(e, c.id) }, e) : chronoTr(c, e, lvl));
-    if (!rows.length && !full.add) tbody.append(el("tr", {}, el("td", { colspan: 9, class: "muted empty" }, all.length ? "Aucune entrée ne correspond au filtre." : "Aucune entrée. « + Entrée » en ajoute une ici, ou utilisez les boutons + de la frise.")));
-  };
-  const chips = el("div", { class: "chipsf" }, [["all", "Toutes", all.length], ...TRACKS.map(([k, t, kinds]) => [k, t, all.filter(e => kinds.includes(e.kind || "jalon")).length])].map(([k, t, n]) =>
-    el("button", { class: (full.filt === k ? "on" : "") + (n ? "" : " empty"), onclick: () => { full.filt = k; full.row = null; renderFull(true); } }, [t, el("span", { class: "c" }, String(n))])));
-  const qi = el("input", { type: "search", class: "srch", placeholder: "Filtrer par intitulé…", value: full.q });
-  qi.addEventListener("input", () => { full.q = qi.value; drawRows(); });
-  const kc = el("input", { type: "checkbox" }); kc.checked = full.kids; kc.onchange = () => { full.kids = kc.checked; drawRows(); };
-  wrap.append(el("div", { class: "toolbar" }, [chips, qi, el("label", { class: "chk" }, [kc, " étapes"]), el("span", { class: "spacer" }),
-    el("button", { class: "btn prim ed", onclick: () => {
-      const trk = full.filt === "all" ? null : TRACKS.find(t => t[0] === full.filt);
-      full.row = null; full.add = { year: c.start, end: "", title: "", kind: trk ? trk[2][0] : "jalon", role: "principal" }; drawRows();
-    } }, "+ Entrée")]));
-  wrap.append(el("div", { class: "tscroll" }, el("table", { class: "t tchrono" }, [el("thead", {}, el("tr", {}, [
-    el("th", {}, "Date"), el("th", {}, "Intitulé"), el("th", {}, "Nature"), el("th", {}, "Rôle de « " + c.name + " »"),
-    el("th", { class: "opt" }, "Autres civilisations"), el("th", { class: "opt" }, "Lieux"), el("th", { class: "opt" }, "Personnages"), el("th", { class: "opt", title: "Placé sur la carte" }, "Carte"), el("th", {})])), tbody])));
-  wrap.append(el("div", { class: "fnote" }, "Clic sur une ligne : la frise et la carte vont à sa date · ↗ ou double-clic : sa fiche" + (canEdit() ? " · ✎ : correction dans la ligne · ⋯ : formulaire complet (liens, lieux, personnages, description, carte)" : "")));
-  drawRows();
-  return wrap;
-}
-function chronoTr(c, e, lvl) {
-  const tagL = arr => el("div", { class: "tags" }, arr);
-  const others = evCivIds(e).filter(id => id !== c.id).map(id => civ(id)).filter(Boolean)
-    .map(x => el("span", { class: "tag" }, [el("span", { class: "dot", style: `background:${x.color}` }), x.name, el("span", { class: "r" }, (CIV_ROLES[evRole(e, x.id)] || "").toLowerCase())]));
-  const places = evPoiIds(e).map(id => byId(db.pois, id)).filter(Boolean).map(p => el("span", { class: "tag" }, p.name));
-  const people = evPeople(e).map(x => person(x.personId)).filter(Boolean).map(p => el("span", { class: "tag" }, p.name));
-  const role = evRole(e, c.id), kids = lvl ? 0 : evKids(e.id).length;
-  const sub = [];
-  if (kids && !full.kids) sub.push(el("span", {}, pl(kids, "étape", "étapes")));
-  if (e.kind === "periode") {
-    const tt = terrsOfPeriod(e.id);
-    if (tt.length) sub.push(el("button", { class: "linkbtn", onclick: ev => { ev.stopPropagation(); full.tab = "geo"; renderFull(true); } }, pl(tt.length, "emprise", "emprises")));
-    for (const t of terrOf(c.id).filter(t => nearPair(t, e))) sub.push(el("span", { class: "dup ed" }, ["≈ emprise « " + (t.label || shortSpan(t.start, t.end)) + " »",
-      el("button", { class: "btn sm ed", onclick: ev => { ev.stopPropagation(); attachTerr(t, e); } }, "Rattacher"),
-      el("button", { class: "btn sm ed", onclick: ev => { ev.stopPropagation(); dismissPair(t, e); } }, "Écarter")]));
-  }
-  const tr = el("tr", { class: (lvl ? "kid" : "") + (full.cur === e.id ? " cur" : "") }, [
-    el("td", { class: "y" }, shortSpan(e.year, evLong(e) ? evEnd(e) : null)),
-    el("td", { class: "tt" }, [el("div", {}, e.title), sub.length ? el("div", { class: "tsub" }, sub) : null]),
-    el("td", {}, el("span", { class: "kindb" }, [el("i", { style: `background:${KIND_COL[e.kind] || KIND_COL.jalon}` }), EVKINDS[e.kind] || "Jalon"])),
-    el("td", { class: role === "principal" ? "muted" : "" }, (CIV_ROLES[role] || role).toLowerCase()),
-    el("td", { class: "opt" }, tagL(others)), el("td", { class: "opt" }, tagL(places)), el("td", { class: "opt" }, tagL(people)),
-    el("td", { class: "opt geo" }, evHasGeo(e) ? "●" : ""),
-    el("td", { class: "ac" }, [
-      iconBtn("open", "Ouvrir sa fiche", () => select("event", e.id)),
-      el("button", { class: "iconbtn ed", title: "Corriger dans la ligne", onclick: ev => { ev.stopPropagation(); full.add = null; full.row = e.id; renderFull(true); } }, icon("pen")),
-      el("button", { class: "iconbtn ed", title: "Formulaire complet", onclick: ev => { ev.stopPropagation(); openEventForm(e); } }, "⋯"),
-      iconBtn("trash", "Supprimer", () => delEntry(e), "danger ed")])
-  ]);
-  tr.addEventListener("click", () => { full.cur = e.id; tr.parentNode.querySelectorAll("tr.cur").forEach(x => x.classList.remove("cur")); tr.classList.add("cur"); setYear(e.year); });
-  tr.addEventListener("dblclick", () => select("event", e.id));
-  return tr;
-}
-function editTr(c, st, e) {
-  const isNew = !e;
-  const y = el("input", { type: "text", value: st.year ?? "", placeholder: "année", "aria-label": "Début" });
-  const en = el("input", { type: "text", value: st.end ?? "", placeholder: "fin", "aria-label": "Fin (facultatif)" });
-  const ti = el("input", { type: "text", value: st.title || "", placeholder: "Intitulé", "aria-label": "Intitulé" });
-  const ki = selectEl(Object.entries(EVKINDS), st.kind), ro = selectEl(Object.entries(CIV_ROLES), st.role);
-  const cancel = () => { full.row = null; full.add = null; renderFull(true); };
-  const ok = () => {
-    const v = { year: parseYear(y.value), end: parseYear(en.value), title: ti.value.trim(), kind: ki.value, role: ro.value };
-    if (!v.title || v.year === null) { toast("Intitulé et année sont requis"); return; }
-    if (v.end !== null && v.end < v.year) { toast("La fin précède le début"); return; }
-    if (!requireEdit()) return;
-    if (isNew) {
-      mutate(() => {
-        const o = { id: uid("evt"), civId: c.id, year: v.year, end: v.end === null ? v.year : v.end, kind: v.kind, title: v.title, parentId: null, description: "", links: [], arrows: [], lon: null, lat: null };
-        if (v.role !== "principal") o.civRole = v.role;
-        db.events.push(o);
-      });
-      full.add = { year: v.year, end: "", title: "", kind: v.kind, role: v.role };
-      toast("Entrée ajoutée — saisissez la suivante");
-    } else {
-      mutate(() => { Object.assign(e, { year: v.year, end: v.end === null ? v.year : v.end, title: v.title, kind: v.kind }); setRole(e, c.id, v.role); });
-      full.row = null;
-    }
-    refresh();
-  };
-  const tr = el("tr", { class: "editrow" }, [
-    el("td", { class: "y" }, el("div", { class: "yy" }, [y, en])),
-    el("td", {}, ti), el("td", {}, ki), el("td", {}, ro),
-    el("td", { colspan: 4, class: "muted hintc" }, isNew ? "Entrée : enregistrer et saisir la suivante · Échap : arrêter" : "Civilisations, lieux, personnages : formulaire complet ⋯"),
-    el("td", { class: "ac" }, [el("button", { class: "btn sm prim", title: "Enregistrer (Entrée)", onclick: ok }, "✓"), el("button", { class: "btn sm", title: "Annuler (Échap)", onclick: cancel }, "✕")])
-  ]);
-  tr.addEventListener("keydown", ev => {
-    if (ev.key === "Enter") { ev.preventDefault(); ok(); }
-    else if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); cancel(); }
-  });
-  setTimeout(() => { ti.focus(); }, 0);
-  return tr;
 }
 
 /* --- Relations : filiations (avec suggestions) et tutelles --- */
@@ -4341,15 +4640,19 @@ Cliquer une civilisation, un lieu ou un personnage n'affiche plus que **sa frise
 
 Une entrée (règne, guerre, traité…) n'existe qu'une fois mais peut être reliée à **plusieurs civilisations, chacune avec son rôle** (vainqueur, vaincu, allié, signataire…), à **plusieurs lieux** et à **plusieurs personnages** : elle apparaît dans la frise et la fiche de chacun. Les boutons **+** des pistes et des sections créent une entrée déjà reliée à l'élément affiché.
 
-## Fiche d'une civilisation
-Le panneau en donne le **résumé** : dates, début du texte, quelques repères et le nombre d'entrées, de relations, d'emprises et de lieux. Un clic sur un compteur, ou sur **Fiche complète**, ouvre la vue large au-dessus de la carte (la frise reste visible), en quatre onglets : **Aperçu** (identité, texte, image, liens, personnages), **Chronologie** (toutes les entrées dans un tableau filtrable), **Relations** (filiations, suggestions, tutelles) et **Géographie** (couverture dans le temps, emprises, lieux). **Échap** la referme.
+## Fiches
+Chaque civilisation, lieu, entrée et personnage a deux niveaux. Le panneau en donne le **résumé** : dates, début du texte, quelques repères, des compteurs et, pour les comptes autorisés, ce qui reste **à compléter**. Un compteur ou **Fiche complète** ouvre la vue large au-dessus de la carte (la frise reste visible), avec des onglets adaptés :
+- **Civilisation** : Aperçu, Chronologie, Relations (filiations, tutelles), Géographie (couverture, emprises, lieux) ;
+- **Lieu** : Aperçu, Chronologie, Contrôle (qui le tenait, d'après les territoires), Géographie (position, entrées proches à rattacher) ;
+- **Entrée** : Aperçu, Chronologie de ses étapes (pour un épisode : guerre, période, règne, ou toute entrée qui a des étapes), Participants (civilisations et personnages avec leur rôle), Géographie (point, mouvements, lieux) ; une étape propose ← précédente · ↑ épisode · suivante → ;
+- **Personnage** : Aperçu, Chronologie (avec son rôle), Relations (civilisations, lieux, personnages croisés).
 
-Les comptes autorisés modifient chaque bloc avec son crayon ✎, sans quitter la fiche. Dans la Chronologie, ✎ corrige une entrée dans sa ligne et **+ Entrée** en saisit plusieurs à la suite (Entrée enregistre et ouvre la ligne suivante, Échap arrête) ; ⋯ ouvre le formulaire complet. Le bloc **À compléter** du résumé signale ce qui manque.
+Chaque nom ouvre la fiche correspondante sans quitter la vue ; **← Retour** revient à la précédente, **Échap** referme. Les comptes autorisés modifient chaque bloc avec son crayon ✎ ; dans une Chronologie, ✎ corrige une ligne et **+ Entrée** (ou **+ Étape**) enchaîne les saisies (Entrée enregistre, Échap arrête). Dans un épisode, **Appliquer aux étapes** reporte ses participants sur les étapes, sans rien retirer.
+
+Un épisode a sa propre frise, cadrée sur sa durée avec ses étapes ; **↑** dans l'en-tête de la frise revient à celle de sa civilisation. Les images sont des vignettes : un clic les agrandit.
 
 ## Périodes et emprises
 Une **période** (entrée de la chronologie) et une **emprise** (tracé sur la carte) restent indépendantes, mais une emprise peut être rattachée à une période. Les formulaires proposent **Reprendre nom et dates** de l'une vers l'autre, avec une case pour les relier. Quand une période et une emprise portent le même nom ou presque les mêmes dates, la fiche propose de les **rattacher** ou d'**écarter** le rapprochement.
-
-Les autres éléments (lieux, entrées, personnages) gardent leur fiche **Description** et leur onglet **Technique**.
 
 L'image est une simple adresse https, de préférence sur Wikimedia Commons ; l'import d'un résumé Wikipédia la remplit lorsqu'il en trouve une.
 

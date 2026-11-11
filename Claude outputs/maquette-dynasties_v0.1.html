@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<!-- Atlas des civilisations — maquette « dynasties, arbres et dirigeants » — v0.1 -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette dynasties v0.1</title>
+<style>
+:root{
+  --paper:#e6e6e2; --surface:#f7f7f5; --surface-2:#efefec; --surface-3:#e4e4df;
+  --ink:#181b1e; --ink-2:#454c53; --muted:#7c838a; --line:#d3d4d0; --line-2:#bcbdb8;
+  --accent:#2c4a63; --accent-soft:#e2e9ef; --flag:#9d3d2d;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; --r:3px;
+  --jc:#8a3b3b; --fla:#3f6a8a; --ant:#5a7a3a; --sev:#8a6a2a; --none:#9a9a94;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);font-family:var(--sans);font-size:13px;line-height:1.5;color:var(--ink);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none;padding:0}
+.mk{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 14px;background:#1f2a33;color:#e8edf1;font-size:12px;position:sticky;top:0;z-index:50}
+.mk b{font-weight:600}
+.mk .sw{display:flex;border:1px solid #4b5d6c;border-radius:3px;overflow:hidden;flex-wrap:wrap}
+.mk .sw button{padding:4px 10px;color:#cfd8df;border-right:1px solid #4b5d6c}
+.mk .sw button:last-child{border:none}
+.mk .sw button.on{background:#e8edf1;color:#1f2a33}
+.mk .note{color:#9fb0bd;margin-left:auto}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--surface);font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+.btn:hover{border-color:var(--ink-2);color:var(--ink)}
+.btn.sm{padding:2px 8px;font-size:11.5px}
+.btn.prim{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.seg2{display:inline-flex;border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden}
+.seg2 button{padding:3px 10px;font-size:12px;color:var(--ink-2);background:#fff;border-right:1px solid var(--line-2)}
+.seg2 button:last-child{border:none}
+.seg2 button.on{background:var(--accent);color:#fff}
+.chk{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--ink-2);cursor:pointer}
+.callout{background:#fff7e3;border:1px solid #e0c27c;color:#5a4410;font-size:11.5px;line-height:1.45;padding:7px 10px;border-radius:4px;max-width:330px}
+.callout b{color:#3e2e05}
+body.nocall .callout{display:none}
+
+.app{max-width:1440px;margin:12px auto;background:var(--surface);border:1px solid var(--line-2);box-shadow:0 4px 24px rgba(0,0,0,.12)}
+.topbar{height:42px;display:flex;align-items:center;gap:14px;padding:0 14px;border-bottom:1px solid var(--line-2);background:var(--surface)}
+.topbar b{font-family:var(--serif);font-size:16px}
+.view{display:none}
+.view.on{display:block}
+.fhead{display:flex;align-items:flex-end;gap:16px;padding:10px 18px 0;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.fid{padding-bottom:9px;min-width:240px}
+.fid .kind{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.fid h2{font-family:var(--serif);font-size:22px;line-height:1.15;margin:2px 0 0;font-weight:600}
+.fid .from{font-size:12px;color:var(--ink-2);margin-top:2px}
+.fid .from a{color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:0 0 auto}
+.ftabs{display:flex;gap:2px}
+.ftabs button{padding:7px 13px 8px;font-size:12.5px;color:var(--ink-2);border:1px solid transparent;border-bottom:none;border-radius:3px 3px 0 0;margin-bottom:-1px;display:flex;gap:6px;align-items:baseline;white-space:nowrap}
+.ftabs button .c{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.ftabs button.on{background:#fff;border-color:var(--line-2);color:var(--ink);font-weight:600}
+.facts{margin-left:auto;display:flex;gap:6px;padding-bottom:9px}
+.fbody{background:#fff}
+
+/* ---- arbre ---- */
+.treebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--line)}
+.treebar .spacer{flex:1}
+.legend{display:flex;gap:12px;font-size:11px;color:var(--ink-2);flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.lg-adop{width:22px;border-top:2px dashed #b06a1e}
+.lg-mar{width:22px;border-top:2px solid #8a8a84}
+.lg-out{width:14px;height:10px;border:1px dashed #9a9a94;border-radius:2px;background:#f4f4f1}
+.lg-ruler{width:14px;height:10px;border-left:4px solid var(--jc);background:#fbf3f1;border-radius:2px}
+.treewrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;height:600px}
+.treecanvas{position:relative;overflow:hidden;background:
+  radial-gradient(circle,#e4e4df 1px,transparent 1px) 0 0/22px 22px,#fbfbfa;cursor:grab}
+.treecanvas.drag{cursor:grabbing}
+.treecanvas svg{width:100%;height:100%;display:block;user-select:none}
+.zoomctl{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:4px}
+.zoomctl button{width:28px;height:28px;border:1px solid var(--line-2);border-radius:3px;background:#fff;font-size:14px}
+.side{border-left:1px solid var(--line);background:var(--surface);padding:14px;overflow:auto}
+.side h3{font-family:var(--serif);font-size:18px;margin:2px 0 2px;font-weight:600}
+.side .rel{margin-top:10px}
+.side .rel h4{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px;font-weight:500}
+.side .chipl{display:flex;flex-wrap:wrap;gap:4px}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:11.5px;white-space:nowrap;cursor:pointer}
+.tag:hover{border-color:var(--accent)}
+.tag .r{color:var(--muted);font-size:10.5px}
+.tag.adop{border-style:dashed;border-color:#d9a76a}
+.crown{color:#b0841e}
+.node{cursor:pointer}
+.node rect.card{fill:#fff;stroke:#c9cac5;stroke-width:1}
+.node.out rect.card{fill:#f4f4f1;stroke:#a9a9a3;stroke-dasharray:4 3}
+.node.out text{fill:#6c727a}
+.node:hover rect.card{stroke:var(--accent)}
+.node.sel rect.card{stroke:var(--accent);stroke-width:2.2}
+.node text.nm{font:600 12.5px var(--sans);fill:#181b1e}
+.node text.dt{font:10.5px var(--mono);fill:#6c727a}
+.node text.rg{font:600 10.5px var(--mono)}
+.dim .node:not(.hl){opacity:.28}
+.dim path.edge:not(.hl){opacity:.15}
+path.edge{fill:none;stroke:#8a8a84;stroke-width:1.4}
+path.edge.mar{stroke:#8a8a84;stroke-width:1.8}
+path.edge.mar.far{stroke-dasharray:2 4;stroke-width:1.6}
+path.edge.adop{stroke:#b06a1e;stroke-dasharray:6 4;stroke-width:1.6}
+text.adoplbl{font:italic 10px var(--sans);fill:#b06a1e}
+text.marlbl{font:12px var(--sans);fill:#8a8a84}
+.gentick{font:10px var(--mono);fill:#9a9a94}
+.genline{stroke:#ececea;stroke-width:1}
+
+/* ---- frise dynastie (aperçu) ---- */
+.frise{border-top:1px solid var(--line-2);background:var(--surface);padding:6px 0 10px}
+.frise .hd{display:flex;align-items:center;gap:8px;padding:2px 12px 6px;font-size:12px}
+.frise .hd b{font-family:var(--serif);font-size:14px}
+.frow{display:grid;grid-template-columns:150px 1fr;align-items:start;border-top:1px solid var(--line)}
+.frow>.lb{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:6px 12px}
+.ftrack{position:relative}
+.fbar{position:absolute;height:15px;border-radius:2px;font-size:10.5px;line-height:15px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fbar.life{background:#e7e3ea;border:1px solid #b9aec4;color:#3d3348}
+.fbar.life.out{background:#f1f1ee;border:1px dashed #b9b9b3;color:#7a7a74}
+.fbar.reign{color:#fff;font-weight:600}
+.axis{position:relative;height:18px;margin-left:150px;border-top:1px solid var(--line)}
+.axis span{position:absolute;top:2px;font-family:var(--mono);font-size:10px;color:var(--muted);transform:translateX(-50%)}
+
+/* ---- dirigeants ---- */
+.pane{padding:14px 18px 22px}
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.toolbar .spacer{flex:1}
+.ribbon{border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:8px 10px 4px;margin-bottom:14px}
+.rrow{position:relative}
+.rrow .dyn{position:absolute;top:0;height:18px;border-radius:2px;font-size:10.5px;line-height:18px;padding:0 6px;color:#fff;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.rrow .rg{position:absolute;height:20px;border-radius:2px;border:1px solid rgba(0,0,0,.18);font-size:10px;line-height:18px;padding:0 3px;overflow:hidden;white-space:nowrap;color:#fff;cursor:pointer}
+.rrow .rg:hover{filter:brightness(1.12);z-index:2}
+.rrow .gap{position:absolute;height:20px;background:repeating-linear-gradient(45deg,#f3d9cf 0 4px,#fff 4px 8px);border:1px dashed var(--flag);border-radius:2px}
+.raxis{position:relative;height:16px;margin-top:4px}
+.raxis span{position:absolute;font-family:var(--mono);font-size:10px;color:var(--muted);transform:translateX(-50%)}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+table.t th{position:sticky;top:42px;background:var(--surface-2);text-align:left;font-weight:500;font-size:11px;color:var(--ink-2);padding:6px 8px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+table.t td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.t tr.r:hover td{background:#f6f8fa;cursor:pointer}
+td.y{font-family:var(--mono);font-size:11px;color:var(--ink-2);white-space:nowrap}
+td.nm{font-weight:600}
+td.nm .sub{font-weight:400;color:var(--muted);font-size:11.5px;margin-left:6px}
+tr.grp td{background:var(--surface);padding:9px 8px 7px;border-bottom:1px solid var(--line-2)}
+tr.grp .gname{font-family:var(--serif);font-size:15px;font-weight:600}
+tr.grp .gbar{display:inline-block;width:5px;height:16px;border-radius:1px;vertical-align:-3px;margin-right:8px}
+tr.grp .gm{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-left:8px}
+tr.grp .glink{color:var(--accent);font-size:11.5px;text-decoration:underline;text-underline-offset:2px;margin-left:10px}
+tr.co td.nm{padding-left:26px}
+tr.co td.nm:before{content:"co-";font-weight:400;color:var(--muted);font-size:11px;margin-right:2px}
+tr.gaprow td{background:repeating-linear-gradient(45deg,#fbf0ea 0 6px,#fff 6px 12px);color:#8a4a32;font-size:12px}
+.durbar{display:inline-block;height:6px;border-radius:3px;vertical-align:1px;margin-right:6px}
+.rel-pre{font-size:12px;color:var(--ink-2)}
+.rel-pre.adop{color:#a0601a}
+.addrow{display:flex;gap:6px;align-items:center;padding:8px;border:1px dashed var(--line-2);border-radius:4px;margin-top:10px;background:var(--surface);flex-wrap:wrap}
+.addrow input,.addrow select{border:1px solid var(--line-2);border-radius:3px;padding:3px 7px;font-size:12px;background:#fff}
+
+/* ---- personnage ---- */
+.pcols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px;padding:14px 18px 22px}
+.pcols h4{font-family:var(--serif);font-size:15px;margin:0 0 8px;font-weight:600;display:flex;gap:8px;align-items:center}
+.pcols h4 .btn{margin-left:auto}
+.minitree{height:330px;border:1px solid var(--line);border-radius:4px;position:relative;overflow:hidden;background:#fbfbfa}
+.minitree svg{width:100%;height:100%}
+.fam{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;font-size:12.5px;margin-top:10px;align-items:start}
+.fam dt{color:var(--muted);padding-top:2px}
+.fam dd{margin:0;display:flex;flex-wrap:wrap;gap:4px}
+.ftab td.k{white-space:nowrap}
+.kfait{display:inline-flex;align-items:center;gap:5px;font-size:12px}
+.kfait i{width:7px;height:7px;border-radius:50%;border:1.5px solid #6b4f8a;display:inline-block}
+.kent i{width:7px;height:7px;transform:rotate(45deg);display:inline-block;background:#9d3d2d}
+.promote{font-size:11px;color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+.note2{font-size:11.5px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<div class="mk">
+  <b>Maquette v0.1 : dynasties, arbres, dirigeants</b>
+  <div class="sw" id="views">
+    <button data-v="tree" class="on">1 · Dynastie › Arbre</button>
+    <button data-v="rulers">2 · Civilisation › Dirigeants</button>
+    <button data-v="person">3 · Personnage › Famille et faits de vie</button>
+  </div>
+  <div class="sw"><button id="tgCall" class="on">Annotations</button></div>
+  <span class="note">Données historiques réelles, simplifiées. Tout est cliquable : personnes, règnes, onglets.</span>
+</div>
+
+<div class="app">
+  <div class="topbar"><b>Atlas des civilisations</b><span class="mono">fiche complète</span></div>
+
+  <!-- ================= 1. DYNASTIE › ARBRE ================= -->
+  <section class="view on" data-v="tree">
+    <div class="fhead">
+      <div class="fid">
+        <div class="kind"><span class="dot" style="background:var(--jc)"></span><span class="eyebrow">Dynastie</span><span class="mono">27 av. J.-C. → 68 · Empire romain · 5 souverains</span></div>
+        <h2>Julio-Claudiens</h2>
+        <div class="from">Issue de : <a>gens Julia</a> ⨯ <a>gens Claudia</a> <span class="mono">(union par mariage et adoption)</span></div>
+      </div>
+      <nav class="ftabs"><button>Aperçu</button><button class="on">Arbre <span class="c">22</span></button><button>Souverains <span class="c">5</span></button><button>Territoires</button></nav>
+      <div class="facts"><button class="btn">Voir sur la carte</button><button class="btn">Cadrer la frise</button><button class="btn">✕ Fermer</button></div>
+    </div>
+    <div class="treebar">
+      <div class="seg2" id="mode"><button data-m="gen" class="on">Par générations</button><button data-m="time">Sur l'échelle du temps</button></div>
+      <label class="chk"><input type="checkbox" id="cbAdop" checked> adoptions</label>
+      <label class="chk"><input type="checkbox" id="cbOut" checked> conjoints extérieurs</label>
+      <label class="chk"><input type="checkbox" id="cbSucc"> fil de la succession</label>
+      <span class="spacer"></span>
+      <div class="legend">
+        <span><i class="lg-ruler"></i>souverain (n° d'ordre)</span>
+        <span><i class="lg-mar"></i>mariage</span>
+        <span><i class="lg-adop"></i>adoption</span>
+        <span><i class="lg-out"></i>hors dynastie</span>
+      </div>
+    </div>
+    <div class="treewrap">
+      <div class="treecanvas" id="canvas">
+        <svg id="svg"><g id="vp"></g></svg>
+        <div class="zoomctl"><button id="zin" title="Zoomer">+</button><button id="zout" title="Dézoomer">−</button><button id="zfit" title="Ajuster">⤢</button></div>
+      </div>
+      <aside class="side" id="side"></aside>
+    </div>
+    <div class="frise" id="frise"></div>
+    <div style="display:flex;gap:12px;padding:12px 18px;flex-wrap:wrap">
+      <div class="callout"><b>Disposition automatique</b> à partir des seuls liens parents / conjoints : rien à placer à la main. Un clic sur une personne met en évidence ses ascendants et descendants ; le panneau de droite ouvre sa fiche.</div>
+      <div class="callout"><b>« Sur l'échelle du temps »</b> place chaque personne à son année de naissance : on voit tout de suite que Claude épouse sa nièce, d'une génération plus jeune.</div>
+      <div class="callout"><b>Fusion de dynasties</b> : les Julio-Claudiens unissent la gens Julia et la gens Claudia. La ligne « Issue de » relie les dynasties entre elles ; les conjoints venus d'ailleurs restent dans leur propre maison (pointillés).</div>
+    </div>
+  </section>
+
+  <!-- ================= 2. CIVILISATION › DIRIGEANTS ================= -->
+  <section class="view" data-v="rulers">
+    <div class="fhead">
+      <div class="fid">
+        <div class="kind"><span class="dot" style="background:#7a2e2e"></span><span class="eyebrow">Civilisation</span><span class="mono">27 av. J.-C. → 395 · Méditerranée</span></div>
+        <h2>Empire romain</h2>
+      </div>
+      <nav class="ftabs"><button>Aperçu</button><button>Chronologie <span class="c">48</span></button><button class="on">Dirigeants <span class="c">26</span></button><button>Relations <span class="c">3</span></button><button>Géographie <span class="c">14</span></button></nav>
+      <div class="facts"><button class="btn">Voir sur la carte</button><button class="btn">Cadrer la frise</button><button class="btn">✕ Fermer</button></div>
+    </div>
+    <div class="fbody pane">
+      <div class="toolbar">
+        <div class="seg2"><button class="on">Par dynastie</button><button>Liste simple</button></div>
+        <label class="chk"><input type="checkbox" checked> co-souverains</label>
+        <span class="spacer"></span>
+        <span class="mono" id="rstat"></span>
+        <button class="btn prim">+ Souverain</button>
+      </div>
+      <div class="ribbon" id="ribbon"></div>
+      <table class="t"><thead><tr><th style="width:150px">Règne</th><th style="width:150px">Durée</th><th>Souverain</th><th>Lien avec le précédent</th><th>Vie</th><th></th></tr></thead><tbody id="rtb"></tbody></table>
+      <div class="addrow"><span class="mono">Saisie rapide</span>
+        <input placeholder="début" size="6" value="235"><input placeholder="fin" size="6" value="238"><input placeholder="Souverain (nouveau ou existant)" size="28" value="Maximin le Thrace">
+        <select><option>— sans dynastie —</option><option>Sévères</option></select><button class="btn sm prim">✓ Entrée : suivant</button>
+        <span class="mono">crée le règne et, s'il n'existe pas, le personnage</span></div>
+      <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
+        <div class="callout"><b>Construit à partir des entrées « Règne »</b> où un personnage a le rôle Souverain : rien n'est saisi deux fois, la piste Règnes de la frise montre la même chose.</div>
+        <div class="callout"><b>« Lien avec le précédent »</b> est calculé d'après l'arbre : on voit d'un coup d'œil l'âge des empereurs adoptifs (orange) chez les Antonins.</div>
+        <div class="callout"><b>Les trous</b> (hachures) signalent les périodes sans souverain saisi : ici tout le IIIe siècle après 235.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 3. PERSONNAGE › FAMILLE ================= -->
+  <section class="view" data-v="person">
+    <div class="fhead">
+      <div class="fid">
+        <div class="kind"><span class="dot" style="background:var(--jc)"></span><span class="eyebrow">Personnage</span><span class="mono">37 → 68 · Empereur romain · Julio-Claudiens</span></div>
+        <h2>Néron</h2>
+      </div>
+      <nav class="ftabs"><button>Aperçu</button><button class="on">Famille <span class="c">9</span></button><button>Chronologie <span class="c">9</span></button><button>Relations <span class="c">3</span></button></nav>
+      <div class="facts"><button class="btn">✕ Fermer</button></div>
+    </div>
+    <div class="fbody pcols">
+      <div>
+        <h4>Famille <button class="btn sm">Voir l'arbre de la dynastie</button></h4>
+        <div class="minitree" id="mini"><svg id="msvg"><g id="mvp"></g></svg></div>
+        <dl class="fam" id="fam"></dl>
+        <div class="note2">Les enfants et la fratrie sont calculés à partir des parents : on ne saisit que les parents et les conjoints.</div>
+      </div>
+      <div>
+        <h4>Faits de vie et entrées <button class="btn sm prim">+ Fait de vie</button></h4>
+        <table class="t ftab"><thead><tr><th>Année</th><th>Nature</th><th>Libellé</th><th>Lieu</th><th></th></tr></thead><tbody id="ftb"></tbody></table>
+        <div class="note2"><span class="kfait"><i></i> fait de vie</span> : léger, sans fiche, stocké dans le personnage, visible sur sa frise.
+          <span class="kent"><i></i></span> entrée : a sa propre fiche, des participants, apparaît sur la frise des civilisations.</div>
+        <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
+          <div class="callout"><b>Naissance et mort</b> viennent des dates du personnage, avec un lieu facultatif. L'avènement est l'entrée « Règne » : pas de double saisie.</div>
+          <div class="callout"><b>« En faire une entrée »</b> transforme un fait de vie qui prend de l'importance en entrée complète, sans rien perdre.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ===================== données (simplifiées) ===================== */
+const P = [
+  { id: "aug", n: "Auguste", b: -63, d: 14, r: [-27, 14], k: 1, dyn: 1, par: [], adop: [] },
+  { id: "scrib", n: "Scribonia", b: -70, d: 16, dyn: 0, par: [], adop: [], approx: 1 },
+  { id: "livie", n: "Livie", b: -58, d: 29, dyn: 1, par: [], adop: [] },
+  { id: "tcn", n: "Tib. Claudius Nero", b: -85, d: -33, dyn: 0, par: [], adop: [], approx: 1 },
+  { id: "julie", n: "Julie l'Ancienne", b: -39, d: 14, dyn: 1, par: ["aug", "scrib"], adop: [] },
+  { id: "agrippa", n: "Agrippa", b: -63, d: -12, dyn: 0, par: [], adop: [] },
+  { id: "tib", n: "Tibère", b: -42, d: 37, r: [14, 37], k: 2, dyn: 1, par: ["tcn", "livie"], adop: ["aug"] },
+  { id: "drusA", n: "Drusus l'Ancien", b: -38, d: -9, dyn: 1, par: ["tcn", "livie"], adop: [] },
+  { id: "antonia", n: "Antonia la Jeune", b: -36, d: 37, dyn: 0, par: [], adop: [] },
+  { id: "vips", n: "Vipsania", b: -36, d: 20, dyn: 0, par: ["agrippa"], adop: [] },
+  { id: "drusJ", n: "Drusus le Jeune", b: -14, d: 23, dyn: 1, par: ["tib", "vips"], adop: [] },
+  { id: "germ", n: "Germanicus", b: -15, d: 19, dyn: 1, par: ["drusA", "antonia"], adop: ["tib"] },
+  { id: "claude", n: "Claude", b: -10, d: 54, r: [41, 54], k: 4, dyn: 1, par: ["drusA", "antonia"], adop: [] },
+  { id: "agrA", n: "Agrippine l'Aînée", b: -14, d: 33, dyn: 1, par: ["agrippa", "julie"], adop: [] },
+  { id: "calig", n: "Caligula", b: 12, d: 41, r: [37, 41], k: 3, dyn: 1, par: ["germ", "agrA"], adop: [] },
+  { id: "agrJ", n: "Agrippine la Jeune", b: 15, d: 59, dyn: 1, par: ["germ", "agrA"], adop: [] },
+  { id: "ahen", n: "Cn. Domitius Ahenobarbus", b: -2, d: 40, dyn: 0, par: [], adop: [], approx: 1 },
+  { id: "mess", n: "Messaline", b: 20, d: 48, dyn: 0, par: [], adop: [], approx: 1 },
+  { id: "neron", n: "Néron", b: 37, d: 68, r: [54, 68], k: 5, dyn: 1, par: ["ahen", "agrJ"], adop: ["claude"] },
+  { id: "brit", n: "Britannicus", b: 41, d: 55, dyn: 1, par: ["claude", "mess"], adop: [] },
+  { id: "octavie", n: "Octavie", b: 40, d: 62, dyn: 1, par: ["claude", "mess"], adop: [] },
+  { id: "poppee", n: "Poppée", b: 30, d: 65, dyn: 0, par: [], adop: [] },
+  { id: "statil", n: "Statilia Messalina", b: 35, d: null, dyn: 0, par: [], adop: [], approx: 1 },
+  { id: "claudA", n: "Claudia Augusta", b: 63, d: 63, dyn: 1, par: ["neron", "poppee"], adop: [] }
+];
+const S = [["aug", "scrib"], ["aug", "livie"], ["livie", "tcn"], ["julie", "agrippa"], ["julie", "tib"], ["tib", "vips"], ["drusA", "antonia"],
+  ["germ", "agrA"], ["agrJ", "ahen"], ["agrJ", "claude"], ["claude", "mess"], ["neron", "octavie"], ["neron", "poppee"], ["neron", "statil"]];
+const TREE_IDS = P.filter(p => !["poppee", "statil", "claudA"].includes(p.id)).map(p => p.id);
+const byId = Object.fromEntries(P.map(p => [p.id, p]));
+const fy = y => y < 0 ? -y + " av." : String(y);
+const fyl = y => y < 0 ? -y + " av. J.-C." : String(y);
+const life = p => (p.approx ? "v. " : "") + fy(p.b) + " – " + (p.d === null ? "?" : fy(p.d));
+
+/* ===================== disposition de l'arbre ===================== */
+/* générations par les parents naturels, blocs de conjoints, barycentres, puis x */
+function layout(ids, S, mode) {
+  const set = new Set(ids), ps = ids.map(id => byId[id]);
+  const par = p => p.par.filter(x => set.has(x));
+  const sp = id => S.filter(s => s.includes(id)).map(s => s[0] === id ? s[1] : s[0]).filter(x => set.has(x));
+  const kids = id => ps.filter(p => par(p).includes(id));
+  const g = {}; ps.forEach(p => g[p.id] = 0);
+  for (let it = 0; it < 40; it++) {
+    let ch = false;
+    for (const p of ps) {
+      let v;
+      if (par(p).length) v = Math.max(...par(p).map(x => g[x])) + 1;
+      else {
+        const inner = sp(p.id).filter(x => par(byId[x]).length), ks = kids(p.id);
+        if (inner.length) v = Math.max(...inner.map(x => g[x]));
+        else if (ks.length) v = Math.min(...ks.map(k => g[k.id])) - 1;
+        else if (sp(p.id).length) v = Math.max(...sp(p.id).map(x => g[x]));
+        else v = 0;
+      }
+      if (v !== g[p.id]) { g[p.id] = v; ch = true; }
+    }
+    if (!ch) break;
+  }
+  const g0 = Math.min(...Object.values(g)); for (const k in g) g[k] -= g0;
+  const nL = Math.max(...Object.values(g)) + 1;
+  /* ordre initial : parcours en profondeur depuis les fondateurs */
+  const seen = new Set(), ord = [];
+  const visit = p => { if (seen.has(p.id)) return; seen.add(p.id); ord.push(p.id); sp(p.id).forEach(s => visit(byId[s])); kids(p.id).sort((a, b) => a.b - b.b).forEach(visit); };
+  ps.filter(p => !par(p).length).sort((a, b) => a.b - b.b).forEach(visit);
+  const rank = Object.fromEntries(ord.map((id, i) => [id, i]));
+  /* blocs : composantes de conjoints dans une même génération, en chaîne */
+  const layers = [];
+  for (let L = 0; L < nL; L++) {
+    const here = ord.filter(id => g[id] === L), done = new Set(), blocks = [];
+    for (const id of here) {
+      if (done.has(id)) continue;
+      const comp = [], st = [id]; while (st.length) { const x = st.pop(); if (done.has(x)) continue; done.add(x); comp.push(x); sp(x).filter(y => g[y] === L && !done.has(y)).forEach(y => st.push(y)); }
+      let start = comp.find(x => sp(x).filter(y => g[y] === L).length <= 1) || comp[0];
+      /* commence par le conjoint extérieur, pour garder les membres de la dynastie au centre */
+      const ends = comp.filter(x => sp(x).filter(y => g[y] === L).length <= 1);
+      if (ends.length) start = ends.sort((a, b) => byId[a].dyn - byId[b].dyn || rank[a] - rank[b])[0];
+      const chain = [], vis = new Set(); let cur = start;
+      while (cur && !vis.has(cur)) { vis.add(cur); chain.push(cur); cur = sp(cur).find(y => g[y] === L && !vis.has(y)); }
+      comp.filter(x => !vis.has(x)).forEach(x => chain.push(x));
+      blocks.push(chain);
+    }
+    layers.push(blocks);
+  }
+  const W = 172, GAP = 26, x = {};
+  const place = () => layers.forEach(bl => { let cx = 0; bl.forEach(b => b.forEach(id => { x[id] = cx; cx += W; })); });
+  place();
+  const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
+  for (let sweep = 0; sweep < 6; sweep++) {
+    const down = sweep % 2 === 0;
+    const order = down ? layers.map((_, i) => i) : layers.map((_, i) => nL - 1 - i);
+    for (const L of order) {
+      const bl = layers[L];
+      const key = b => {
+        const refs = b.flatMap(id => down ? par(byId[id]) : kids(id).map(k => k.id)).map(r => x[r]);
+        return refs.length ? mean(refs) - (b.length - 1) * W / 2 : null;
+      };
+      bl.forEach(b => b._k = key(b));
+      bl.forEach((b, i) => { if (b._k === null) b._k = (bl[i - 1] ? bl[i - 1]._k ?? x[bl[i - 1][0]] : x[b[0]]); });
+      bl.sort((a, b) => a._k - b._k);
+      let right = -Infinity;
+      bl.forEach(b => { const s = Math.max(b._k, right + GAP); b.forEach((id, j) => x[id] = s + j * W); right = s + b.length * W; });
+    }
+  }
+  /* recentrage : pousse chaque bloc vers ses parents sans chevauchement */
+  for (let L = 1; L < nL; L++) {
+    const bl = layers[L];
+    for (let i = bl.length - 1; i >= 0; i--) {
+      const b = bl[i], refs = b.flatMap(id => par(byId[id])).map(r => x[r]);
+      if (!refs.length) continue;
+      const want = mean(refs) - (b.length - 1) * W / 2, next = bl[i + 1], max = next ? x[next[0]] - b.length * W : Infinity;
+      const s = Math.min(Math.max(want, x[b[0]]), max); b.forEach((id, j) => x[id] = s + j * W);
+    }
+  }
+  const minX = Math.min(...Object.values(x)); for (const k in x) x[k] -= minX;
+  const y = {};
+  const minB = Math.min(...ps.map(p => p.b));
+  ps.forEach(p => y[p.id] = mode === "time" ? (p.b - minB) * 7.2 : g[p.id] * 118);
+  /* échelle du temps : écarte les cartes qui se chevauchent */
+  if (mode === "time") {
+    const placed = [];
+    ps.slice().sort((a, b) => y[a.id] - y[b.id] || x[a.id] - x[b.id]).forEach(p => {
+      let tries = 0;
+      while (placed.some(q => Math.abs(x[q] - x[p.id]) < 160 && Math.abs(y[q] - y[p.id]) < 56) && tries++ < 30) x[p.id] += 86;
+      placed.push(p.id);
+    });
+  }
+  return { x, y, g, nL, set, par, sp, minB };
+}
+
+/* ===================== dessin ===================== */
+const NS = "http://www.w3.org/2000/svg";
+const mk = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt !== undefined) e.textContent = txt; return e; };
+const NW = 152, NH = 50;
+function draw(vp, ids, opt) {
+  vp.textContent = "";
+  const L = layout(ids, S, opt.mode), { x, y, set, par } = L;
+  const cx = id => x[id] + NW / 2, top = id => y[id], bot = id => y[id] + NH, mid = id => y[id] + NH / 2;
+  const edges = mk("g", {}), nodes = mk("g", {});
+  vp.append(edges, nodes);
+  if (opt.mode === "time") {
+    const span = [L.minB, Math.max(...ids.map(id => byId[id].b))];
+    for (let yy = Math.ceil(span[0] / 25) * 25; yy <= span[1] + 10; yy += 25) {
+      const py = (yy - L.minB) * 7.2;
+      edges.append(mk("line", { x1: -60, x2: Math.max(...Object.values(x)) + NW + 20, y1: py, y2: py, class: "genline" }), mk("text", { x: -58, y: py - 4, class: "gentick" }, fyl(yy)));
+    }
+  } else {
+    for (let gi = 0; gi < L.nL; gi++) edges.append(mk("text", { x: -58, y: gi * 118 + 29, class: "gentick" }, "gén. " + (gi + 1)));
+  }
+  /* mariages */
+  for (const [a, b] of S) {
+    if (!set.has(a) || !set.has(b)) continue;
+    const same = Math.abs(y[a] - y[b]) < 1 && Math.abs(x[a] - x[b]) <= 176;
+    const [l, r] = x[a] < x[b] ? [a, b] : [b, a];
+    let d, far = !same;
+    if (same) d = `M${x[l] + NW},${mid(l)} H${x[r]}`;
+    else { const x1 = cx(a), y1 = mid(a), x2 = cx(b), y2 = mid(b); d = `M${x1},${y1} C${x1},${(y1 + y2) / 2 - 40} ${x2},${(y1 + y2) / 2 - 40} ${x2},${y2}`; }
+    const pth = mk("path", { d, class: "edge mar" + (far ? " far" : ""), "data-a": a, "data-b": b });
+    edges.append(pth);
+    if (same) edges.append(mk("text", { x: x[l] + NW + (x[r] - x[l] - NW) / 2 - 5, y: mid(l) - 4, class: "marlbl" }, "⚭"));
+  }
+  /* enfants : un « bus » par couple de parents */
+  const groups = {};
+  for (const id of ids) { const ps = par(byId[id]); if (!ps.length) continue; const k = ps.slice().sort().join("+"); (groups[k] = groups[k] || []).push(id); }
+  const busN = {};
+  for (const k in groups) {
+    const ps = k.split("+"), kids = groups[k];
+    let ax, ay;
+    if (ps.length === 2 && Math.abs(y[ps[0]] - y[ps[1]]) < 1 && Math.abs(x[ps[0]] - x[ps[1]]) <= 176) { ax = (Math.max(x[ps[0]], x[ps[1]]) + Math.min(x[ps[0]], x[ps[1]]) + NW) / 2; ay = mid(ps[0]); }
+    else { const lo = ps.reduce((m, p) => y[p] > y[m] ? p : m, ps[0]); ax = cx(lo); ay = bot(lo); }
+    const lay = Math.round(Math.min(...kids.map(top))), n = busN[lay] = (busN[lay] || 0) + 1;
+    const busY = Math.min(...kids.map(top)) - 12 - (n - 1) * 7;
+    kids.forEach(c => edges.append(mk("path", { d: `M${ax},${ay} V${busY} H${cx(c)} V${top(c)}`, class: "edge", "data-a": ps.join(" "), "data-b": c })));
+  }
+  /* adoptions */
+  if (opt.adop) for (const id of ids) for (const a of byId[id].adop.filter(z => set.has(z))) {
+    const x1 = cx(a) + 18, y1 = bot(a), x2 = cx(id) + 18, y2 = top(id);
+    edges.append(mk("path", { d: `M${x1},${y1} C${x1},${y1 + 60} ${x2},${y2 - 60} ${x2},${y2}`, class: "edge adop", "data-a": a, "data-b": id }));
+    edges.append(mk("text", { x: (x1 + x2) / 2 + 4, y: (y1 + y2) / 2, class: "adoplbl" }, "adoption"));
+  }
+  /* fil de la succession */
+  if (opt.succ) {
+    const rs = ids.map(id => byId[id]).filter(p => p.k).sort((a, b) => a.k - b.k);
+    for (let i = 1; i < rs.length; i++) {
+      const a = rs[i - 1].id, b = rs[i].id;
+      edges.append(mk("path", { d: `M${x[a] + NW},${y[a] + 8} C${x[a] + NW + 80},${y[a] + 8} ${x[b] - 80},${y[b] + 8} ${x[b]},${y[b] + 8}`, fill: "none", stroke: "#b0841e", "stroke-width": 2.4, opacity: .85, "marker-end": "url(#arr)" }));
+    }
+  }
+  /* cartes */
+  for (const id of ids) {
+    const p = byId[id], g = mk("g", { class: "node" + (p.dyn ? "" : " out") + (opt.sel === id ? " sel" : ""), transform: `translate(${x[id]},${y[id]})`, "data-id": id });
+    g.append(mk("rect", { class: "card", width: NW, height: NH, rx: 4 }));
+    if (p.r) { g.append(mk("rect", { x: 0, y: 0, width: 4, height: NH, fill: "var(--jc)", rx: 1 })); g.append(mk("rect", { x: 4, y: 0, width: NW - 4, height: NH, fill: "#fbf3f1", rx: 0, opacity: .9 })); g.querySelector("rect.card").setAttribute("fill", "none"); g.append(mk("rect", { class: "card", width: NW, height: NH, rx: 4, fill: "none" })); }
+    g.append(mk("text", { x: 10, y: 17, class: "nm" }, p.n.length > 22 ? p.n.slice(0, 21) + "…" : p.n));
+    g.append(mk("text", { x: 10, y: 31, class: "dt" }, life(p)));
+    if (p.r) {
+      g.append(mk("text", { x: 10, y: 44, class: "rg", fill: "#9a6a12" }, "♛ " + fy(p.r[0]) + " – " + fy(p.r[1])));
+      const c = mk("g", { transform: `translate(${NW - 12},12)` }); c.append(mk("circle", { r: 9, fill: "var(--jc)" }), mk("text", { "text-anchor": "middle", y: 3.5, fill: "#fff", style: "font:700 10px var(--sans)" }, p.k)); g.append(c);
+    }
+    nodes.append(g);
+  }
+  return L;
+}
+
+/* ===================== vue 1 : arbre de la dynastie ===================== */
+const svg = document.getElementById("svg"), vp = document.getElementById("vp"), canvas = document.getElementById("canvas");
+svg.insertAdjacentHTML("afterbegin", '<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#b0841e"/></marker></defs>');
+const st = { mode: "gen", adop: true, out: true, succ: false, sel: "neron", k: 1, tx: 0, ty: 0 };
+function lineage(id, ids) {
+  const set = new Set([id]), up = [id], down = [id];
+  while (up.length) { const p = byId[up.pop()]; [...p.par, ...p.adop].filter(x => ids.includes(x) && !set.has(x)).forEach(x => { set.add(x); up.push(x); }); }
+  while (down.length) { const c = down.pop(); P.filter(p => ids.includes(p.id) && (p.par.includes(c) || p.adop.includes(c)) && !set.has(p.id)).forEach(p => { set.add(p.id); down.push(p.id); }); }
+  S.filter(s => s.includes(id)).forEach(s => set.add(s[0] === id ? s[1] : s[0]));
+  return set;
+}
+function idsTree() { return TREE_IDS.filter(id => st.out || byId[id].dyn || P.some(p => TREE_IDS.includes(p.id) && byId[p.id].dyn && p.par.includes(id) && false) || byId[id].dyn); }
+function render() {
+  const ids = st.out ? TREE_IDS : TREE_IDS.filter(id => byId[id].dyn);
+  draw(vp, ids, st);
+  const hl = st.sel ? lineage(st.sel, ids) : null;
+  vp.classList.toggle("dim", !!hl);
+  if (hl) { vp.querySelectorAll(".node").forEach(n => n.classList.toggle("hl", hl.has(n.dataset.id)));
+    vp.querySelectorAll("path.edge").forEach(e => { const a = (e.dataset.a || "").split(" "), b = e.dataset.b; e.classList.toggle("hl", hl.has(b) && a.some(z => hl.has(z))); }); }
+  vp.querySelectorAll(".node").forEach(n => n.addEventListener("click", ev => { ev.stopPropagation(); st.sel = st.sel === n.dataset.id ? null : n.dataset.id; render(); side(); }));
+  apply();
+}
+function apply() { vp.setAttribute("transform", `translate(${st.tx},${st.ty}) scale(${st.k})`); }
+function fit() {
+  const bb = vp.getBBox(), W = canvas.clientWidth, H = canvas.clientHeight;
+  st.k = Math.min(1.1, (W - 40) / bb.width, (H - 40) / bb.height); st.tx = (W - bb.width * st.k) / 2 - bb.x * st.k; st.ty = 20 - bb.y * st.k; apply();
+}
+canvas.addEventListener("wheel", e => { e.preventDefault(); const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, f = Math.exp(-e.deltaY * .0015), k2 = Math.min(2.5, Math.max(.25, st.k * f));
+  st.tx = mx - (mx - st.tx) * k2 / st.k; st.ty = my - (my - st.ty) * k2 / st.k; st.k = k2; apply(); }, { passive: false });
+let drag = null;
+canvas.addEventListener("pointerdown", e => { if (e.target.closest(".zoomctl")) return; drag = { x: e.clientX, y: e.clientY, tx: st.tx, ty: st.ty, moved: false }; });
+addEventListener("pointermove", e => { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 3) { drag.moved = true; canvas.classList.add("drag"); } st.tx = drag.tx + dx; st.ty = drag.ty + dy; apply(); });
+addEventListener("pointerup", () => { if (drag && !drag.moved && st.sel) { /* clic dans le vide */ } drag = null; canvas.classList.remove("drag"); });
+const zoomBy = f => { const W = canvas.clientWidth / 2, H = canvas.clientHeight / 2, k2 = Math.min(2.5, Math.max(.25, st.k * f)); st.tx = W - (W - st.tx) * k2 / st.k; st.ty = H - (H - st.ty) * k2 / st.k; st.k = k2; apply(); };
+document.getElementById("zin").onclick = () => zoomBy(1.25); document.getElementById("zout").onclick = () => zoomBy(.8); document.getElementById("zfit").onclick = fit;
+document.querySelectorAll("#mode button").forEach(b => b.onclick = () => { st.mode = b.dataset.m; document.querySelectorAll("#mode button").forEach(x => x.classList.toggle("on", x === b)); render(); fit(); });
+document.getElementById("cbAdop").onchange = e => { st.adop = e.target.checked; render(); };
+document.getElementById("cbOut").onchange = e => { st.out = e.target.checked; render(); fit(); };
+document.getElementById("cbSucc").onchange = e => { st.succ = e.target.checked; render(); };
+
+const rel = id => {
+  const p = byId[id];
+  const sps = S.filter(s => s.includes(id)).map(s => s[0] === id ? s[1] : s[0]).map(x => byId[x]);
+  const kids = P.filter(q => q.par.includes(id)), akids = P.filter(q => q.adop.includes(id));
+  const sibs = P.filter(q => q.id !== id && p.par.length && q.par.some(z => p.par.includes(z)));
+  return { p, pars: p.par.map(x => byId[x]), adop: p.adop.map(x => byId[x]), sps, kids, akids, sibs };
+};
+const tag = (q, cls, sub) => `<button class="tag ${cls || ""}" data-go="${q.id}">${q.n}<span class="r">${sub ?? life(q)}</span></button>`;
+function side() {
+  const el = document.getElementById("side");
+  if (!st.sel) { el.innerHTML = `<div class="eyebrow">Sélection</div><p class="mono" style="margin-top:8px">Cliquez une personne de l'arbre.</p>`; return; }
+  const R = rel(st.sel), p = R.p;
+  el.innerHTML = `<div class="eyebrow">${p.dyn ? "Membre · Julio-Claudiens" : "Hors dynastie (conjoint)"}</div><h3>${p.n}</h3><div class="mono">${life(p)}</div>
+    ${p.r ? `<div style="margin-top:6px;font-size:12.5px"><span class="crown">♛</span> Empereur ${fyl(p.r[0])} → ${fyl(p.r[1])} · ${p.k}<sup>e</sup> souverain</div>` : ""}
+    <div class="rel">
+    ${R.pars.length ? `<h4>Parents</h4><div class="chipl">${R.pars.map(q => tag(q)).join("")}</div>` : ""}
+    ${R.adop.length ? `<h4>Parent adoptif</h4><div class="chipl">${R.adop.map(q => tag(q, "adop")).join("")}</div>` : ""}
+    ${R.sps.length ? `<h4>Conjoints</h4><div class="chipl">${R.sps.map(q => tag(q)).join("")}</div>` : ""}
+    ${R.sibs.length ? `<h4>Fratrie</h4><div class="chipl">${R.sibs.map(q => tag(q)).join("")}</div>` : ""}
+    ${R.kids.length ? `<h4>Enfants</h4><div class="chipl">${R.kids.map(q => tag(q)).join("")}</div>` : ""}
+    ${R.akids.length ? `<h4>Enfants adoptifs</h4><div class="chipl">${R.akids.map(q => tag(q, "adop")).join("")}</div>` : ""}
+    </div><div style="margin-top:14px;display:flex;gap:6px"><button class="btn prim">Ouvrir sa fiche</button><button class="btn">Voir sa frise</button></div>`;
+  el.querySelectorAll("[data-go]").forEach(b => b.onclick = () => { st.sel = b.dataset.go; render(); side(); });
+}
+
+/* frise de la dynastie : règnes et vies */
+function frise() {
+  const A = -90, B = 75, pct = v => (v - A) / (B - A) * 100;
+  const mem = TREE_IDS.map(id => byId[id]).filter(p => p.dyn).sort((a, b) => a.b - b.b);
+  const lanes = [], lifeBars = mem.map(p => { let i = lanes.findIndex(e => e <= p.b); if (i < 0) { i = lanes.length; lanes.push(p.d + 2); } else lanes[i] = p.d + 2; return `<div class="fbar life" style="top:${4 + i * 18}px;left:${pct(p.b)}%;width:${pct(p.d) - pct(p.b)}%" title="${p.n} · ${life(p)}">${p.n}</div>`; });
+  const rulers = P.filter(p => p.r && TREE_IDS.includes(p.id)).map(p => `<div class="fbar reign" style="top:4px;left:${pct(p.r[0])}%;width:calc(${pct(p.r[1]) - pct(p.r[0])}% - 1px);background:var(--jc)" title="${p.n}">${p.n}</div>`);
+  const ax = []; for (let y = -75; y <= 75; y += 25) ax.push(`<span style="left:${pct(y)}%">${fy(y)}</span>`);
+  document.getElementById("frise").innerHTML = `<div class="hd"><span class="eyebrow">Dynastie</span><b>Julio-Claudiens</b><span class="mono">frise propre · 27 av. → 68</span><span style="flex:1"></span><button class="btn sm">↑ Empire romain</button></div>
+    <div class="frow"><div class="lb">Souverains · 5</div><div class="ftrack" style="height:24px">${rulers.join("")}</div></div>
+    <div class="frow"><div class="lb">Membres · ${mem.length}</div><div class="ftrack" style="height:${8 + lanes.length * 18}px">${lifeBars.join("")}</div></div>
+    <div class="axis">${ax.join("")}</div>`;
+}
+
+/* ===================== vue 2 : dirigeants ===================== */
+const DYN = { jc: ["Julio-Claudiens", "var(--jc)"], fla: ["Flaviens", "var(--fla)"], ant: ["Antonins", "var(--ant)"], sev: ["Sévères", "var(--sev)"], none: ["Sans dynastie", "var(--none)"] };
+const R = [
+  [-27, 14, "Auguste", "jc", "", -63, 14], [14, 37, "Tibère", "jc", "fils adoptif (et beau-fils) d'Auguste", -42, 37, 1], [37, 41, "Caligula", "jc", "petit-fils adoptif de Tibère", 12, 41, 1],
+  [41, 54, "Claude", "jc", "oncle de Caligula", -10, 54], [54, 68, "Néron", "jc", "fils adoptif (et beau-fils) de Claude", 37, 68, 1],
+  [68, 69, "Galba", "none", "—", -3, 69], [69, 69, "Othon", "none", "—", 32, 69], [69, 69, "Vitellius", "none", "—", 15, 69],
+  [69, 79, "Vespasien", "fla", "—", 9, 79], [79, 81, "Titus", "fla", "fils de Vespasien", 39, 81], [81, 96, "Domitien", "fla", "frère de Titus", 51, 96],
+  [96, 98, "Nerva", "ant", "—", 30, 98], [98, 117, "Trajan", "ant", "fils adoptif de Nerva", 53, 117, 1], [117, 138, "Hadrien", "ant", "fils adoptif de Trajan", 76, 138, 1],
+  [138, 161, "Antonin le Pieux", "ant", "fils adoptif d'Hadrien", 86, 161, 1], [161, 180, "Marc Aurèle", "ant", "fils adoptif d'Antonin", 121, 180, 1],
+  [161, 169, "Lucius Verus", "ant", "frère adoptif de Marc Aurèle", 130, 169, 1, 1], [177, 192, "Commode", "ant", "fils de Marc Aurèle", 161, 192, 0, 1],
+  [193, 193, "Pertinax", "none", "—", 126, 193], [193, 193, "Didius Julianus", "none", "—", 133, 193],
+  [193, 211, "Septime Sévère", "sev", "—", 145, 211], [198, 217, "Caracalla", "sev", "fils de Septime Sévère", 188, 217, 0, 1], [209, 211, "Geta", "sev", "fils de Septime Sévère", 189, 211, 0, 1],
+  [217, 218, "Macrin", "none", "—", 165, 218], [218, 222, "Élagabal", "sev", "—", 204, 222], [222, 235, "Sévère Alexandre", "sev", "cousin germain d'Élagabal", 208, 235]
+];
+function rulers() {
+  const A = -30, B = 400, pct = v => (v - A) / (B - A) * 100;
+  /* ruban : dynasties, règnes (co-règnes sur une 2e rangée), trous */
+  const groups = []; R.forEach(r => { const g = groups[groups.length - 1]; if (g && g.d === r[3]) { g.a = Math.min(g.a, r[0]); g.b = Math.max(g.b, r[1]); g.n++; } else groups.push({ d: r[3], a: r[0], b: r[1], n: 1 }); });
+  const dyn = groups.map(g => `<div class="dyn" style="left:${pct(g.a)}%;width:calc(${Math.max(.3, pct(g.b + 1) - pct(g.a))}% - 1px);background:${DYN[g.d][1]}" title="${DYN[g.d][0]}">${g.d === "none" ? "" : DYN[g.d][0]}</div>`).join("");
+  const lane = r => r[8] ? 1 : 0;
+  const rg = R.map(r => `<div class="rg" style="top:${22 + lane(r) * 23}px;left:${pct(r[0])}%;width:calc(${Math.max(.25, pct(r[1] + (r[0] === r[1] ? 1 : 0)) - pct(r[0]))}% - 1px);background:${DYN[r[3]][1]}" title="${r[2]} · ${fyl(r[0])} → ${fyl(r[1])}">${r[2]}</div>`).join("");
+  const gap = `<div class="gap" style="top:22px;left:${pct(235)}%;width:${pct(395) - pct(235)}%" title="235 → 395 : aucun souverain saisi"></div>`;
+  const ax = [-27, 50, 100, 150, 200, 250, 300, 350, 395].map(y => `<span style="left:${pct(y)}%">${fy(y)}</span>`).join("");
+  document.getElementById("ribbon").innerHTML = `<div class="rrow" style="height:68px">${dyn}${rg}${gap}</div><div class="raxis">${ax}</div>`;
+  /* tableau groupé par dynastie */
+  const tb = document.getElementById("rtb"); let h = "", last = null;
+  const maxDur = 45;
+  R.forEach((r, i) => {
+    if (r[3] !== last) { const g = groups.find(g => g.d === r[3] && g.a <= r[0] && r[1] <= g.b); last = r[3];
+      h += `<tr class="grp"><td colspan="6"><span class="gbar" style="background:${DYN[r[3]][1]}"></span><span class="gname">${r[3] === "none" ? (r[0] === 68 ? "Année des quatre empereurs" : r[0] === 193 ? "Année des cinq empereurs" : "Sans dynastie") : DYN[r[3]][0]}</span><span class="gm">${fyl(g.a)} → ${fyl(g.b)} · ${g.n} souverain${g.n > 1 ? "s" : ""}</span>${r[3] === "jc" ? `<a class="glink" data-v="tree">voir l'arbre</a>` : r[3] !== "none" ? `<a class="glink">voir l'arbre</a>` : ""}</td></tr>`; }
+    const dur = Math.max(r[1] - r[0], 0), adop = r[7] === 1;
+    h += `<tr class="r ${r[8] ? "co" : ""}"><td class="y">${fyl(r[0])} → ${fyl(r[1])}</td><td class="y"><span class="durbar" style="width:${Math.max(3, dur / maxDur * 70)}px;background:${DYN[r[3]][1]}"></span>${dur ? dur + " an" + (dur > 1 ? "s" : "") : "< 1 an"}</td>
+      <td class="nm">${r[2]}</td><td><span class="rel-pre ${adop ? "adop" : ""}">${r[4] || "—"}</span></td><td class="y">${fy(r[5])} – ${fy(r[6])}</td><td style="text-align:right"><button class="btn sm">↗</button></td></tr>`;
+    if (i === R.length - 1) h += `<tr class="gaprow"><td class="y">235 → 395</td><td colspan="4">Aucun souverain saisi pendant 160 ans (crise du IIIe siècle, Tétrarchie, Constantiniens…)</td><td style="text-align:right"><button class="btn sm">+ Ajouter</button></td></tr>`;
+  });
+  tb.innerHTML = h;
+  document.getElementById("rstat").textContent = `${R.length} souverains · 5 dynasties · 1 trou`;
+  tb.querySelectorAll("[data-v]").forEach(a => a.onclick = () => show("tree"));
+}
+
+/* ===================== vue 3 : Néron ===================== */
+function person() {
+  const mvp = document.getElementById("mvp"), ids = ["germ", "agrA", "ahen", "agrJ", "claude", "neron", "octavie", "poppee", "statil", "claudA"];
+  draw(mvp, ids, { mode: "gen", adop: true, sel: "neron" });
+  const svg2 = document.getElementById("msvg"); requestAnimationFrame(() => { const bb = mvp.getBBox(), W = svg2.clientWidth, H = svg2.clientHeight, k = Math.min(1, (W - 30) / bb.width, (H - 30) / bb.height); mvp.setAttribute("transform", `translate(${(W - bb.width * k) / 2 - bb.x * k},${(H - bb.height * k) / 2 - bb.y * k}) scale(${k})`); });
+  const t = q => `<span class="tag">${q.n}<span class="r">${life(q)}</span></span>`;
+  document.getElementById("fam").innerHTML = `
+    <dt>Parents</dt><dd>${t(byId.ahen)}${t(byId.agrJ)}</dd>
+    <dt>Parent adoptif</dt><dd><span class="tag adop">Claude<span class="r">adoption en 50</span></span></dd>
+    <dt>Conjoints</dt><dd><span class="tag">Octavie<span class="r">53 → 62</span></span><span class="tag">Poppée<span class="r">62 → 65</span></span><span class="tag">Statilia Messalina<span class="r">66 → 68</span></span></dd>
+    <dt>Enfants</dt><dd>${t(byId.claudA)}</dd>
+    <dt>Fratrie adoptive</dt><dd>${t(byId.brit)}${t(byId.octavie)}</dd>
+    <dt>Dynastie</dt><dd><span class="tag" style="border-color:var(--jc)">Julio-Claudiens<span class="r">5<sup>e</sup> souverain</span></span></dd>`;
+  const F = [
+    [37, "f", "Naissance", "Naissance", "Antium"], [50, "f", "Adoption", "Adopté par Claude", "Rome"], [53, "f", "Mariage", "Épouse Octavie", ""],
+    [54, "e", "Règne", "Règne de Néron (54 → 68)", "Rome"], [59, "e", "Jalon", "Meurtre d'Agrippine", "Baïes"], [62, "f", "Mariage", "Épouse Poppée", ""],
+    [64, "e", "Catastrophe", "Grand incendie de Rome", "Rome"], [66, "f", "Mariage", "Épouse Statilia Messalina", ""], [68, "f", "Mort", "Mort (suicide)", "près de Rome"]
+  ];
+  document.getElementById("ftb").innerHTML = F.map(f => `<tr class="r"><td class="y">${fy(f[0])}</td><td class="k">${f[1] === "f" ? `<span class="kfait"><i></i>${f[2]}</span>` : `<span class="kent"><i></i> ${f[2]}</span>`}</td>
+    <td>${f[3]}</td><td>${f[4] || "<span class='mono'>—</span>"}</td><td style="text-align:right">${f[1] === "f" && !["Naissance", "Mort"].includes(f[2]) ? `<button class="promote">en faire une entrée</button>` : f[1] === "e" ? `<button class="btn sm">↗</button>` : ""}</td></tr>`).join("");
+}
+
+/* ===================== navigation entre vues ===================== */
+let drawn = {};
+function show(v) {
+  document.querySelectorAll(".view").forEach(s => s.classList.toggle("on", s.dataset.v === v));
+  document.querySelectorAll("#views button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  if (v === "tree" && !drawn.tree) { render(); side(); frise(); fit(); drawn.tree = 1; }
+  if (v === "rulers" && !drawn.rulers) { rulers(); drawn.rulers = 1; }
+  if (v === "person" && !drawn.person) { person(); drawn.person = 1; }
+}
+document.querySelectorAll("#views button").forEach(b => b.onclick = () => show(b.dataset.v));
+document.getElementById("tgCall").onclick = e => { e.currentTarget.classList.toggle("on"); document.body.classList.toggle("nocall"); };
+const q = new URLSearchParams(location.search);
+show(q.get("v") || "tree");
+if (q.get("m") === "time") document.querySelector('#mode button[data-m="time"]').click();
+if (q.has("succ")) { document.getElementById("cbSucc").checked = true; st.succ = true; render(); }
+</script>
+</body>
+</html>

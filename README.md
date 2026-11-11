@@ -1,4 +1,4 @@
-# Atlas des civilisations — v2.7.0
+# Atlas des civilisations — v2.8.0
 
 Atlas historique interactif (5000 av. J.-C. → 1900) : carte et frise synchronisées, territoires, lieux, événements, filiations, tutelles.
 
@@ -13,7 +13,7 @@ Atlas historique interactif (5000 av. J.-C. → 1900) : carte et frise synchroni
 | `data/geo/t/*.json` | 464 tuiles 10° × 10° au 1:10 000 000, chargées au zoom |
 | `data/geo/relief/` | relief ombré : image d'ensemble + 69 tuiles 30° × 30°, chargées au zoom |
 | `supabase/schema_v2.0.0.sql` | tables, règles d'accès (RLS) et fonctions |
-| `supabase/migration_v2.4.0.sql` | ajoute la collection des personnages (à exécuter après le schéma) |
+| `supabase/migration_v2.8.0.sql` | ajoute les collections des personnages et des dynasties (à exécuter après le schéma) |
 | `tools/build_geo.py` | régénère `data/geo` (traits de côte, lacs, fleuves) depuis Natural Earth |
 | `tools/build_relief_v2.1.0.py` | régénère `data/geo/relief` |
 | `tools/build_enrich_v2.1.0.py`, `tools/enrich/` | ont produit l'enrichissement v2.1.0 (conservés pour la traçabilité de la source GPL) |
@@ -36,7 +36,7 @@ Si `config.js` est laissé vide, l'atlas fonctionne en **mode fichier** : lectur
 
 ## Mise en service
 
-1. **Supabase** — créer un projet sur supabase.com, puis *SQL Editor* › coller et exécuter `supabase/schema_v2.0.0.sql`.
+1. **Supabase** — créer un projet sur supabase.com, puis *SQL Editor* › coller et exécuter `supabase/schema_v2.0.0.sql`, puis `supabase/migration_v2.8.0.sql`.
 2. **Authentification** — *Authentication › URL Configuration* :
    - *Site URL* : `https://<compte>.github.io/<depot>/`
    - *Redirect URLs* : la même adresse (liens de confirmation et de réinitialisation du mot de passe).
@@ -53,6 +53,13 @@ Si `config.js` est laissé vide, l'atlas fonctionne en **mode fichier** : lectur
 
 Les rôles des autres comptes se gèrent ensuite depuis *Données › Comptes et rôles…*.
 
+## Mise à jour vers la v2.8.0
+
+1. **D'abord**, dans Supabase › *SQL Editor*, coller et exécuter `supabase/migration_v2.8.0.sql` (rejouable sans risque). Il autorise les collections *persons* et *dynasties* ; sans lui, la publication d'un personnage ou d'une dynastie est refusée par la base. Il remplace l'ancien `migration_v2.4.0.sql`, qui n'a jamais été déposé dans le dépôt.
+2. Copier `index.html`, `README.md` et `supabase/migration_v2.8.0.sql`, commit, **push**.
+
+Rien à convertir : faits, parents, conjoints et dynasties de rattachement sont de nouveaux champs facultatifs.
+
 ## Mise à jour vers la v2.7.0
 
 Aucun script SQL. Copier `index.html` et `README.md`, commit, **push**.
@@ -64,10 +71,7 @@ Aucun script SQL. Copier `index.html` et `README.md`, commit, **push**.
 
 ## Mise à jour vers la v2.4.0
 
-1. **D'abord**, dans Supabase › *SQL Editor*, exécuter `supabase/migration_v2.4.0.sql` (rejouable sans risque). Sans cette étape, la publication d'un personnage est refusée par la base.
-2. Copier `index.html` et `README.md`, commit, push.
-
-Rien à convertir : les événements existants restent valables (leur civilisation devient la civilisation principale) et peuvent être enrichis au fil de l'eau.
+La migration des personnages est incluse dans `supabase/migration_v2.8.0.sql`.
 
 ## Données
 
@@ -83,11 +87,15 @@ L'enrichissement v2.1.0 (civilisations supplémentaires, emprises datées) est d
 - **Personnages** : fiches à part (dates, titre, biographie, image, civilisations de rattachement), recherchables.
 - **Lieux** : *Technique › Rattacher les entrées proches* propose les entrées localisées à moins de 30 km.
 - Supprimer une civilisation conserve les entrées partagées : la civilisation suivante devient principale.
-- **Fiches** : civilisation, lieu, entrée et personnage s'ouvrent sur un **résumé** dans le panneau (dates, début du texte, repères, compteurs qui ouvrent la fiche complète sur le bon onglet ; pour les comptes autorisés, un bloc *À compléter*). **Fiche complète** ouvre une vue large au-dessus de la carte, la frise restant visible ; **Échap** la referme. Onglets selon le type :
+- **Fiches** : civilisation, lieu, entrée, personnage et dynastie s'ouvrent sur un **résumé** dans le panneau (dates, début du texte, repères, compteurs qui ouvrent la fiche complète sur le bon onglet ; pour les comptes autorisés, un bloc *À compléter*). **Fiche complète** ouvre une vue large au-dessus de la carte, la frise restant visible ; **Échap** la referme. Onglets selon le type :
   - *Civilisation* : Aperçu, Chronologie, Relations (filiations déclarées ou suggérées, tutelles), Géographie (bande de couverture, emprises avec leur période, lieux) ;
   - *Lieu* : Aperçu, Chronologie, Contrôle (qui le tenait, calculé d'après les territoires ; civilisation de rattachement ; personnages), Géographie (position, entrées localisées à moins de 30 km à rattacher) ;
   - *Entrée* : Aperçu, Chronologie de ses étapes (pour un **épisode** : guerre, période, règne, entrée longue ou qui a des étapes), Participants (civilisations et personnages avec leur rôle, civilisation principale, filiations dont elle est l'événement de transition), Géographie (point, mouvements, lieux, étapes placées, emprises rattachées pour une période). Une étape propose ← précédente · ↑ épisode · suivante → ;
-  - *Personnage* : Aperçu, Chronologie (avec son rôle), Relations (civilisations rattachées ou présentes dans ses entrées, lieux, personnages croisés).
+  - *Personnage* : Aperçu (dont sexe, lieux de naissance et de mort), **Famille** (parents naturels ou adoptifs, conjoints datés, enfants et fratrie calculés, petit arbre sur deux générations, dynasties), Chronologie (avec son rôle et ses faits de vie), Relations (civilisations rattachées ou présentes dans ses entrées, lieux, personnages croisés) ;
+  - *Dynastie* : Aperçu (civilisations, **issue de** : union, branche cadette ou changement de nom ; branches qui en sont issues), **Arbre** généalogique complet (par générations ou sur l'échelle du temps, adoptions, conjoints et parents extérieurs, fil de la succession, souverains numérotés), Souverains, Territoires gouvernés (emprise au milieu de chaque règne), Chronologie.
+- **Dirigeants** (onglet d'une civilisation) : ses souverains dans l'ordre, regroupés par dynastie, avec ruban chronologique, co-souverains, durée, **lien de parenté avec le précédent** (calculé d'après les familles ; en orange quand il passe par une adoption) et périodes sans souverain saisi. La **saisie rapide** (années + nom + dynastie) crée en une fois le règne et, si besoin, le personnage. La liste repose sur les entrées « Règne » où un personnage a le rôle Souverain.
+- **Faits** : événements légers, sans fiche, rangés dans l'élément qu'ils concernent — personnage (naissance et mort d'après ses dates, mariage, adoption, avènement, abdication, exil, captivité), lieu (fondation, changement de nom, destruction, reconstruction, séisme, capitale), civilisation (changement de capitale ou de nom, réforme), dynastie (fondation, extinction, union, changement de nom). Ils s'ajoutent en série dans l'onglet Chronologie (**+ Fait**), apparaissent sur la frise propre de l'élément, et **→ entrée** les transforme en entrée complète.
+- **Saisie des noms** : partout où l'on relie un personnage (parents, conjoints, enfants, membres, souverains), on tape un nom existant ou nouveau ; un nom inconnu crée le personnage.
 - **Navigation de fiche en fiche** : dans la fiche complète, chaque nom (civilisation, lieu, entrée, personnage) ouvre sa fiche sans quitter la vue ; **← Retour** revient à la précédente. La frise et la carte suivent.
 - **Édition sur place** (comptes autorisés) : chaque bloc de l'Aperçu a son crayon ✎ et son propre *Enregistrer* ; dans une Chronologie, ✎ corrige une entrée dans sa ligne (dates, intitulé, nature, rôle) et **+ Entrée** / **+ Étape** permet la saisie en série (Entrée enregistre et ouvre la ligne suivante, Échap arrête) ; ⋯ ouvre le formulaire complet. Les participants, lieux et civilisations de rattachement s'ajoutent, se retirent et changent de rôle directement dans leurs listes. Dans un épisode, **Appliquer aux étapes** reporte ses civilisations et personnages sur les étapes cochées, sans rien retirer ni modifier. L'onglet *Technique* n'existe plus.
 - **Frise d'un épisode** : sélectionner un épisode (ou une de ses étapes) affiche sa frise propre, cadrée sur sa durée, avec ses étapes et ses personnages ; **↑** dans son en-tête revient à la frise de sa civilisation.
@@ -121,6 +129,7 @@ python3 tools/build_relief_v2.1.0.py shadedrelief.jpg ./ne/ne_50m_land.geojson .
 
 ## Historique
 
+- **2.8.0** — familles (parents naturels ou adoptifs, conjoints, enfants et fratrie calculés) ; type **Dynastie** avec arbre généalogique automatique, souverains, territoires gouvernés et filiation entre maisons (union, branche, changement de nom) ; onglet **Dirigeants** des civilisations avec lien de parenté avec le prédécesseur et saisie rapide des règnes ; **faits** légers sans fiche pour personnages, lieux, civilisations et dynasties ; sexe et lieux de naissance et de mort des personnages ; frises propres des dynasties ; recherche des dynasties. Migration SQL `migration_v2.8.0.sql`.
 - **2.7.0** — fiches résumé + fiche complète pour les lieux, entrées et personnages (onglet Technique supprimé) ; navigation de fiche en fiche avec ← Retour ; entrées « épisode » avec chronologie de leurs étapes, frise propre et *Appliquer aux étapes* ; étapes précédente / suivante ; participants, lieux et rattachements modifiables dans les listes ; entrées proches d'un lieu à rattacher ; images en vignettes agrandissables. Pas de migration SQL.
 - **2.6.0** — fiche civilisation refondue : résumé dans le panneau, fiche complète à onglets (Aperçu, Chronologie, Relations, Géographie) modifiable bloc par bloc, tableau des entrées avec correction dans la ligne et saisie en série, suggestions de filiation à déclarer, bande de couverture des emprises ; périodes et emprises reliables (*Reprendre nom et dates*, rapprochements à rattacher ou écarter). Pas de migration SQL.
 - **2.5.0** — frise d'entité compacte (titres incrustés, pistes vides regroupées), sections remplies en priorité dans la fiche, amorces de continuité avant/après, molette de frise : Ctrl = zoom, Maj = déplacement, barre de navigation.

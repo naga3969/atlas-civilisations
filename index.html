@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- Atlas des civilisations — v2.7.0 -->
+<!-- Atlas des civilisations — v2.8.0 -->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="generator" content="Atlas des civilisations 2.7.0">
+<meta name="generator" content="Atlas des civilisations 2.8.0">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Atlas des civilisations · 5000 av. J.-C. → 1900</title>
 <style>
@@ -660,6 +660,108 @@ tr.editrow td.hintc{font-size:11.5px;vertical-align:middle}
   .srch{flex:1;width:auto}
   .marks button{padding:7px 4px}
 }
+/* ---------- v2.8.0 : faits, familles, dynasties, dirigeants ---------- */
+.seg2{display:inline-flex;border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden}
+.seg2 button{padding:3px 10px;font-size:12px;color:var(--ink-2);background:#fff;border-right:1px solid var(--line-2)}
+.seg2 button:last-child{border-right:none}
+.seg2 button.on{background:var(--accent);color:#fff}
+.kfait{display:inline-flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap}
+.kfait i{width:7px;height:7px;border-radius:50%;border:1.5px solid #6b4f8a;display:inline-block}
+tr.fact td.tt{font-weight:400}
+.tag.adop{border-style:dashed;border-color:#d9a76a}
+.tag.dyn{gap:5px}
+.tagw{display:inline-flex;align-items:center;gap:1px}
+.tagw .iconbtn{width:20px;height:20px;font-size:10px}
+.dynpill{cursor:pointer;background:none}
+.dynfrom{font-size:12px;color:var(--ink-2);margin-top:3px}
+.dynfrom .linkbtn{font-size:12px}
+.fam{display:grid;grid-template-columns:96px 1fr;gap:8px 10px;font-size:12.5px;margin:0;align-items:start}
+.fam dt{color:var(--muted);padding-top:3px}
+.fam dd{margin:0;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.fam-add{display:flex;gap:6px;align-items:center;flex-wrap:wrap;width:100%;margin-top:2px}
+.fam-add input,.fam-add select{border:1px solid var(--line-2);border-radius:var(--r);padding:3px 7px;font-size:12px;background:#fff;min-width:0}
+.pp{display:inline-flex;flex:1 1 180px;min-width:150px}
+.pp .pp-in{width:100%}
+.famcols{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+.ft-mini{height:340px;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.ft-mini .ft-canvas{height:100%}
+.ft-wrap{display:grid;grid-template-columns:minmax(0,1fr) 280px;height:clamp(340px,calc(100dvh - 480px),900px);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.ft-canvas{position:relative;overflow:hidden;background:radial-gradient(circle,#e4e4df 1px,transparent 1px) 0 0/22px 22px,#fbfbfa;cursor:grab;touch-action:none;height:100%}
+.ft-canvas.drag{cursor:grabbing}
+.ft-svg{width:100%;height:100%;display:block;user-select:none}
+.ft-zoom{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:4px}
+.ft-zoom button{width:28px;height:28px;border:1px solid var(--line-2);border-radius:var(--r);background:#fff;font-size:14px;color:var(--ink-2)}
+.ft-side{border-left:1px solid var(--line);background:var(--surface);padding:12px 14px;overflow:auto}
+.ft-side h3{font-family:var(--serif);font-size:18px;margin:2px 0;font-weight:600}
+.ft-side h5{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px;font-weight:500}
+.ft-side .row{margin-top:14px}
+.ft-reign{font-size:12.5px;margin-top:6px}
+.crown{color:#b0841e}
+.ft-legend{display:flex;gap:12px;font-size:11px;color:var(--ink-2);flex-wrap:wrap}
+.ft-legend span{display:inline-flex;align-items:center;gap:5px}
+.ft-legend i{display:inline-block}
+.lg-ruler{width:14px;height:10px;border-left:4px solid #8a3b3b;background:#fbf3f1;border-radius:2px}
+.lg-mar{width:22px;border-top:2px solid #8a8a84}
+.lg-adop{width:22px;border-top:2px dashed #b06a1e}
+.lg-out{width:14px;height:10px;border:1px dashed #9a9a94;border-radius:2px;background:#f4f4f1}
+.ft-node{cursor:pointer}
+.ft-card{fill:#fff;stroke:#c9cac5;stroke-width:1}
+.ft-card.ft-ruler{fill:#fbf6f4}
+.ft-node.out .ft-card{fill:#f4f4f1;stroke:#a9a9a3;stroke-dasharray:4 3}
+.ft-node.out text{fill:#6c727a}
+.ft-node:hover .ft-card{stroke:var(--accent)}
+.ft-node.sel .ft-card{stroke:var(--accent);stroke-width:2.2}
+.ft-nm{font:600 12.5px var(--sans);fill:var(--ink)}
+.ft-dt{font:10.5px var(--mono);fill:#6c727a}
+.ft-rg{font:600 10.5px var(--mono);fill:#9a6a12}
+.ft-num{font:700 10px var(--sans);fill:#fff}
+.ft-tick{font:10px var(--mono);fill:#9a9a94}
+.ft-genline{stroke:#ececea;stroke-width:1}
+.ft-edge{fill:none;stroke:#8a8a84;stroke-width:1.4}
+.ft-edge.mar{stroke-width:1.8}
+.ft-edge.mar.far{stroke-dasharray:2 4;stroke-width:1.6}
+.ft-edge.adop{stroke:#b06a1e;stroke-dasharray:6 4;stroke-width:1.6}
+.ft-adopl{font:italic 10px var(--sans);fill:#b06a1e}
+.ft-marl{font:12px var(--sans);fill:#8a8a84}
+.ft-succ{fill:none;stroke:#b0841e;stroke-width:2.4;opacity:.85}
+.ft-dim .ft-node:not(.hl){opacity:.28}
+.ft-dim .ft-edge:not(.hl){opacity:.15}
+.ribbon{border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:8px 10px 4px;margin-bottom:14px}
+.rrow{position:relative}
+.rrow .dynb{position:absolute;top:0;height:18px;border-radius:2px;font-size:10.5px;line-height:18px;padding:0 6px;color:#fff;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.rrow .rg{position:absolute;height:20px;border-radius:2px;border:1px solid rgba(0,0,0,.18);font-size:10px;line-height:18px;padding:0 3px;overflow:hidden;white-space:nowrap;color:#fff;text-align:left}
+.rrow .rg:hover{filter:brightness(1.12);z-index:2}
+.rrow .gap{position:absolute;height:20px;background:repeating-linear-gradient(45deg,#f3d9cf 0 4px,#fff 4px 8px);border:1px dashed var(--flag);border-radius:2px}
+.raxis{position:relative;height:16px;margin-top:4px}
+.raxis span{position:absolute;font-family:var(--mono);font-size:10px;color:var(--muted);transform:translateX(-50%)}
+.raxis span:first-child{transform:none}
+.raxis span:last-child{transform:translateX(-100%)}
+.trulers tr.r{cursor:pointer}
+.trulers tr.grp td{background:var(--surface);padding:9px 8px 7px;border-bottom:1px solid var(--line-2)}
+.trulers .gname{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--ink)}
+.trulers button.gname:hover{text-decoration:underline}
+.trulers .gbar{display:inline-block;width:5px;height:16px;border-radius:1px;vertical-align:-3px;margin-right:8px}
+.trulers tr.co td.tt{padding-left:26px}
+.trulers tr.gaprow td{background:repeating-linear-gradient(45deg,#fbf0ea 0 6px,#fff 6px 12px);color:#8a4a32;font-size:12px}
+.durbar{display:inline-block;height:6px;border-radius:3px;vertical-align:1px;margin-right:6px}
+td.kin{font-size:12px;color:var(--ink-2)}
+td.kin.adop{color:#a0601a}
+.rquick{margin-top:12px;padding:8px;border:1px dashed var(--line-2);border-radius:4px;background:var(--surface)}
+.ti.fact{--c:#6b4f8a}
+@media (max-width:900px){
+  .ft-wrap{grid-template-columns:minmax(0,1fr);height:auto}
+  .ft-wrap .ft-canvas{height:420px}
+  .ft-side{border-left:none;border-top:1px solid var(--line)}
+  .ft-mini{height:300px}
+  .fam{grid-template-columns:80px 1fr}
+  .ft-legend{display:none}
+  .fcols.famcols{grid-template-columns:minmax(0,1fr)}
+  .fam-add .pp{flex-basis:100%}
+  .fam-add select,.fam-add input:not(.pp-in){flex:1 1 90px}
+  .trulers tr.grp,.trulers tr.gaprow{grid-template-columns:minmax(0,1fr)!important}
+  .trulers tr.grp td,.trulers tr.gaprow td{grid-column:1 / -1!important;grid-row:auto!important}
+  .trulers tr.gaprow td.ac{display:none}
+}
 </style>
 </head>
 <body>
@@ -789,7 +891,7 @@ tr.editrow td.hintc{font-size:11.5px;vertical-align:middle}
 
 "use strict";
 /* =====================================================================
-   ATLAS DES CIVILISATIONS — v2.7.0
+   ATLAS DES CIVILISATIONS — v2.8.0
    Données : base partagée Supabase (lecture publique, écriture par rôle)
              ou, à défaut, data/atlas.json + brouillon local
    Fond de carte : data/geo (Natural Earth 1:50M + tuiles 1:10M, relief ombré)
@@ -919,9 +1021,9 @@ const EVKINDS = { periode: "Période", regne: "Règne", guerre: "Guerre", batail
      envoient des propositions soumises à validation ;
    - « fichier » (pas de configuration) : lecture de data/atlas.json, modifications
      conservées dans ce navigateur, export pour mise à jour du dépôt. */
-const APP_VERSION = "2.7.0";
-const COLLS = ["civs", "territories", "events", "pois", "links", "subjections", "persons"];
-const COLL_LABEL = { persons: "Personnage", civs: "Civilisation", territories: "Territoire", events: "Événement", pois: "Lieu", links: "Filiation", subjections: "Tutelle" };
+const APP_VERSION = "2.8.0";
+const COLLS = ["civs", "territories", "events", "pois", "links", "subjections", "persons", "dynasties"];
+const COLL_LABEL = { dynasties: "Dynastie", persons: "Personnage", civs: "Civilisation", territories: "Territoire", events: "Événement", pois: "Lieu", links: "Filiation", subjections: "Tutelle" };
 const ROLE_LABEL = { viewer: "Visiteur", contributor: "Contributeur", editor: "Éditeur", admin: "Administrateur", local: "Local" };
 const DRAFT_KEY = "atlas-civ:draft:v2";
 const CFG = window.ATLAS_CONFIG || {};
@@ -935,7 +1037,7 @@ let syncTimer = null, syncing = false, pendingOps = 0, lastRefresh = 0;
 let preview = null;            // aperçu d'une proposition : { p, saved, savedSel }
 let pendingReview = 0;         // propositions en attente (éditeurs)
 
-const emptyDb = () => ({ civs: [], territories: [], events: [], pois: [], links: [], subjections: [], persons: [] });
+const emptyDb = () => ({ civs: [], territories: [], events: [], pois: [], links: [], subjections: [], persons: [], dynasties: [] });
 function emptyBase() { const b = {}; for (const k of COLLS) b[k] = new Map(); return b; }
 function canon(v) {
   if (Array.isArray(v)) return "[" + v.map(x => x === undefined ? "null" : canon(x)).join(",") + "]";
@@ -1331,6 +1433,7 @@ function objName(coll, o) {
   if (coll === "links") return civName(o.from) + " → " + civName(o.to);
   if (coll === "subjections") return civName(o.civId) + " ⤓ " + civName(o.overId);
   if (coll === "persons") return o.name || o.id;
+  if (coll === "dynasties") return o.name || o.id;
   return o.id;
 }
 function opWire(op) { /* op serveur ou local → objets */
@@ -1344,7 +1447,7 @@ function summarize(ws) {
   const head = ws.slice(0, 12).map(opLine).join("\n");
   return (ws.length > 12 ? head + `\n… et ${ws.length - 12} autre(s)` : head).slice(0, 3900);
 }
-const FIELD_LABEL = { parts: "autres civilisations", poiIds: "lieux", people: "personnages", civIds: "rattachements", civRole: "rôle", image: "image", imageCaption: "légende", imageCredit: "crédit", source: "source", name: "nom", title: "titre", label: "intitulé", start: "début", end: "fin", year: "année", color: "couleur", region: "aire", description: "description", links: "liens", rings: "tracé", arrows: "mouvements", civId: "civilisation", overId: "puissance dominante", kind: "type", lon: "longitude", lat: "latitude", parentId: "épisode parent", from: "de", to: "vers", eventId: "événement de transition", periodId: "période", periodNo: "rapprochements écartés", noFil: "suggestions de filiation écartées" };
+const FIELD_LABEL = { parents: "parents", spouses: "conjoints", dynastyIds: "dynasties", facts: "faits", sex: "sexe", birthPoiId: "lieu de naissance", deathPoiId: "lieu de mort", origins: "issue de", parts: "autres civilisations", poiIds: "lieux", people: "personnages", civIds: "rattachements", civRole: "rôle", image: "image", imageCaption: "légende", imageCredit: "crédit", source: "source", name: "nom", title: "titre", label: "intitulé", start: "début", end: "fin", year: "année", color: "couleur", region: "aire", description: "description", links: "liens", rings: "tracé", arrows: "mouvements", civId: "civilisation", overId: "puissance dominante", kind: "type", lon: "longitude", lat: "latitude", parentId: "épisode parent", from: "de", to: "vers", eventId: "événement de transition", periodId: "période", periodNo: "rapprochements écartés", noFil: "suggestions de filiation écartées" };
 function fmtVal(k, v) {
   if (v === null || v === undefined || v === "") return "—";
   if (k === "parts") return v.map(p => civName(p.civId) + " (" + (CIV_ROLES[p.role] || p.role) + ")").join(", ");
@@ -2545,6 +2648,7 @@ function renderSheet() {
   if (t.type === "civ") return sumCiv(t.o);
   if (t.type === "poi") return sumPoi(t.o);
   if (t.type === "person") return sumPerson(t.o);
+  if (t.type === "dynasty") return sumDynasty(t.o);
   return sumEvent(t.o);
 }
 function sheetEmpty() {
@@ -2867,7 +2971,8 @@ const fmtArea = a => a >= 1e6 ? (a / 1e6).toFixed(a >= 1e7 ? 0 : 1).replace(".",
 let tlEnt = null;            // entité dont la frise est affichée : { type: "civ" | "poi" | "person" | "event", id }
 function focusEnt() {
   if (!tlEnt) return null;
-  let o = tlEnt.type === "civ" ? civ(tlEnt.id) : tlEnt.type === "poi" ? byId(db.pois, tlEnt.id) : tlEnt.type === "event" ? byId(db.events, tlEnt.id) : person(tlEnt.id);
+  let o = tlEnt.type === "civ" ? civ(tlEnt.id) : tlEnt.type === "poi" ? byId(db.pois, tlEnt.id) : tlEnt.type === "event" ? byId(db.events, tlEnt.id) : tlEnt.type === "dynasty" ? dynasty(tlEnt.id) : person(tlEnt.id);
+  if (o && tlEnt.type === "dynasty") { const sp = dynSpan(o); o = sp ? { id: o.id, name: o.name, start: sp[0], end: sp[1], color: o.color, civId: (o.civIds || [])[0], dyn: o } : null; }
   /* une entrée (épisode) se présente comme une entité datée */
   if (o && tlEnt.type === "event") o = { id: o.id, name: o.title, start: o.year, end: evEnd(o), civId: o.civId, kind: o.kind, ev: o };
   if (!o) tlEnt = null;
@@ -2879,6 +2984,7 @@ function focusFromSel() {
   else if (sel.type === "terr") { const t = byId(db.territories, sel.id); if (t) tlEnt = { type: "civ", id: t.civId }; }
   else if (sel.type === "poi") tlEnt = { type: "poi", id: sel.id };
   else if (sel.type === "person") tlEnt = { type: "person", id: sel.id };
+  else if (sel.type === "dynasty") tlEnt = dynasty(sel.id) && dynSpan(dynasty(sel.id)) ? { type: "dynasty", id: sel.id } : tlEnt;
   else if (sel.type === "event") {
     const e = byId(db.events, sel.id); if (!e) return;
     if (isEpisode(e)) { tlEnt = { type: "event", id: e.id }; return; }
@@ -2891,6 +2997,7 @@ function focusEntries() {
   if (f.type === "civ") return evOf(f.id);
   if (f.type === "poi") return evOfPoi(f.id);
   if (f.type === "event") return evKids(f.id);
+  if (f.type === "dynasty") return [...new Set(membersOf(f.id).flatMap(p => evOfPerson(p.id)))].filter(e => e.kind !== "regne");
   return evOfPerson(f.id);
 }
 /* continuité : filiations déclarées, sinon civilisations qui se succèdent sur le même sol */
@@ -2921,8 +3028,8 @@ function continuity(c) {
 function renderFocusTL(w) {
   const o = focusEnt(), f = tlEnt;
   const span = f.type === "person" ? personSpan(o) : fmtSpan(o.start, o.end);
-  const label = { civ: "Civilisation", poi: KINDS[o.kind] || "Lieu", person: "Personnage", event: (EVKINDS[o.kind] || "Entrée") + " · épisode" }[f.type];
-  const up = f.type === "event" && o.civId && civ(o.civId) ? civ(o.civId) : null;
+  const label = { civ: "Civilisation", poi: KINDS[o.kind] || "Lieu", person: "Personnage", event: (EVKINDS[o.kind] || "Entrée") + " · épisode", dynasty: "Dynastie" }[f.type];
+  const up = (f.type === "event" || f.type === "dynasty") && o.civId && civ(o.civId) ? civ(o.civId) : null;
   evBand.textContent = "";
   evBand.append(el("div", { class: "tl-focus-h" }, [
     el("button", { class: "btn sm", title: "Revenir à toutes les civilisations", onclick: ev => { ev.stopPropagation(); tlEnt = null; renderTimeline(); } }, "← Toutes"),
@@ -2974,7 +3081,7 @@ function renderFocusTL(w) {
   });
   const entries = focusEntries();
   const ctx = f.type === "civ" ? { civId: f.id } : f.type === "poi" ? { poiIds: [f.id], civId: o.civId || "" }
-    : f.type === "event" ? { parentId: o.id, civId: o.civId || "", parts: clone(o.ev.parts || []) } : { people: [{ personId: f.id, role: "participant" }] };
+    : f.type === "event" ? { parentId: o.id, civId: o.civId || "", parts: clone(o.ev.parts || []) } : f.type === "dynasty" ? { civId: o.civId || "" } : { people: [{ personId: f.id, role: "participant" }] };
 
   if (f.type === "civ") {
     /* étendue territoriale, titre incrusté */
@@ -3009,13 +3116,23 @@ function renderFocusTL(w) {
     track("Contrôle", ownersOf(o).map(([a, b, cid]) => ({ a, b, t: civ(cid).name, c: civ(cid).color, s: fmtSpan(a, b) + " · d'après les territoires", on: () => select("civ", cid) })));
   } else if (f.type === "event") {
     track(null, [{ a: o.start, b: o.end, t: o.name, c: KIND_COL[o.kind] || civ(o.civId)?.color || "#7a6a5a", s: evSpan(o.ev) + " · " + (EVKINDS[o.kind] || ""), sel: sel && sel.type === "event" && sel.id === o.id, on: () => select("event", o.id) }]);
+  } else if (f.type === "dynasty") {
+    const ms = membersOf(o.id), rows = reignRows([...new Set(ms.flatMap(p => reignsOf(p.id)))]).filter(r => r.p && (r.p.dynastyIds || []).includes(o.id));
+    track("Souverains", rows.map(r => ({ a: r.a, b: r.b, t: r.p.name, c: o.color, s: shortSpan(r.a, r.b) + " · " + (civ(r.e.civId)?.name || ""), on: () => select("person", r.p.id) })));
+    track("Membres", ms.filter(p => p.start !== null && p.start !== undefined).map(p => ({ a: p.start, b: p.end ?? p.start, t: p.name, c: "#6b4f8a", s: personSpan(p) + (p.title ? " · " + p.title : ""), on: () => select("person", p.id) })));
   } else {
     track("Vie", o.start === null || o.start === undefined ? [] : [{ a: o.start, b: o.end ?? o.start, t: o.name, c: "#6b4f8a", s: personSpan(o), on: () => select("person", o.id) }]);
+  }
+  /* faits légers (sans fiche) */
+  const fo = f.type === "dynasty" ? o.dyn : f.type === "event" ? null : o;
+  if (fo && (fo.facts || []).length) {
+    const fk = FACT_KINDS[f.type] || {};
+    track(f.type === "person" ? "Faits de vie" : "Faits", fo.facts.map(x => ({ a: x.year, b: x.year, t: x.label || fk[x.kind] || "Fait", c: "#6b4f8a", cls: "fact", s: fmtYear(x.year, true) + " · " + (fk[x.kind] || "fait"), on: () => openFull(f.type, fo.id, "chrono") })));
   }
   for (const [key, title, kinds] of TRACKS)
     track(title, entries.filter(e => kinds.includes(e.kind || "jalon")).map(evItem), () => openEventForm(null, Object.assign({ kind: kinds[0] }, clone(ctx))));
   const ps = f.type === "civ" ? personsOfCiv(o.id) : f.type === "poi" ? personsOfPoi(o.id) : f.type === "event" ? evPersons(o.ev) : [];
-  if (f.type !== "person") track("Personnages", ps.filter(p => p.start !== null && p.start !== undefined).map(p => ({ a: p.start, b: p.end ?? p.start, t: p.name, c: "#6b4f8a", s: personSpan(p) + (p.title ? " · " + p.title : ""), on: () => select("person", p.id) })),
+  if (f.type !== "person" && f.type !== "dynasty") track("Personnages", ps.filter(p => p.start !== null && p.start !== undefined).map(p => ({ a: p.start, b: p.end ?? p.start, t: p.name, c: "#6b4f8a", s: personSpan(p) + (p.title ? " · " + p.title : ""), on: () => select("person", p.id) })),
     f.type === "civ" ? () => openPersonForm(null, { civIds: [o.id] }) : null);
   if (empties.length && canEdit()) {
     laneIn.append(el("div", { class: "trk-add", style: `top:${top}px` }, [el("span", {}, "Ajouter"),
@@ -3067,6 +3184,10 @@ function delPerson(p) {
   mutate(() => {
     db.persons = db.persons.filter(x => x.id !== p.id);
     for (const e of db.events) if (e.people && e.people.some(x => x.personId === p.id)) e.people = e.people.filter(x => x.personId !== p.id);
+    for (const q of db.persons) {
+      if ((q.parents || []).some(x => x.personId === p.id)) { q.parents = q.parents.filter(x => x.personId !== p.id); if (!q.parents.length) delete q.parents; }
+      if ((q.spouses || []).some(x => x.personId === p.id)) { q.spouses = q.spouses.filter(x => x.personId !== p.id); if (!q.spouses.length) delete q.spouses; }
+    }
   });
   sel = null; renderAll();
 }
@@ -3078,7 +3199,7 @@ function delPerson(p) {
    chaque nom ouvre la fiche correspondante (← Retour pour revenir). */
 let full = null;               // { type, id, tab, block, row, add, filt, q, kids, cur, hist }
 const fullSheet = $("#fullSheet");
-const fullBusy = () => !!(full && (full.block || full.row || full.add));
+const fullBusy = () => !!(full && (full.block || full.row || full.add || full.fadd));
 const pl = (n, one, many) => n + " " + (n > 1 ? many : one);
 const shortSpan = (a, b) => (b === null || b === undefined || b === a) ? fmtYear(a, false) : fmtYear(a, false) + " → " + fmtYear(b, false);
 const setF = (scope, k, v) => { const i = scope.querySelector("#f-" + k); if (i) i.value = v; };
@@ -3139,7 +3260,8 @@ const ENT = {
   civ: { get: id => civ(id), label: () => "Civilisation" },
   poi: { get: id => byId(db.pois, id), label: o => KINDS[o.kind] || "Lieu" },
   event: { get: id => byId(db.events, id), label: o => EVKINDS[o.kind] || "Entrée" },
-  person: { get: id => person(id), label: () => "Personnage" }
+  person: { get: id => person(id), label: () => "Personnage" },
+  dynasty: { get: id => dynasty(id), label: () => "Dynastie" }
 };
 const entName = (type, o) => type === "event" ? o.title : o.name;
 function entOfSel() {
@@ -3232,7 +3354,7 @@ function sumCiv(c) {
     acts: [el("button", { class: "btn", onclick: () => { const t = ts.find(t => alive(t)) || ts[0]; t ? fitTo(t.rings) : toast("Aucun territoire tracé"); } }, "Cadrer"),
       el("button", { class: "btn", onclick: () => { tlEnt = { type: "civ", id: c.id }; tlFocus(c.start, c.end ?? Y1); } }, "Cadrer la frise")],
     marks: marksOf(c),
-    counts: [[evs.length, "entrée chronologique", "entrées chronologiques", "chrono"], [pers.length, "personnage", "personnages", "apercu"],
+    counts: [[evs.length, "entrée chronologique", "entrées chronologiques", "chrono"], [evs.filter(e => e.kind === "regne").length, "règne", "règnes", "rulers"], [pers.length, "personnage", "personnages", "apercu"],
       [nRel, "relation", "relations", "rel", sg.length ? pl(sg.length, "suggérée", "suggérées") : ""],
       [ts.length, "emprise", "emprises", "geo", gaps.length ? pl(gaps.length, "trou", "trous") : ""], [ps.length, "lieu", "lieux", "geo"]],
     todo
@@ -3292,13 +3414,15 @@ function sumPerson(p) {
   const todo = [];
   if (p.start === null || p.start === undefined) todo.push(["+ dates", go("apercu", "ident")]);
   if (!(p.civIds || []).length) todo.push(["+ civilisation", go("rel")]);
+  if (!parentsOf(p).length) todo.push(["+ parents", go("famille")]);
   if (!p.description) todo.push(["+ biographie", go("apercu", "desc")]);
   if (!p.image) todo.push(["+ image", go("apercu", "img")]);
   sumShell("person", p, {
-    kind: "Personnage", color: cs[0]?.color || "#6b4f8a", sub: personSpan(p), meta: p.title || "",
+    kind: "Personnage", color: dynsOf(p)[0]?.color || cs[0]?.color || "#6b4f8a", pills: dynsOf(p).map(d => el("button", { class: "pill dynpill", style: `border-color:${d.color};color:${d.color}`, onclick: () => select("dynasty", d.id) }, d.name)), sub: personSpan(p), meta: p.title || "",
     acts: cs.slice(0, 2).map(c => el("button", { class: "btn", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name)),
     marks: marksFrom(evs),
-    counts: [[evs.length, "entrée", "entrées", "chrono"], [cs.length, "civilisation", "civilisations", "rel"], [ls.length, "lieu", "lieux", "rel"]],
+    counts: [[evs.length + (p.facts || []).length, "entrée ou fait", "entrées et faits", "chrono"], [parentsOf(p).length + spousesOf(p.id).length + childrenOf(p.id).length, "proche", "proches", "famille"],
+      [cs.length, "civilisation", "civilisations", "rel"], [ls.length, "lieu", "lieux", "rel"]],
     todo
   });
 }
@@ -3319,23 +3443,33 @@ function fullGoBack() {
   try { select(h.type, h.id, { keepYear: true }); } finally { fullBack = false; fullTabNext = null; }
 }
 function fullTabs(type, o) {
-  if (type === "civ") return [["apercu", "Aperçu"], ["chrono", "Chronologie", evOf(o.id).length],
+  if (type === "civ") return [["apercu", "Aperçu"], ["chrono", "Chronologie", evOf(o.id).length + (o.facts || []).length],
+    ["rulers", "Dirigeants", evOf(o.id).filter(e => e.kind === "regne").length],
     ["rel", "Relations", linksIn(o.id).length + linksOut(o.id).length + subjAs(o.id).length + subjOver(o.id).length], ["geo", "Géographie", terrOf(o.id).length + poisOf(o.id).length]];
-  if (type === "poi") return [["apercu", "Aperçu"], ["chrono", "Chronologie", evOfPoi(o.id).length], ["ctrl", "Contrôle", new Set(ownersOf(o).map(x => x[2])).size], ["geo", "Géographie"]];
-  if (type === "person") return [["apercu", "Aperçu"], ["chrono", "Chronologie", evOfPerson(o.id).length], ["rel", "Relations", civsOfPerson(o).length]];
+  if (type === "poi") return [["apercu", "Aperçu"], ["chrono", "Chronologie", evOfPoi(o.id).length + (o.facts || []).length], ["ctrl", "Contrôle", new Set(ownersOf(o).map(x => x[2])).size], ["geo", "Géographie"]];
+  if (type === "person") return [["apercu", "Aperçu"], ["famille", "Famille", parentsOf(o).length + spousesOf(o.id).length + childrenOf(o.id).length],
+    ["chrono", "Chronologie", evOfPerson(o.id).length + (o.facts || []).length], ["rel", "Relations", civsOfPerson(o).length]];
+  if (type === "dynasty") { const ms = membersOf(o.id); return [["apercu", "Aperçu"], ["tree", "Arbre", ms.length], ["rulers", "Souverains", new Set(ms.flatMap(p => reignsOf(p.id).map(e => e.id))).size],
+    ["terr", "Territoires"], ["chrono", "Chronologie", (o.facts || []).length]]; }
   return [["apercu", "Aperçu"], ...(isEpisode(o) ? [["chrono", "Chronologie", evKids(o.id).length]] : []),
     ["parts", "Participants", evCivIds(o).length + evPeople(o).length], ["geo", "Géographie", evPoiIds(o).length + (o.arrows || []).length + (o.lon !== null && o.lon !== undefined ? 1 : 0)]];
 }
 function fullHeadInfo(type, o) {
   if (type === "civ") return { color: o.color, meta: fmtSpan(o.start, o.end) + (o.region ? " · " + o.region : "") };
   if (type === "poi") return { color: civ(o.civId)?.color, meta: fmtSpan(o.start, o.end) + " · " + coordTxt(o) + (civ(o.civId) ? " · " + civ(o.civId).name : "") };
-  if (type === "person") return { color: civsOfPerson(o)[0]?.color || "#6b4f8a", meta: personSpan(o) + (o.title ? " · " + o.title : "") };
+  if (type === "person") return { color: dynsOf(o)[0]?.color || civsOfPerson(o)[0]?.color || "#6b4f8a", meta: personSpan(o) + (o.title ? " · " + o.title : "") + (dynsOf(o).length ? " · " + dynsOf(o).map(d => d.name).join(", ") : "") };
+  if (type === "dynasty") return { color: o.color, meta: dynSpanTxt(o) + ((o.civIds || []).length ? " · " + o.civIds.map(civ).filter(Boolean).map(c => c.name).join(", ") : "") };
   return { color: KIND_COL[o.kind] || civ(o.civId)?.color, meta: evSpan(o) + (isEpisode(o) ? " · épisode" : "") };
 }
 function fullMapPts(type, o) {
   if (type === "civ") { const ts = terrOf(o.id), t = ts.find(t => alive(t)) || ts[0]; return t ? t.rings : null; }
   if (type === "poi") return [[[o.lon - 3, o.lat - 2], [o.lon + 3, o.lat + 2]]];
   if (type === "event") { const p = evPts(o); for (const id of evPoiIds(o)) { const q = byId(db.pois, id); if (q) p.push([q.lon, q.lat]); } return p.length ? [p] : null; }
+  if (type === "dynasty") {
+    const rings = [];
+    for (const p of membersOf(o.id)) for (const e of reignsOf(p.id)) { const m = Math.round((e.year + evEnd(e)) / 2), t = terrOf(e.civId || "").find(t => t.start <= m && (t.end ?? Y1) >= m); if (t) rings.push(...t.rings); }
+    return rings.length ? rings : null;
+  }
   const p = poisOfPerson(o).map(([q]) => [q.lon, q.lat]); evOfPerson(o.id).forEach(e => p.push(...evPts(e)));
   return p.length ? [p] : null;
 }
@@ -3343,6 +3477,7 @@ function fullFrise(type, o) {
   if (type === "civ") { tlEnt = { type: "civ", id: o.id }; tlFocus(o.start, o.end ?? Y1); }
   else if (type === "poi") { tlEnt = { type: "poi", id: o.id }; tlFocus(Math.max(o.start, Y0), Math.min(o.end ?? Y1, Y1)); }
   else if (type === "person") { tlEnt = { type: "person", id: o.id }; if (o.start !== null && o.start !== undefined) tlFocus(o.start, Math.max(o.end ?? o.start, o.start + 20)); }
+  else if (type === "dynasty") { const sp = dynSpan(o); tlEnt = { type: "dynasty", id: o.id }; if (sp) tlFocus(sp[0], Math.max(sp[1], sp[0] + 20)); }
   else { const ep = isEpisode(o) ? o : o.parentId ? byId(db.events, o.parentId) : null; if (ep) tlEnt = { type: "event", id: ep.id }; tlFocus(o.year - 2, Math.max(evEnd(o), o.year) + 2); }
   renderTimeline();
 }
@@ -3350,6 +3485,7 @@ function fullDelete(type, o) {
   if (type === "civ") { delCiv(o); return; }
   if (type === "poi") return delPoi(o);
   if (type === "person") return delPerson(o);
+  if (type === "dynasty") return delDynasty(o);
   delEvent(o);
 }
 function renderFull(force) {
@@ -3357,7 +3493,7 @@ function renderFull(force) {
     const s = entOfSel();
     if (s && (s.type !== full.type || s.id !== full.id)) {
       if (!fullBack) full.hist.push({ type: full.type, id: full.id, tab: full.tab });
-      Object.assign(full, { type: s.type, id: s.id, tab: fullTabNext || "apercu", block: null, row: null, add: null, cur: null, filt: "all", q: "" });
+      Object.assign(full, { type: s.type, id: s.id, tab: fullTabNext || "apercu", block: null, row: null, add: null, fadd: null, cur: null, filt: "all", q: "", ft: null, rq: null });
       fullTabNext = null;
     }
   }
@@ -3382,9 +3518,9 @@ function renderFull(force) {
         el("span", { class: "dot", style: `background:${info.color || "#7a6a5a"}` }), el("span", { class: "eyebrow" }, ENT[type].label(o)),
         el("span", { class: "fmeta" }, info.meta)]),
       el("h2", {}, entName(type, o)),
-      type === "event" ? stepNav(o) : null]),
+      type === "event" ? stepNav(o) : type === "dynasty" ? dynHouses(o) : null]),
     el("nav", { class: "ftabs", role: "tablist" }, tabs.map(([k, t, n]) => el("button", {
-      class: k === full.tab ? "on" : "", role: "tab", onclick: () => { Object.assign(full, { tab: k, block: null, row: null, add: null }); renderFull(true); }
+      class: k === full.tab ? "on" : "", role: "tab", onclick: () => { Object.assign(full, { tab: k, block: null, row: null, add: null, fadd: null, filt: "all", q: "" }); renderFull(true); }
     }, [t, n !== undefined ? el("span", { class: "c" }, String(n)) : null]))),
     el("div", { class: "facts" }, [
       pts ? el("button", { class: "btn", onclick: () => { closeFull(); fitTo(pts); } }, "Voir sur la carte") : null,
@@ -3396,9 +3532,10 @@ function renderFull(force) {
   const t = full.tab;
   body.append(t === "apercu" ? fullApercu(type, o)
     : t === "chrono" ? chronoTable(chronoCfg(type, o))
-    : type === "civ" ? (t === "rel" ? fullRel(o) : fullGeo(o))
+    : type === "civ" ? (t === "rel" ? fullRel(o) : t === "rulers" ? fullRulers(o) : fullGeo(o))
     : type === "poi" ? (t === "ctrl" ? fullPoiCtrl(o) : fullPoiGeo(o))
-    : type === "person" ? fullPersonRel(o)
+    : type === "person" ? (t === "famille" ? fullFamily(o) : fullPersonRel(o))
+    : type === "dynasty" ? (t === "tree" ? fullDynTree(o) : t === "rulers" ? fullDynRulers(o) : fullDynTerr(o))
     : t === "parts" ? fullParts(o) : fullEvGeo(o));
   fullSheet.append(body);
   body.scrollTop = sc; full.lastKey = type + o.id + t;
@@ -3436,15 +3573,38 @@ function identBlock(type, o) {
       mutate(() => Object.assign(o, { name: v.name.trim(), kind: v.kind, civId: v.civId || null, lat: clamp(v.lat, -85, 85), lon: clamp(v.lon, -180, 180), start: v.start ?? Y0, end: v.end ?? Y1 }));
     };
   } else if (type === "person") {
-    view = kv([["Nom", o.name], ["Titre", o.title || "—"], ["Naissance", o.start !== null && o.start !== undefined ? fmtYear(o.start, true) : "inconnue"],
-      ["Mort", o.end !== null && o.end !== undefined ? fmtYear(o.end, true) : "inconnue"]]);
-    fields = [{ key: "name", label: "Nom" }, { key: "title", label: "Titre ou fonction", ph: "Pharaon de la XIXe dynastie" },
-      { type: "row", fields: [{ key: "start", label: "Naissance", type: "number", help: "Vide si inconnue" }, { key: "end", label: "Mort", type: "number" }] }];
-    values = { name: o.name, title: o.title || "", start: o.start ?? "", end: o.end ?? "" };
+    const bp = o.birthPoiId ? byId(db.pois, o.birthPoiId) : null, dp = o.deathPoiId ? byId(db.pois, o.deathPoiId) : null;
+    view = kv([["Nom", o.name], ["Titre", o.title || "—"],
+      ["Naissance", [o.start !== null && o.start !== undefined ? fmtYear(o.start, true) : "inconnue", bp ? [" · ", link("poi", bp.id, bp.name)] : null].flat()],
+      ["Mort", [o.end !== null && o.end !== undefined ? fmtYear(o.end, true) : "inconnue", dp ? [" · ", link("poi", dp.id, dp.name)] : null].flat()],
+      ["Sexe", SEX[o.sex || ""]]]);
+    fields = [{ key: "name", label: "Nom" }, { type: "row", fields: [{ key: "title", label: "Titre ou fonction", ph: "Pharaon de la XIXe dynastie" }, { key: "sex", label: "Sexe", type: "select", options: Object.entries(SEX), help: "Sert aux liens de parenté (fils / fille…)" }] },
+      { type: "row", fields: [{ key: "start", label: "Naissance", type: "number", help: "Vide si inconnue" }, { key: "birthPoiId", label: "Lieu de naissance", type: "select", options: [["", "— aucun —"]].concat(poiOpts()) }] },
+      { type: "row", fields: [{ key: "end", label: "Mort", type: "number" }, { key: "deathPoiId", label: "Lieu de mort", type: "select", options: [["", "— aucun —"]].concat(poiOpts()) }] }];
+    values = { name: o.name, title: o.title || "", sex: o.sex || "", start: o.start ?? "", end: o.end ?? "", birthPoiId: o.birthPoiId || "", deathPoiId: o.deathPoiId || "" };
     save = v => {
       if (!v.name.trim()) { toast("Le nom est requis"); return false; }
       if (v.start !== null && v.end !== null && v.end < v.start) { toast("La mort précède la naissance"); return false; }
-      mutate(() => Object.assign(o, { name: v.name.trim(), title: v.title.trim() || undefined, start: v.start, end: v.end }));
+      mutate(() => {
+        Object.assign(o, { name: v.name.trim(), title: v.title.trim() || undefined, start: v.start, end: v.end });
+        for (const k of ["sex", "birthPoiId", "deathPoiId"]) { if (v[k]) o[k] = v[k]; else delete o[k]; }
+      });
+    };
+  } else if (type === "dynasty") {
+    const cs = (o.civIds || []).map(civ).filter(Boolean), ori = (o.origins || []).map(x => [dynasty(x.dynastyId), x.kind]).filter(x => x[0]);
+    view = kv([["Nom", o.name], ["Période", dynSpanTxt(o) + " (d'après les règnes de ses membres)"],
+      ["Civilisations", cs.length ? cs.flatMap((c, i) => [i ? ", " : null, link("civ", c.id, c.name)]) : "—"],
+      ["Issue de", ori.length ? ori.flatMap(([x, k], i) => [i ? ", " : null, link("dynasty", x.id, x.name), " (" + (DYN_ORIGIN[k] || k) + ")"]) : "—"],
+      ["Couleur", [el("span", { class: "dot", style: `background:${o.color};display:inline-block;vertical-align:-1px;margin-right:6px` }), el("span", { class: "fmeta" }, o.color)]]]);
+    fields = [{ key: "name", label: "Nom" }, { key: "color", label: "Couleur", type: "color" },
+      { type: "custom", key: "civs", label: "Civilisations où elle a régné", render: st => rowsEditor(st, "civs", [{ k: "civId", opts: civOpts, empty: "— civilisation —" }], { civId: "" }, "+ Civilisation") },
+      { type: "custom", key: "origins", label: "Issue de", help: "Union de deux maisons, branche cadette d'une autre, ou changement de nom.",
+        render: st => rowsEditor(st, "origins", [{ k: "dynastyId", opts: () => dynastyOpts().filter(([id]) => id !== o.id), empty: "— dynastie —" }, { k: "kind", opts: () => Object.entries(DYN_ORIGIN) }], { dynastyId: "", kind: "union" }, "+ Origine") }];
+    values = { name: o.name, color: o.color || "#8a3b3b", civs: (o.civIds || []).map(id => ({ civId: id })), origins: clone(o.origins || []) };
+    save = v => {
+      if (!v.name.trim()) { toast("Le nom est requis"); return false; }
+      const civIds = [...new Set(v.civs.map(x => x.civId).filter(Boolean))], origins = v.origins.filter(x => x.dynastyId);
+      mutate(() => { Object.assign(o, { name: v.name.trim(), color: v.color }); if (civIds.length) o.civIds = civIds; else delete o.civIds; if (origins.length) o.origins = origins; else delete o.origins; });
     };
   } else {
     const par = o.parentId ? byId(db.events, o.parentId) : null, kids = evKids(o.id);
@@ -3505,10 +3665,11 @@ function fullApercu(type, o) {
 
 /* =====  Chronologie (tous les types) : un tableau filtrable, modifiable ligne par ligne  ===== */
 function chronoCfg(type, o) {
-  if (type === "civ") return { all: evOf(o.id), civ: o.id, role: { label: `Rôle de « ${o.name} »`, opts: CIV_ROLES, def: "principal", get: e => evRole(e, o.id), set: (e, r) => setRole(e, o.id, r) }, hide: [], defaults: { civId: o.id } };
-  if (type === "poi") return { all: evOfPoi(o.id), hide: ["lieux"], defaults: { civId: o.civId || null, poiIds: [o.id] } };
+  if (type === "dynasty") return { all: [...new Set(membersOf(o.id).flatMap(p => evOfPerson(p.id)))], hide: [], defaults: { civId: (o.civIds || [])[0] || null }, facts: factCfg("dynasty", o) };
+  if (type === "civ") return { facts: factCfg("civ", o), all: evOf(o.id), civ: o.id, role: { label: `Rôle de « ${o.name} »`, opts: CIV_ROLES, def: "principal", get: e => evRole(e, o.id), set: (e, r) => setRole(e, o.id, r) }, hide: [], defaults: { civId: o.id } };
+  if (type === "poi") return { all: evOfPoi(o.id), hide: ["lieux"], defaults: { civId: o.civId || null, poiIds: [o.id] }, facts: factCfg("poi", o) };
   if (type === "person") return {
-    all: evOfPerson(o.id), hide: ["pers"], defaults: { civId: (o.civIds || [])[0] || null, people: [{ personId: o.id, role: "participant" }] },
+    facts: factCfg("person", o), all: evOfPerson(o.id), hide: ["pers"], defaults: { civId: (o.civIds || [])[0] || null, people: [{ personId: o.id, role: "participant" }] },
     role: { label: `Rôle de « ${o.name} »`, opts: PERSON_ROLES, def: "participant", get: e => (evPeople(e).find(x => x.personId === o.id) || {}).role || "participant",
       set: (e, r) => { const x = (e.people || []).find(x => x.personId === o.id); if (x) x.role = r; else (e.people = e.people || []).push({ personId: o.id, role: r }); } }
   };
@@ -3535,23 +3696,32 @@ function chronoTable(cfg) {
         rows.push([e, 0]); if (full.kids && !cfg.step) for (const k of evKids(e.id)) rows.push([k, 1]);
       }
     }
+    const F = cfg.facts;
+    if (F && (full.filt === "all" || full.filt === "faits")) {
+      const fl = F.list().filter(f => !q || normName(f.label || F.kinds[f.kind]).includes(q));
+      if (full.filt === "faits") rows = [];
+      for (const f of fl) { let i = rows.findIndex(([e, l]) => l === 0 && e.year > f.year); if (i < 0) i = rows.length; rows.splice(i, 0, [f, "fact"]); }
+    }
+    if (full.fadd && F) tbody.append(factEditTr(cfg, cols, full.fadd, null));
     if (full.add) tbody.append(editTr(cfg, cols, full.add, null));
-    for (const [e, lvl] of rows) tbody.append(full.row === e.id
+    for (const [e, lvl] of rows) tbody.append(lvl === "fact" ? (full.row === "f:" + e.id ? factEditTr(cfg, cols, { year: e.year, kind: e.kind, label: e.label, poiId: e.poiId }, e) : factTr(cfg, cols, e)) : full.row === e.id
       ? editTr(cfg, cols, { year: e.year, end: evLong(e) ? evEnd(e) : "", title: e.title, kind: e.kind || "jalon", role: cfg.role ? cfg.role.get(e) : "" }, e)
       : chronoTr(cfg, cols, e, lvl));
-    if (!rows.length && !full.add) tbody.append(el("tr", {}, el("td", { colspan: cols.length, class: "muted empty" },
+    if (!rows.length && !full.add && !full.fadd) tbody.append(el("tr", {}, el("td", { colspan: cols.length, class: "muted empty" },
       all.length ? "Aucune entrée ne correspond au filtre." : cfg.step ? "Aucune étape. « + Étape » en ajoute une ici." : "Aucune entrée. « + Entrée » en ajoute une ici.")));
   };
-  const chips = el("div", { class: "chipsf" }, [["all", "Toutes", all.length], ...TRACKS.map(([k, t, kinds]) => [k, t, all.filter(e => kinds.includes(e.kind || "jalon")).length])].map(([k, t, n]) =>
+  const chips = el("div", { class: "chipsf" }, [["all", "Toutes", all.length + (cfg.facts ? cfg.facts.list().length : 0)], ...(cfg.facts ? [["faits", "Faits", cfg.facts.list().length]] : []), ...TRACKS.map(([k, t, kinds]) => [k, t, all.filter(e => kinds.includes(e.kind || "jalon")).length])].map(([k, t, n]) =>
     el("button", { class: (full.filt === k ? "on" : "") + (n ? "" : " empty"), onclick: () => { full.filt = k; full.row = null; renderFull(true); } }, [t, el("span", { class: "c" }, String(n))])));
   const qi = el("input", { type: "search", class: "srch", placeholder: "Filtrer par intitulé…", value: full.q });
   qi.addEventListener("input", () => { full.q = qi.value; drawRows(); });
   const kc = el("input", { type: "checkbox" }); kc.checked = full.kids; kc.onchange = () => { full.kids = kc.checked; drawRows(); };
   wrap.append(el("div", { class: "toolbar" }, [chips, qi, hasKids && !cfg.step ? el("label", { class: "chk" }, [kc, " étapes"]) : null, el("span", { class: "spacer" }),
+    cfg.facts ? el("button", { class: "btn ed", title: "Fait léger, sans fiche : " + Object.values(FACT_KINDS[cfg.facts.type]).join(", ").toLowerCase(), onclick: () => {
+      full.row = null; full.add = null; full.fadd = { year: full.fadd?.year ?? "", kind: Object.keys(FACT_KINDS[cfg.facts.type])[0], label: "" }; drawRows(); } }, cfg.facts.type === "person" ? "+ Fait de vie" : "+ Fait") : null,
     el("button", { class: "btn prim ed", onclick: () => {
       const trk = full.filt === "all" ? null : TRACKS.find(t => t[0] === full.filt);
       const base = full.add || {};
-      full.row = null; full.add = { year: base.year ?? (all.length ? Math.max(...all.map(e => e.year)) : (cfg.defaults.parentId ? byId(db.events, cfg.defaults.parentId).year : year)), end: "", title: "",
+      full.row = null; full.fadd = null; full.add = { year: base.year ?? (all.length ? Math.max(...all.map(e => e.year)) : (cfg.defaults.parentId ? byId(db.events, cfg.defaults.parentId).year : year)), end: "", title: "",
         kind: trk ? trk[2][0] : (cfg.newKind || "jalon"), role: cfg.role ? cfg.role.def : "" }; drawRows();
     } }, cfg.step ? "+ Étape" : "+ Entrée")]));
   const TH = { date: "Date", title: "Intitulé", kind: "Nature", role: cfg.role?.label, civs: cfg.civ ? "Autres civilisations" : "Civilisations", lieux: "Lieux", pers: "Personnages", carte: "Carte", ac: "" };
@@ -3993,6 +4163,607 @@ function fullGeo(c) {
       el("div", { class: "tscroll" }, el("table", { class: "t" }, [el("thead", {}, el("tr", {}, [el("th", {}, "Lieu"), el("th", {}, "Nature"), el("th", {}, "Période"), el("th", {})])), lieux]))
     ])
   ]);
+}
+
+/* =====================  FAMILLES, DYNASTIES, DIRIGEANTS, FAITS (v2.8.0)  =====================
+   - faits : événements légers, sans fiche, stockés dans l'élément (o.facts) ;
+   - famille : parents (naturels ou adoptifs) et conjoints d'un personnage, enfants et fratrie calculés ;
+   - dynasties : collection « dynasties », membres = personnages (p.dynastyIds), arbre dessiné automatiquement ;
+   - dirigeants : entrées « Règne » où un personnage est Souverain. */
+const dynasty = id => byId(db.dynasties || [], id);
+const FACT_KINDS = {
+  person: { mariage: "Mariage", adoption: "Adoption", avenement: "Avènement", abdication: "Abdication", exil: "Exil", captivite: "Captivité", autre: "Autre" },
+  poi: { fondation: "Fondation", renommage: "Changement de nom", destruction: "Destruction", reconstruction: "Reconstruction", seisme: "Séisme", capitale: "Devient capitale", autre: "Autre" },
+  civ: { capitale: "Changement de capitale", renommage: "Changement de nom", reforme: "Réforme", autre: "Autre" },
+  dynasty: { fondation: "Fondation", extinction: "Extinction", union: "Union", renommage: "Changement de nom", autre: "Autre" }
+};
+const FACT_TO_EV = { fondation: "fondation", destruction: "catastrophe", seisme: "catastrophe", reconstruction: "construction", avenement: "regne", reforme: "jalon" };
+const DYN_ORIGIN = { union: "union", branche: "branche cadette", renommage: "changement de nom" };
+const SEX = { "": "—", m: "homme", f: "femme" };
+
+/* --- famille --- */
+const parentsOf = p => (p.parents || []).filter(x => person(x.personId));
+const natParents = p => parentsOf(p).filter(x => x.kind !== "adoptif").map(x => person(x.personId));
+const adoParents = p => parentsOf(p).filter(x => x.kind === "adoptif").map(x => person(x.personId));
+const childrenOf = id => (db.persons || []).filter(q => (q.parents || []).some(x => x.personId === id))
+  .map(q => ({ p: q, adop: (q.parents || []).find(x => x.personId === id).kind === "adoptif" })).sort((a, b) => (a.p.start ?? 0) - (b.p.start ?? 0));
+function spousesOf(id) {
+  const out = [], me = person(id);
+  for (const s of (me && me.spouses) || []) { const q = person(s.personId); if (q) out.push({ p: q, start: s.start ?? null, end: s.end ?? null, owner: me, ref: s }); }
+  for (const q of db.persons || []) if (q.id !== id) for (const s of q.spouses || []) if (s.personId === id && !out.some(o => o.p.id === q.id)) out.push({ p: q, start: s.start ?? null, end: s.end ?? null, owner: q, ref: s });
+  return out.sort((a, b) => (a.start ?? 9e9) - (b.start ?? 9e9));
+}
+const sharesParent = (a, b) => a.id !== b.id && natParents(a).some(x => natParents(b).includes(x));
+const siblingsOf = p => (db.persons || []).filter(q => sharesParent(p, q));
+const dynsOf = p => (p.dynastyIds || []).map(dynasty).filter(Boolean);
+const membersOf = did => (db.persons || []).filter(p => (p.dynastyIds || []).includes(did)).sort((a, b) => (a.start ?? 0) - (b.start ?? 0));
+const isRuler = (e, pid) => e.kind === "regne" && evPeople(e).some(x => x.personId === pid && x.role === "souverain");
+const reignsOf = pid => evOfPerson(pid).filter(e => isRuler(e, pid));
+function kinOf(b, a) {   /* ce que B est pour A : [libellé, par adoption] */
+  if (!a || !b || a.id === b.id) return null;
+  const w = (m, f) => b.sex === "f" ? f : m;
+  const link = (child, parent) => parentsOf(child).find(x => x.personId === parent.id);
+  let l = link(b, a); if (l) return l.kind === "adoptif" ? [w("fils adoptif", "fille adoptive") + " de", 1] : [w("fils", "fille") + " de", 0];
+  l = link(a, b); if (l) return [w("père", "mère") + (l.kind === "adoptif" ? w(" adoptif", " adoptive") : "") + " de", l.kind === "adoptif" ? 1 : 0];
+  if (spousesOf(a.id).some(s => s.p.id === b.id)) return [w("époux", "épouse") + " de", 0];
+  for (const x of parentsOf(b)) { const m = person(x.personId), y = m && link(m, a); if (y) { const ad = x.kind === "adoptif" || y.kind === "adoptif"; return [w("petit-fils", "petite-fille") + (ad ? w(" adoptif", " adoptive") : "") + " de", ad ? 1 : 0]; } }
+  if (sharesParent(a, b)) return [w("frère", "sœur") + " de", 0];
+  if (adoParents(b).some(m => adoParents(a).includes(m) || natParents(a).includes(m)) || adoParents(a).some(m => natParents(b).includes(m))) return [w("frère adoptif", "sœur adoptive") + " de", 1];
+  if (natParents(b).some(m => sharesParent(m, a))) return [w("neveu", "nièce") + " de", 0];
+  if (natParents(a).some(m => sharesParent(m, b))) return [w("oncle", "tante") + " de", 0];
+  if (childrenOf(a.id).some(c => spousesOf(c.p.id).some(s => s.p.id === b.id))) return [w("gendre", "belle-fille") + " de", 0];
+  if (spousesOf(a.id).some(s => link(b, s.p))) return [w("beau-fils", "belle-fille") + " de", 0];
+  if (natParents(b).some(m => natParents(a).some(n => sharesParent(m, n)))) return [w("cousin germain", "cousine germaine") + " de", 0];
+  return null;
+}
+function delDynasty(d) {
+  if (!requireEdit() || !confirm(`Supprimer la dynastie « ${d.name} » ? Ses membres sont conservés.`)) return;
+  mutate(() => {
+    db.dynasties = (db.dynasties || []).filter(x => x.id !== d.id);
+    for (const p of db.persons || []) if ((p.dynastyIds || []).includes(d.id)) { p.dynastyIds = p.dynastyIds.filter(x => x !== d.id); if (!p.dynastyIds.length) delete p.dynastyIds; }
+    for (const x of db.dynasties) if ((x.origins || []).some(o => o.dynastyId === d.id)) x.origins = x.origins.filter(o => o.dynastyId !== d.id);
+  });
+  sel = null; renderAll();
+}
+function dynSpan(d) {
+  const ms = membersOf(d.id), rs = ms.flatMap(p => reignsOf(p.id));
+  /* ses dates sont celles de ses règnes ; à défaut, celles de la vie de ses membres */
+  if (rs.length) return [Math.min(...rs.map(e => e.year)), Math.max(...rs.map(evEnd))];
+  const a = ms.map(p => p.start).filter(v => v !== null && v !== undefined), b = ms.map(p => p.end ?? p.start).filter(v => v !== null && v !== undefined);
+  return a.length ? [Math.min(...a), Math.max(...b)] : null;
+}
+const dynSpanTxt = d => { const s = dynSpan(d); return s ? fmtSpan(s[0], s[1]) : "dates inconnues"; };
+const dynastyOpts = () => (db.dynasties || []).slice().sort((a, b) => a.name.localeCompare(b.name, "fr")).map(d => [d.id, d.name]);
+function openDynastyForm(d, init = {}, after) {
+  const isNew = !d;
+  const st = { civs: ((d ? d.civIds : init.civIds) || []).map(id => ({ civId: id })), origins: clone((d && d.origins) || []) };
+  openForm(isNew ? "Nouvelle dynastie" : "Modifier la dynastie", [
+    { key: "name", label: "Nom", ph: "Julio-Claudiens, Capétiens, Ming…" },
+    { key: "color", label: "Couleur", type: "color" },
+    { type: "custom", key: "civs", label: "Civilisations où elle a régné", render: () => rowsEditor(st, "civs", [{ k: "civId", opts: civOpts, empty: "— civilisation —" }], { civId: "" }, "+ Civilisation") },
+    { type: "custom", key: "origins", label: "Issue de (facultatif)", help: "Union de deux maisons, branche cadette d'une autre, ou simple changement de nom.",
+      render: () => rowsEditor(st, "origins", [{ k: "dynastyId", opts: () => dynastyOpts().filter(([id]) => !d || id !== d.id), empty: "— dynastie —" }, { k: "kind", opts: () => Object.entries(DYN_ORIGIN) }], { dynastyId: "", kind: "union" }, "+ Origine") },
+    { key: "description", label: "Description", type: "textarea", rows: 4, after: wikiField() }
+  ], { name: d?.name || init.name || "", color: d?.color || init.color || "#8a3b3b", description: d?.description || "" }, v => {
+    if (!v.name.trim()) { toast("Le nom est requis"); return false; }
+    const civIds = [...new Set(st.civs.map(x => x.civId).filter(Boolean))], origins = st.origins.filter(x => x.dynastyId);
+    let o;
+    mutate(() => {
+      db.dynasties = db.dynasties || [];
+      o = d || { id: uid("dyn"), links: [] };
+      Object.assign(o, { name: v.name.trim(), color: v.color, civIds: civIds.length ? civIds : undefined, origins: origins.length ? origins : undefined, description: v.description });
+      if (isNew) db.dynasties.push(o);
+    });
+    if (after && o) after(o); else renderAll();
+  });
+}
+/* sélecteur de personnage : nom existant (liste) ou nouveau nom, créé à la volée */
+let PICK_N = 0;
+function personPicker(ph) {
+  const id = "pp" + (++PICK_N), inp = el("input", { type: "text", list: id, placeholder: ph || "Nom du personnage", class: "pp-in" });
+  const dl = el("datalist", { id }, (db.persons || []).slice().sort((a, b) => a.name.localeCompare(b.name, "fr")).map(p => el("option", { value: p.name + (p.start !== null && p.start !== undefined ? " (" + fmtYear(p.start, false) + ")" : "") })));
+  const resolve = (extra = {}) => {
+    const v = inp.value.trim(); if (!v) return null;
+    const hit = (db.persons || []).find(p => v === p.name + (p.start !== null && p.start !== undefined ? " (" + fmtYear(p.start, false) + ")" : "")) || (db.persons || []).find(p => normName(p.name) === normName(v));
+    if (hit) return hit;
+    const o = Object.assign({ id: uid("per"), name: v.replace(/\s*\([^)]*\)\s*$/, ""), start: null, end: null }, extra);
+    db.persons = db.persons || []; db.persons.push(o);   // appelé dans un mutate()
+    return o;
+  };
+  return { el: el("span", { class: "pp" }, [inp, dl]), inp, resolve };
+}
+
+/* --- faits légers --- */
+function factCfg(type, o) {
+  const list = () => {
+    const L = [];
+    if (type === "person") {
+      if (o.start !== null && o.start !== undefined) L.push({ id: "_birth", year: o.start, kind: "naissance", label: "Naissance", poiId: o.birthPoiId, pseudo: 1 });
+      if (o.end !== null && o.end !== undefined) L.push({ id: "_death", year: o.end, kind: "mort", label: "Mort", poiId: o.deathPoiId, pseudo: 1 });
+    }
+    return L.concat((o.facts || []).slice()).sort((a, b) => a.year - b.year);
+  };
+  const kinds = Object.assign({}, FACT_KINDS[type], type === "person" ? { naissance: "Naissance", mort: "Mort" } : {});
+  const toEntry = f => {
+    if (!requireEdit()) return;
+    let ev;
+    mutate(() => {
+      const civId = type === "civ" ? o.id : type === "poi" ? o.civId : type === "person" ? (o.civIds || [])[0] : (o.civIds || [])[0];
+      ev = { id: uid("evt"), title: f.label || kinds[f.kind] || "Fait", year: f.year, end: f.year, kind: FACT_TO_EV[f.kind] || "jalon", civId: civId || null, parentId: null,
+        description: "", links: [], arrows: [], lon: null, lat: null };
+      const pois = [...new Set([f.poiId, type === "poi" ? o.id : null].filter(Boolean))]; if (pois.length) ev.poiIds = pois;
+      if (type === "person") ev.people = [{ personId: o.id, role: f.kind === "avenement" ? "souverain" : "participant" }];
+      db.events.push(ev);
+      o.facts = (o.facts || []).filter(x => x.id !== f.id); if (!o.facts.length) delete o.facts;
+    });
+    refresh(); toast("Entrée créée : « " + ev.title + " »");
+  };
+  return { type, owner: o, kinds, list, toEntry };
+}
+function factTr(cfg, cols, f) {
+  const F = cfg.facts, poi = f.poiId ? byId(db.pois, f.poiId) : null;
+  const cell = {
+    date: () => el("td", { class: "y" }, fmtYear(f.year, false)),
+    title: () => el("td", { class: "tt" }, [el("div", {}, f.label || F.kinds[f.kind] || "Fait"), f.pseudo ? el("div", { class: "tsub" }, "date du personnage") : null]),
+    kind: () => el("td", {}, el("span", { class: "kfait" }, [el("i"), F.kinds[f.kind] || "Fait"])),
+    role: () => el("td", { class: "muted" }, "—"),
+    civs: () => el("td", { class: "opt" }, ""),
+    lieux: () => el("td", { class: "opt" }, poi ? el("div", { class: "tags" }, el("span", { class: "tag" }, poi.name)) : ""),
+    pers: () => el("td", { class: "opt" }, ""),
+    carte: () => el("td", { class: "opt geo" }, poi ? "●" : ""),
+    ac: () => el("td", { class: "ac" }, f.pseudo
+      ? [el("button", { class: "iconbtn ed", title: "Modifier (dates et lieux du personnage)", onclick: ev => { ev.stopPropagation(); Object.assign(full, { tab: "apercu", block: "ident" }); renderFull(true); } }, icon("pen"))]
+      : [el("button", { class: "btn sm ed", title: "En faire une entrée, avec sa propre fiche", onclick: ev => { ev.stopPropagation(); F.toEntry(f); } }, "→ entrée"),
+        el("button", { class: "iconbtn ed", title: "Corriger dans la ligne", onclick: ev => { ev.stopPropagation(); full.add = null; full.fadd = null; full.row = "f:" + f.id; renderFull(true); } }, icon("pen")),
+        iconBtn("trash", "Supprimer", () => { mutate(() => { F.owner.facts = F.owner.facts.filter(x => x.id !== f.id); if (!F.owner.facts.length) delete F.owner.facts; }); refresh(); }, "danger ed")])
+  };
+  const tr = el("tr", { class: "fact" }, cols.map(k => cell[k]()));
+  tr.addEventListener("click", () => setYear(f.year));
+  return tr;
+}
+function factEditTr(cfg, cols, st, f) {
+  const F = cfg.facts, isNew = !f;
+  const y = el("input", { type: "text", value: st.year ?? "", placeholder: "année" });
+  const lb = el("input", { type: "text", value: st.label || "", placeholder: "Libellé (facultatif)" });
+  const ki = selectEl(Object.entries(FACT_KINDS[F.type]), st.kind);
+  const po = selectEl(poiOpts(), st.poiId || "", "— lieu (facultatif) —");
+  const cancel = () => { full.row = null; full.fadd = null; renderFull(true); };
+  const ok = () => {
+    const v = { year: parseYear(y.value), label: lb.value.trim(), kind: ki.value, poiId: po.value || undefined };
+    if (v.year === null) { toast("L'année est requise"); return; }
+    if (!requireEdit()) return;
+    mutate(() => {
+      if (isNew) (F.owner.facts = F.owner.facts || []).push(Object.assign({ id: uid("fait") }, v));
+      else Object.assign(f, v);
+    });
+    if (isNew) { full.fadd = { year: v.year, kind: v.kind, label: "" }; toast("Fait ajouté — saisissez le suivant"); } else full.row = null;
+    refresh();
+  };
+  const rest = cols.length - (cols.includes("role") ? 5 : 4);
+  const tr = el("tr", { class: "editrow" }, [el("td", { class: "y" }, el("div", { class: "yy" }, [y])), el("td", {}, lb), el("td", {}, ki),
+    cols.includes("role") ? el("td", {}) : null, el("td", { colspan: rest }, po),
+    el("td", { class: "ac" }, [el("button", { class: "btn sm prim", title: "Enregistrer (Entrée)", onclick: ok }, "✓"), el("button", { class: "btn sm", title: "Annuler (Échap)", onclick: cancel }, "✕")])]);
+  tr.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); ok(); } else if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); cancel(); } });
+  setTimeout(() => (isNew && st.year !== "" && st.year !== null ? lb : y).focus(), 0);
+  return tr;
+}
+
+/* --- arbre généalogique : disposition automatique (générations, blocs de conjoints, barycentres) --- */
+function famLayout(ids, mode) {
+  const set = new Set(ids), P = ids.map(person);
+  const par = p => natParents(p).filter(q => set.has(q.id)).map(q => q.id);
+  const sp = id => spousesOf(id).map(s => s.p.id).filter(x => set.has(x));
+  const kids = id => P.filter(p => par(p).includes(id));
+  const by = p => p.start ?? 0;
+  const g = {}; P.forEach(p => g[p.id] = 0);
+  for (let it = 0; it < 40; it++) {
+    let ch = false;
+    for (const p of P) {
+      let v;
+      if (par(p).length) v = Math.max(...par(p).map(x => g[x])) + 1;
+      else {
+        const inner = sp(p.id).filter(x => par(person(x)).length), ks = kids(p.id);
+        if (inner.length) v = Math.max(...inner.map(x => g[x]));
+        else if (ks.length) v = Math.min(...ks.map(k => g[k.id])) - 1;
+        else if (sp(p.id).length) v = Math.max(...sp(p.id).map(x => g[x]));
+        else {
+          const ad = adoParents(p).filter(q => set.has(q.id)), ak = P.filter(q => adoParents(q).some(z => z.id === p.id));
+          v = ad.length ? Math.max(...ad.map(q => g[q.id])) + 1 : ak.length ? Math.min(...ak.map(q => g[q.id])) - 1 : 0;
+        }
+      }
+      if (v !== g[p.id]) { g[p.id] = v; ch = true; }
+    }
+    if (!ch) break;
+  }
+  const g0 = Math.min(...Object.values(g)); for (const k in g) g[k] -= g0;
+  const nL = Math.max(0, ...Object.values(g)) + 1;
+  const seen = new Set(), ord = [];
+  const visit = p => { if (seen.has(p.id)) return; seen.add(p.id); ord.push(p.id); sp(p.id).forEach(s => visit(person(s))); kids(p.id).sort((a, b) => by(a) - by(b)).forEach(visit); };
+  P.filter(p => !par(p).length).sort((a, b) => by(a) - by(b)).forEach(visit); P.forEach(visit);
+  const rank = Object.fromEntries(ord.map((id, i) => [id, i]));
+  const isOut = id => !!famLayout.out && famLayout.out(id);
+  const layers = [];
+  for (let L = 0; L < nL; L++) {
+    const here = ord.filter(id => g[id] === L), done = new Set(), blocks = [];
+    for (const id of here) {
+      if (done.has(id)) continue;
+      const comp = [], st = [id];
+      while (st.length) { const x = st.pop(); if (done.has(x)) continue; done.add(x); comp.push(x); sp(x).filter(y => g[y] === L && !done.has(y)).forEach(y => st.push(y)); }
+      const ends = comp.filter(x => sp(x).filter(y => g[y] === L).length <= 1);
+      const start = ends.length ? ends.sort((a, b) => (isOut(b) - isOut(a)) || rank[a] - rank[b])[0] : comp[0];
+      const chain = [], vis = new Set(); let cur = start;
+      while (cur && !vis.has(cur)) { vis.add(cur); chain.push(cur); cur = sp(cur).find(y => g[y] === L && !vis.has(y)); }
+      comp.filter(x => !vis.has(x)).forEach(x => chain.push(x));
+      blocks.push(chain);
+    }
+    layers.push(blocks);
+  }
+  const W = 172, GAP = 26, x = {};
+  layers.forEach(bl => { let cx = 0; bl.forEach(b => b.forEach(id => { x[id] = cx; cx += W; })); });
+  const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
+  for (let sweep = 0; sweep < 6; sweep++) {
+    const down = sweep % 2 === 0;
+    for (const L of (down ? layers.map((_, i) => i) : layers.map((_, i) => nL - 1 - i))) {
+      const bl = layers[L];
+      bl.forEach(b => { const refs = b.flatMap(id => down ? par(person(id)) : kids(id).map(k => k.id)).map(r => x[r]); b._k = refs.length ? mean(refs) - (b.length - 1) * W / 2 : null; });
+      bl.forEach((b, i) => { if (b._k === null) b._k = i ? bl[i - 1]._k ?? x[bl[i - 1][0]] : x[b[0]]; });
+      bl.sort((a, b) => a._k - b._k);
+      let right = -Infinity;
+      bl.forEach(b => { const s = Math.max(b._k, right + GAP); b.forEach((id, j) => x[id] = s + j * W); right = s + b.length * W; });
+    }
+  }
+  for (let L = 1; L < nL; L++) {
+    const bl = layers[L];
+    for (let i = bl.length - 1; i >= 0; i--) {
+      const b = bl[i], refs = b.flatMap(id => par(person(id))).map(r => x[r]);
+      if (!refs.length) continue;
+      const want = mean(refs) - (b.length - 1) * W / 2, next = bl[i + 1], max = next ? x[next[0]] - b.length * W : Infinity;
+      const s = Math.min(Math.max(want, x[b[0]]), max); b.forEach((id, j) => x[id] = s + j * W);
+    }
+  }
+  const minX = Math.min(...Object.values(x)); for (const k in x) x[k] -= minX;
+  const y = {}, dated = P.filter(p => p.start !== null && p.start !== undefined), minB = dated.length ? Math.min(...dated.map(p => p.start)) : 0;
+  const timeOk = mode === "time" && dated.length === P.length;
+  P.forEach(p => y[p.id] = timeOk ? (p.start - minB) * 7.2 : g[p.id] * 118);
+  if (timeOk) {
+    const placed = [];
+    P.slice().sort((a, b) => y[a.id] - y[b.id] || x[a.id] - x[b.id]).forEach(p => {
+      let t = 0; while (placed.some(q => Math.abs(x[q] - x[p.id]) < 160 && Math.abs(y[q] - y[p.id]) < 56) && t++ < 30) x[p.id] += 86;
+      placed.push(p.id);
+    });
+  }
+  return { x, y, g, nL, set, par, minB, timeOk };
+}
+const NW = 152, NH = 50;
+/* dessine l'arbre dans <g vp> ; opt : { mode, adop, succ, sel, out(id), color, rank(id) } */
+function famDraw(vp, ids, opt) {
+  vp.textContent = "";
+  famLayout.out = opt.out || null;
+  const L = famLayout(ids, opt.mode), { x, y, set, par } = L;
+  const cx = id => x[id] + NW / 2, top = id => y[id], bot = id => y[id] + NH, mid = id => y[id] + NH / 2;
+  const edges = svgEl("g"), nodes = svgEl("g");
+  vp.append(edges, nodes);
+  const T = (a, t) => { const n = svgEl("text", a); n.textContent = t; return n; };
+  if (L.timeOk) {
+    const span = [L.minB, Math.max(...ids.map(id => person(id).start))], step = span[1] - span[0] > 300 ? 100 : span[1] - span[0] > 120 ? 50 : 25;
+    for (let yy = Math.ceil(span[0] / step) * step; yy <= span[1] + 10; yy += step) {
+      const py = (yy - L.minB) * 7.2;
+      edges.append(svgEl("line", { x1: -60, x2: Math.max(...Object.values(x)) + NW + 20, y1: py, y2: py, class: "ft-genline" }), T({ x: -58, y: py - 4, class: "ft-tick" }, fmtYear(yy, true)));
+    }
+  } else for (let gi = 0; gi < L.nL; gi++) edges.append(T({ x: -58, y: gi * 118 + 29, class: "ft-tick" }, "gén. " + (gi + 1)));
+  const pairs = new Set();
+  for (const id of ids) for (const s of spousesOf(id)) {
+    const a = id, b = s.p.id; if (!set.has(b)) continue;
+    const key = [a, b].sort().join("+"); if (pairs.has(key)) continue; pairs.add(key);
+    const same = Math.abs(y[a] - y[b]) < 1 && Math.abs(x[a] - x[b]) <= 176, [l, r] = x[a] < x[b] ? [a, b] : [b, a];
+    const d = same ? `M${x[l] + NW},${mid(l)} H${x[r]}` : `M${cx(a)},${mid(a)} C${cx(a)},${(mid(a) + mid(b)) / 2 - 40} ${cx(b)},${(mid(a) + mid(b)) / 2 - 40} ${cx(b)},${mid(b)}`;
+    edges.append(svgEl("path", { d, class: "ft-edge mar" + (same ? "" : " far"), "data-a": a, "data-b": b }));
+    if (same) edges.append(T({ x: x[l] + NW + (x[r] - x[l] - NW) / 2 - 5, y: mid(l) - 4, class: "ft-marl" }, "⚭"));
+  }
+  const groups = {}, busN = {};
+  for (const id of ids) { const ps = par(person(id)); if (!ps.length) continue; const k = ps.slice().sort().join("+"); (groups[k] = groups[k] || []).push(id); }
+  for (const k in groups) {
+    const ps = k.split("+"), kids = groups[k];
+    let ax, ay;
+    if (ps.length === 2 && Math.abs(y[ps[0]] - y[ps[1]]) < 1 && Math.abs(x[ps[0]] - x[ps[1]]) <= 176) { ax = (Math.max(x[ps[0]], x[ps[1]]) + Math.min(x[ps[0]], x[ps[1]]) + NW) / 2; ay = mid(ps[0]); }
+    else { const lo = ps.reduce((m, p) => y[p] > y[m] ? p : m, ps[0]); ax = cx(lo); ay = bot(lo); }
+    const lay = Math.round(Math.min(...kids.map(top))), n = busN[lay] = (busN[lay] || 0) + 1, busY = Math.min(...kids.map(top)) - 12 - (n - 1) * 7;
+    kids.forEach(c => edges.append(svgEl("path", { d: `M${ax},${ay} V${busY} H${cx(c)} V${top(c)}`, class: "ft-edge", "data-a": ps.join(" "), "data-b": c })));
+  }
+  if (opt.adop) for (const id of ids) for (const a of adoParents(person(id)).filter(q => set.has(q.id))) {
+    const x1 = cx(a.id) + 18, y1 = bot(a.id), x2 = cx(id) + 18, y2 = top(id);
+    edges.append(svgEl("path", { d: `M${x1},${y1} C${x1},${y1 + 60} ${x2},${y2 - 60} ${x2},${y2}`, class: "ft-edge adop", "data-a": a.id, "data-b": id }));
+    edges.append(T({ x: (x1 + x2) / 2 + 4, y: (y1 + y2) / 2, class: "ft-adopl" }, "adoption"));
+  }
+  const rank = opt.rank || (() => null);
+  if (opt.succ) {
+    const rs = ids.filter(id => rank(id)).sort((a, b) => rank(a) - rank(b));
+    for (let i = 1; i < rs.length; i++) { const a = rs[i - 1], b = rs[i];
+      edges.append(svgEl("path", { d: `M${x[a] + NW},${y[a] + 8} C${x[a] + NW + 80},${y[a] + 8} ${x[b] - 80},${y[b] + 8} ${x[b]},${y[b] + 8}`, class: "ft-succ" })); }
+  }
+  const col = opt.color || "#8a3b3b";
+  for (const id of ids) {
+    const p = person(id), rg = reignsOf(id)[0], out = opt.out && opt.out(id);
+    const gN = svgEl("g", { class: "ft-node" + (out ? " out" : "") + (opt.sel === id ? " sel" : ""), transform: `translate(${x[id]},${y[id]})`, "data-id": id });
+    gN.append(svgEl("rect", { class: "ft-card" + (rg ? " ft-ruler" : ""), width: NW, height: NH, rx: 4 }));
+    if (rg) gN.append(svgEl("rect", { width: 4, height: NH, fill: col, rx: 1 }));
+    gN.append(T({ x: 10, y: 17, class: "ft-nm" }, p.name.length > 22 ? p.name.slice(0, 21) + "…" : p.name));
+    gN.append(T({ x: 10, y: 31, class: "ft-dt" }, p.start !== null && p.start !== undefined ? fmtYear(p.start, false) + " – " + (p.end !== null && p.end !== undefined ? fmtYear(p.end, false) : "?") : "dates inconnues"));
+    if (rg) gN.append(T({ x: 10, y: 44, class: "ft-rg" }, "♛ " + fmtYear(rg.year, false) + " – " + fmtYear(evEnd(rg), false)));
+    const k = rank(id);
+    if (k) { const c = svgEl("g", { transform: `translate(${NW - 12},12)` }); c.append(svgEl("circle", { r: 9, fill: col }), T({ "text-anchor": "middle", y: 3.5, class: "ft-num" }, String(k))); gN.append(c); }
+    nodes.append(gN);
+  }
+  if (opt.sel) {
+    const hl = new Set([opt.sel]), up = [opt.sel], dn = [opt.sel];
+    while (up.length) parentsOf(person(up.pop())).map(x => x.personId).filter(z => set.has(z) && !hl.has(z)).forEach(z => { hl.add(z); up.push(z); });
+    while (dn.length) childrenOf(dn.pop()).map(c => c.p.id).filter(z => set.has(z) && !hl.has(z)).forEach(z => { hl.add(z); dn.push(z); });
+    spousesOf(opt.sel).forEach(s => hl.add(s.p.id));
+    vp.classList.add("ft-dim");
+    nodes.querySelectorAll(".ft-node").forEach(n => n.classList.toggle("hl", hl.has(n.dataset.id)));
+    edges.querySelectorAll(".ft-edge").forEach(e => e.classList.toggle("hl", hl.has(e.dataset.b) && (e.dataset.a || "").split(" ").some(z => hl.has(z))));
+  } else vp.classList.remove("ft-dim");
+  nodes.querySelectorAll(".ft-node").forEach(n => n.addEventListener("click", ev => { ev.stopPropagation(); opt.onPick && opt.onPick(n.dataset.id); }));
+  return L;
+}
+/* déplacement et zoom de l'arbre ; l'état est conservé dans st (k, tx, ty) */
+function famCanvas(st, ids, opt) {
+  const svg = svgEl("svg", { class: "ft-svg" }), vp = svgEl("g");
+  svg.append(vp);
+  const box = el("div", { class: "ft-canvas" }, svg);
+  const apply = () => vp.setAttribute("transform", `translate(${st.tx},${st.ty}) scale(${st.k})`);
+  const fit = () => { const bb = vp.getBBox(), W = box.clientWidth, H = box.clientHeight; if (!bb.width || !W) return;
+    st.k = Math.min(1.1, (W - 40) / bb.width, (H - 40) / bb.height); st.tx = (W - bb.width * st.k) / 2 - bb.x * st.k; st.ty = Math.max(20, (H - bb.height * st.k) / 2) - bb.y * st.k; apply(); };
+  const zoomBy = (f, mx, my) => { mx ??= box.clientWidth / 2; my ??= box.clientHeight / 2; const k2 = clamp(st.k * f, .2, 2.5); st.tx = mx - (mx - st.tx) * k2 / st.k; st.ty = my - (my - st.ty) * k2 / st.k; st.k = k2; apply(); };
+  box.addEventListener("wheel", e => { e.preventDefault(); const r = box.getBoundingClientRect(); zoomBy(Math.exp(-e.deltaY * .0015), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  let drag = null;
+  box.addEventListener("pointerdown", e => { if (e.target.closest(".ft-zoom")) return; drag = { x: e.clientX, y: e.clientY, tx: st.tx, ty: st.ty }; });
+  box.addEventListener("pointermove", e => { if (!drag) return; st.tx = drag.tx + e.clientX - drag.x; st.ty = drag.ty + e.clientY - drag.y; if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 3) box.classList.add("drag"); apply(); });
+  const stop = () => { drag = null; box.classList.remove("drag"); };
+  box.addEventListener("pointerup", stop); box.addEventListener("pointerleave", stop);
+  box.append(el("div", { class: "ft-zoom" }, [el("button", { title: "Zoomer", onclick: () => zoomBy(1.25) }, "+"), el("button", { title: "Dézoomer", onclick: () => zoomBy(.8) }, "−"), el("button", { title: "Ajuster", onclick: fit }, "⤢")]));
+  famDraw(vp, ids, opt);
+  requestAnimationFrame(() => { if (st.k === undefined || st.refit) { st.refit = false; fit(); } else apply(); });
+  return box;
+}
+
+/* « Issue de » et branches d'une dynastie */
+function dynHouses(d) {
+  const ori = (d.origins || []).map(o => [dynasty(o.dynastyId), o.kind]).filter(x => x[0]);
+  const br = (db.dynasties || []).filter(x => (x.origins || []).some(o => o.dynastyId === d.id));
+  if (!ori.length && !br.length) return null;
+  const lk = x => el("button", { class: "linkbtn", onclick: () => select("dynasty", x.id) }, x.name);
+  return el("div", { class: "dynfrom" }, [
+    ori.length ? el("span", {}, ["Issue de : ", ...ori.flatMap(([x, k], i) => [i ? " · " : null, lk(x), el("span", { class: "fmeta" }, " (" + (DYN_ORIGIN[k] || k) + ")")])]) : null,
+    br.length ? el("span", {}, [ori.length ? "  —  " : "", "A donné : ", ...br.flatMap((x, i) => [i ? " · " : null, lk(x)])]) : null]);
+}
+/* --- résumés --- */
+function sumDynasty(d) {
+  const ms = membersOf(d.id), rs = ms.flatMap(p => reignsOf(p.id)), civs = (d.civIds || []).map(civ).filter(Boolean);
+  const go = (tab, block) => () => openFull("dynasty", d.id, tab, block);
+  const orphans = ms.filter(p => !parentsOf(p).length).length;
+  const todo = [];
+  if (ms.length < 2) todo.push(["+ membres", go("tree")]);
+  if (ms.length > 2 && orphans > 1) todo.push([pl(orphans, "membre sans parents", "membres sans parents"), go("tree")]);
+  if (!d.description) todo.push(["+ description", go("apercu", "desc")]);
+  if (!d.image) todo.push(["+ image", go("apercu", "img")]);
+  sumShell("dynasty", d, {
+    kind: "Dynastie", color: d.color, sub: dynSpanTxt(d), meta: civs.map(c => c.name).join(" · "),
+    acts: civs.slice(0, 2).map(c => el("button", { class: "btn", onclick: () => select("civ", c.id, { keepYear: true }) }, "↑ " + c.name)),
+    counts: [[ms.length, "membre", "membres", "tree"], [new Set(rs.map(e => e.id)).size, "règne", "règnes", "rulers"], [civs.length, "civilisation", "civilisations", "terr"]],
+    todo
+  });
+}
+
+/* --- personnage : Famille --- */
+function famIds(p) {
+  const ids = new Set([p.id]);
+  const add = q => q && ids.add(q.id);
+  parentsOf(p).forEach(x => { const m = person(x.personId); add(m); if (x.kind !== "adoptif") natParents(m).forEach(add); });
+  spousesOf(p.id).forEach(s => add(s.p));
+  siblingsOf(p).forEach(add);
+  childrenOf(p.id).forEach(c => { add(c.p); childrenOf(c.p.id).forEach(z => add(z.p)); });
+  return [...ids];
+}
+function fullFamily(p) {
+  full.ft = full.ft || { mode: "gen", k: undefined };
+  const upd = fn => { mutate(fn); refresh(); };
+  const tagP = (q, sub, cls) => el("button", { class: "tag " + (cls || ""), onclick: () => select("person", q.id) }, [q.name, el("span", { class: "r" }, sub ?? personSpan(q))]);
+  const rm = fn => canEdit() ? el("button", { class: "iconbtn ed", title: "Retirer", onclick: fn }, "✕") : null;
+  const pk1 = personPicker("Parent : nom existant ou nouveau"), k1 = selectEl([["naturel", "naturel"], ["adoptif", "adoptif"]], "naturel");
+  const pk2 = personPicker("Conjoint : nom existant ou nouveau"), s2 = el("input", { type: "text", placeholder: "début", size: 6 }), e2 = el("input", { type: "text", placeholder: "fin", size: 6 });
+  const pk3 = personPicker("Enfant : nom existant ou nouveau"), k3 = selectEl([["naturel", "naturel"], ["adoptif", "adoptif"]], "naturel");
+  const d4 = selectEl(dynastyOpts().filter(([id]) => !(p.dynastyIds || []).includes(id)), "", "— dynastie —");
+  const line = (label, items, adder) => [el("dt", {}, label), el("dd", {}, [...items, adder || null])];
+  const adder = (...kids) => canEdit() ? el("div", { class: "fam-add ed" }, kids) : null;
+  const pars = parentsOf(p), sps = spousesOf(p.id), kids = childrenOf(p.id), sibs = siblingsOf(p);
+  const dl = el("dl", { class: "fam" }, [
+    ...line("Parents", pars.map(x => { const q = person(x.personId); return el("span", { class: "tagw" }, [tagP(q, x.kind === "adoptif" ? "adoptif" : null, x.kind === "adoptif" ? "adop" : ""), rm(() => upd(() => { p.parents = p.parents.filter(y => y !== x); if (!p.parents.length) delete p.parents; }))]); }),
+      pars.length < 4 ? adder(pk1.el, k1, el("button", { class: "btn sm prim", onclick: () => { let q; upd(() => { q = pk1.resolve(); if (q && q.id !== p.id && !parentsOf(p).some(y => y.personId === q.id)) (p.parents = p.parents || []).push({ personId: q.id, kind: k1.value }); }); } }, "Ajouter")) : null),
+    ...line("Conjoints", sps.map(s => el("span", { class: "tagw" }, [tagP(s.p, s.start !== null || s.end !== null ? [s.start, s.end].map(v => v === null ? "?" : fmtYear(v, false)).join(" → ") : null),
+      rm(() => upd(() => { s.owner.spouses = s.owner.spouses.filter(y => y !== s.ref); if (!s.owner.spouses.length) delete s.owner.spouses; }))])),
+      adder(pk2.el, s2, e2, el("button", { class: "btn sm prim", onclick: () => { upd(() => { const q = pk2.resolve(); if (q && q.id !== p.id && !spousesOf(p.id).some(y => y.p.id === q.id)) { const o = { personId: q.id }; const a = parseYear(s2.value), b = parseYear(e2.value); if (a !== null) o.start = a; if (b !== null) o.end = b; (p.spouses = p.spouses || []).push(o); } }); } }, "Ajouter"))),
+    ...line("Enfants", kids.map(c => tagP(c.p, c.adop ? "adoptif" : null, c.adop ? "adop" : "")),
+      adder(pk3.el, k3, el("button", { class: "btn sm prim", onclick: () => { upd(() => { const q = pk3.resolve(p.dynastyIds ? { dynastyIds: p.dynastyIds.slice() } : {}); if (q && q.id !== p.id && !parentsOf(q).some(y => y.personId === p.id)) (q.parents = q.parents || []).push({ personId: p.id, kind: k3.value }); }); } }, "Ajouter"))),
+    ...(sibs.length ? line("Fratrie", sibs.map(q => tagP(q))) : []),
+    ...line("Dynasties", dynsOf(p).map(d => el("span", { class: "tagw" }, [el("button", { class: "tag dyn", style: `border-color:${d.color}`, onclick: () => select("dynasty", d.id) }, [el("span", { class: "dot", style: `background:${d.color}` }), d.name]),
+      rm(() => upd(() => { p.dynastyIds = p.dynastyIds.filter(x => x !== d.id); if (!p.dynastyIds.length) delete p.dynastyIds; }))])),
+      adder(d4, el("button", { class: "btn sm prim", onclick: () => { if (!d4.value) return toast("Choisissez une dynastie"); upd(() => { p.dynastyIds = [...new Set([...(p.dynastyIds || []), d4.value])]; }); } }, "Ajouter"),
+        el("button", { class: "btn sm", onclick: () => openDynastyForm(null, { civIds: (p.civIds || []).slice() }, o => { mutate(() => { p.dynastyIds = [...new Set([...(p.dynastyIds || []), o.id])]; }); refresh(); }) }, "+ Nouvelle dynastie")))
+  ]);
+  const ids = famIds(p);
+  const tree = ids.length > 1 ? famCanvas(full.ft, ids, { mode: "gen", adop: true, sel: p.id, color: dynsOf(p)[0]?.color, onPick: id => select("person", id) })
+    : el("div", { class: "emptyrel" }, "Ajoutez des parents, un conjoint ou des enfants : l'arbre se dessine tout seul.");
+  return el("div", { class: "fpane" }, [el("div", { class: "fcols famcols" }, [
+    el("div", {}, [el("div", { class: "fcol-h" }, [el("h4", {}, "Arbre"), el("span", { class: "fmeta" }, "deux générations autour de " + p.name), el("span", { class: "spacer" }),
+      ...dynsOf(p).map(d => el("button", { class: "btn sm", onclick: () => openFull("dynasty", d.id, "tree") }, "Arbre des " + d.name))]), el("div", { class: "ft-mini" }, tree)]),
+    el("div", {}, [el("div", { class: "fcol-h" }, [el("h4", {}, "Famille")]), dl,
+      el("div", { class: "fnote" }, "On ne saisit que les parents et les conjoints : enfants et fratrie sont calculés. Un nom inconnu crée le personnage.")])])]);
+}
+
+/* --- dynastie : Arbre, Souverains, Territoires --- */
+function dynRank(d) {
+  const rs = membersOf(d.id).flatMap(p => reignsOf(p.id).map(e => [p.id, e.year])).sort((a, b) => a[1] - b[1]), r = {};
+  rs.forEach(([id]) => { if (!r[id]) r[id] = Object.keys(r).length + 1; });
+  return r;
+}
+function fullDynTree(d) {
+  full.ft = full.ft || { mode: "gen", adop: true, out: true, succ: false, sel: null };
+  const st = full.ft, ms = membersOf(d.id), mset = new Set(ms.map(p => p.id));
+  const ids = new Set(ms.map(p => p.id));
+  if (st.out) for (const p of ms) { spousesOf(p.id).forEach(s => ids.add(s.p.id)); natParents(p).forEach(q => ids.add(q.id)); }
+  const rk = dynRank(d);
+  const redraw = () => { st.refit = true; renderFull(true); };
+  const chk = (key, label) => { const c = el("input", { type: "checkbox" }); c.checked = !!st[key]; c.onchange = () => { st[key] = c.checked; if (key !== "succ" && key !== "adop") st.refit = true; renderFull(true); }; return el("label", { class: "chk" }, [c, " " + label]); };
+  const bar = el("div", { class: "toolbar" }, [
+    el("div", { class: "seg2" }, [["gen", "Par générations"], ["time", "Sur l'échelle du temps"]].map(([m, t]) => el("button", { class: st.mode === m ? "on" : "", onclick: () => { st.mode = m; redraw(); } }, t))),
+    chk("adop", "adoptions"), chk("out", "conjoints et parents extérieurs"), chk("succ", "fil de la succession"), el("span", { class: "spacer" }),
+    el("div", { class: "ft-legend" }, [el("span", {}, [el("i", { class: "lg-ruler", style: `border-color:${d.color}` }), "souverain (n° d'ordre)"]), el("span", {}, [el("i", { class: "lg-mar" }), "mariage"]),
+      el("span", {}, [el("i", { class: "lg-adop" }), "adoption"]), el("span", {}, [el("i", { class: "lg-out" }), "hors dynastie"])])]);
+  const pk = personPicker("Ajouter un membre : nom existant ou nouveau");
+  const addBar = canEdit() ? el("div", { class: "fam-add ed", style: "margin:0 0 10px" }, [pk.el, el("button", { class: "btn sm prim", onclick: () => {
+    mutate(() => { const q = pk.resolve({ dynastyIds: [d.id] }); if (q) q.dynastyIds = [...new Set([...(q.dynastyIds || []), d.id])]; }); st.refit = true; refresh(); } }, "Ajouter à la dynastie"),
+    el("span", { class: "fmeta" }, "puis reliez parents et conjoints dans la fiche Famille de chacun, ou dans le panneau à droite")]) : null;
+  if (!ms.length) return el("div", { class: "fpane" }, [addBar, el("div", { class: "emptyrel" }, "Aucun membre. Ajoutez des personnages à la dynastie : l'arbre se dessine à partir de leurs parents et conjoints.")]);
+  if (st.sel && !ids.has(st.sel)) st.sel = null;
+  const canvas = famCanvas(st, [...ids], { mode: st.mode, adop: st.adop, succ: st.succ, sel: st.sel, color: d.color, out: id => !mset.has(id), rank: id => mset.has(id) ? rk[id] : null,
+    onPick: id => { st.sel = st.sel === id ? null : id; renderFull(true); } });
+  const side = el("aside", { class: "ft-side" });
+  if (!st.sel) side.append(el("div", { class: "eyebrow" }, "Sélection"), el("p", { class: "fmeta", style: "margin-top:8px" }, "Cliquez une personne de l'arbre : ses ascendants et descendants ressortent, sa famille s'affiche ici."));
+  else {
+    const p = person(st.sel), rg = reignsOf(p.id);
+    const tags = (title, list, cls) => list.length ? [el("h5", {}, title), el("div", { class: "tags" }, list.map(q => el("button", { class: "tag " + (cls || ""), onclick: () => { st.sel = q.id; renderFull(true); } }, [q.name, el("span", { class: "r" }, personSpan(q))])))] : [];
+    side.append(el("div", { class: "eyebrow" }, mset.has(p.id) ? "Membre · " + d.name : "Hors dynastie"), el("h3", {}, p.name), el("div", { class: "fmeta" }, personSpan(p) + (p.title ? " · " + p.title : "")),
+      ...rg.map(e => el("div", { class: "ft-reign" }, [el("span", { class: "crown" }, "♛ "), (civ(e.civId)?.name || "Règne") + " · " + fmtSpan(e.year, evEnd(e)), rk[p.id] ? el("span", { class: "fmeta" }, " · " + rk[p.id] + "e souverain") : null])),
+      ...tags("Parents", natParents(p)), ...tags("Parent adoptif", adoParents(p), "adop"), ...tags("Conjoints", spousesOf(p.id).map(s => s.p)),
+      ...tags("Enfants", childrenOf(p.id).filter(c => !c.adop).map(c => c.p)), ...tags("Enfants adoptifs", childrenOf(p.id).filter(c => c.adop).map(c => c.p), "adop"),
+      el("div", { class: "row" }, [el("button", { class: "btn prim", onclick: () => openFull("person", p.id, "famille") }, "Ouvrir sa fiche"),
+        !mset.has(p.id) && canEdit() ? el("button", { class: "btn ed", onclick: () => { mutate(() => { p.dynastyIds = [...new Set([...(p.dynastyIds || []), d.id])]; }); refresh(); } }, "Ajouter à la dynastie") : null]));
+  }
+  return el("div", { class: "fpane" }, [bar, addBar, el("div", { class: "ft-wrap" }, [canvas, side])]);
+}
+/* une ligne par (règne, souverain) */
+function reignRows(list) {
+  const rows = [];
+  for (const e of list) {
+    const sv = evPeople(e).filter(x => x.role === "souverain").map(x => person(x.personId)).filter(Boolean);
+    (sv.length ? sv : [null]).forEach(p => rows.push({ e, p, a: e.year, b: evEnd(e) }));
+  }
+  rows.sort((x, y) => x.a - y.a || y.b - x.b);
+  let maxEnd = -Infinity, main = null;
+  for (const r of rows) { r.co = r.a < maxEnd; if (!r.co) { r.prev = main; main = r; } else r.prev = main; maxEnd = Math.max(maxEnd, r.b); }
+  return rows;
+}
+function rulerTable(rows, opt = {}) {
+  const maxDur = Math.max(10, ...rows.map(r => r.b - r.a));
+  const tb = el("tbody");
+  const dynOf = r => { if (!r.p) return null; const ds = dynsOf(r.p); return ds.find(d => (d.civIds || []).includes(r.e.civId)) || ds[0] || null; };
+  let lastKey, gaps = opt.gaps || [];
+  const pushGap = upTo => { while (gaps.length && gaps[0][0] < upTo) { const [a, b] = gaps.shift();
+    tb.append(el("tr", { class: "gaprow" }, [el("td", { class: "y" }, shortSpan(a, b)), el("td", { colspan: 4 }, `Aucun souverain saisi pendant ${pl(b - a + 1, "an", "ans")}`),
+      el("td", { class: "ac" }, opt.onGap && canEdit() ? el("button", { class: "btn sm ed", onclick: () => opt.onGap(a, b) }, "+ Ajouter") : null)])); } };
+  for (const r of rows) {
+    pushGap(r.a);
+    const d = dynOf(r), key = d ? d.id : "none";
+    if (opt.group && !r.co && key !== lastKey) {
+      lastKey = key;
+      const span = []; for (const x of rows.slice(rows.indexOf(r))) { if (!x.co && (dynOf(x)?.id || "none") !== key) break; span.push(x); }
+      tb.append(el("tr", { class: "grp" }, el("td", { colspan: 6 }, [el("span", { class: "gbar", style: `background:${d ? d.color : "#9a9a94"}` }),
+        d ? el("button", { class: "gname", onclick: () => select("dynasty", d.id) }, d.name) : el("span", { class: "gname" }, "Sans dynastie"),
+        el("span", { class: "fmeta" }, " " + fmtSpan(Math.min(...span.map(x => x.a)), Math.max(...span.map(x => x.b))) + " · " + pl(span.filter(x => x.p).length, "souverain", "souverains")),
+        d ? el("button", { class: "linkbtn", style: "margin-left:10px", onclick: () => openFull("dynasty", d.id, "tree") }, "voir l'arbre") : null])));
+    }
+    const kin = r.p && r.prev && r.prev.p ? kinOf(r.p, r.prev.p) : null, dur = r.b - r.a;
+    const tr = el("tr", { class: "r" + (r.co ? " co" : "") }, [
+      el("td", { class: "y" }, shortSpan(r.a, r.b)),
+      el("td", { class: "y" }, [el("span", { class: "durbar", style: `width:${Math.max(3, dur / maxDur * 70)}px;background:${d ? d.color : "#9a9a94"}` }), dur ? pl(dur, "an", "ans") : "< 1 an"]),
+      el("td", { class: "tt" }, r.p ? [r.co ? el("span", { class: "fmeta" }, "co- ") : null, r.p.name] : el("span", { class: "muted" }, "souverain non renseigné")),
+      el("td", { class: "kin" + (kin && kin[1] ? " adop" : "") }, kin ? kin[0] + " " + r.prev.p.name : el("span", { class: "muted" }, "—")),
+      el("td", { class: "y opt" }, r.p ? personSpan(r.p) : ""),
+      el("td", { class: "ac" }, [iconBtn("open", "Ouvrir le règne", () => select("event", r.e.id))])]);
+    tr.addEventListener("click", () => r.p ? select("person", r.p.id) : select("event", r.e.id));
+    tb.append(tr);
+  }
+  pushGap(Infinity);
+  return el("div", { class: "tscroll" }, el("table", { class: "t trulers" }, [el("thead", {}, el("tr", {}, ["Règne", "Durée", "Souverain", "Lien avec le précédent", "Vie", ""].map((t, i) => el("th", { class: i === 4 ? "opt" : "" }, t)))), tb]));
+}
+function rulerRibbon(rows, A, B, gaps) {
+  const pct = v => clamp((v - A) / Math.max(1, B - A) * 100, 0, 100);
+  const dynOf = r => r.p ? (dynsOf(r.p).find(d => (d.civIds || []).includes(r.e.civId)) || dynsOf(r.p)[0]) : null;
+  const box = el("div", { class: "rrow" });
+  const groups = []; rows.filter(r => !r.co).forEach(r => { const d = dynOf(r), k = d ? d.id : "none", g = groups[groups.length - 1];
+    if (g && g.k === k) { g.b = Math.max(g.b, r.b); } else groups.push({ k, d, a: r.a, b: r.b }); });
+  groups.forEach(g => box.append(el("div", { class: "dynb", style: `left:${pct(g.a)}%;width:calc(${Math.max(.3, pct(g.b + 1) - pct(g.a))}% - 1px);background:${g.d ? g.d.color : "#b9b9b3"}`, title: g.d ? g.d.name : "sans dynastie" }, g.d ? g.d.name : "")));
+  rows.forEach(r => { const d = dynOf(r), b = el("button", { class: "rg", style: `top:${22 + (r.co ? 23 : 0)}px;left:${pct(r.a)}%;width:calc(${Math.max(.25, pct(r.b + (r.a === r.b ? 1 : 0)) - pct(r.a))}% - 1px);background:${d ? d.color : "#9a9a94"}`,
+    title: (r.p ? r.p.name : "souverain non renseigné") + " · " + shortSpan(r.a, r.b) }, r.p ? r.p.name : "?"); b.onclick = () => r.p ? select("person", r.p.id) : select("event", r.e.id); box.append(b); });
+  gaps.forEach(([a, b]) => box.append(el("span", { class: "gap", style: `top:22px;left:${pct(a)}%;width:max(4px,${pct(b + 1) - pct(a)}%)`, title: "Aucun souverain saisi : " + shortSpan(a, b) })));
+  box.style.height = (rows.some(r => r.co) ? 68 : 46) + "px";
+  const ax = el("div", { class: "raxis" }, [0, .25, .5, .75, 1].map(f => el("span", { style: `left:${f * 100}%` }, fmtYear(Math.round(A + f * (B - A)), false))));
+  return el("div", { class: "ribbon" }, [box, ax]);
+}
+function reignGaps(rows, A, B) {
+  if (!rows.length) return [];
+  const iv = rows.map(r => [r.a, r.b]).sort((x, y) => x[0] - y[0]), gaps = [];
+  let cur = A;
+  for (const [a, b] of iv) { if (a > cur + 1) gaps.push([cur + 1, a - 1]); cur = Math.max(cur, b); }
+  if (B > cur + 1) gaps.push([cur + 1, B]);
+  return gaps.filter(([a, b]) => b - a >= 1);
+}
+/* saisie rapide d'un règne : années + nom (nouveau ou existant) + dynastie */
+function reignQuick(c, prefill) {
+  if (!canEdit()) return null;
+  const a = el("input", { type: "text", placeholder: "début", size: 6, value: prefill?.a ?? "" }), b = el("input", { type: "text", placeholder: "fin", size: 6, value: prefill?.b ?? "" });
+  const pk = personPicker("Souverain : nom existant ou nouveau"), dy = selectEl(dynastyOpts(), prefill?.d || "", "— sans dynastie —");
+  const ok = () => {
+    const va = parseYear(a.value), vb = parseYear(b.value);
+    if (va === null || !pk.inp.value.trim()) return toast("Années et nom sont requis");
+    if (vb !== null && vb < va) return toast("La fin précède le début");
+    let p;
+    mutate(() => {
+      p = pk.resolve({ civIds: [c.id] });
+      if (dy.value) p.dynastyIds = [...new Set([...(p.dynastyIds || []), dy.value])];
+      db.events.push({ id: uid("evt"), title: "Règne de " + p.name, year: va, end: vb ?? va, kind: "regne", civId: c.id, parentId: null, people: [{ personId: p.id, role: "souverain" }], description: "", links: [], arrows: [], lon: null, lat: null });
+    });
+    full.rq = { a: vb ?? va, b: "", d: dy.value };
+    toast("Règne ajouté — saisissez le suivant"); refresh();
+    setTimeout(() => fullSheet.querySelector(".rquick input")?.focus(), 0);
+  };
+  const box = el("div", { class: "fam-add rquick ed" }, [el("span", { class: "fmeta" }, "Saisie rapide"), a, b, pk.el, dy, el("button", { class: "btn sm prim", onclick: ok }, "✓ Ajouter"),
+    el("button", { class: "btn sm", onclick: () => openDynastyForm(null, { civIds: [c.id] }) }, "+ Dynastie"), el("span", { class: "fmeta" }, "Entrée enregistre et passe au suivant ; un nom inconnu crée le personnage")]);
+  box.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); ok(); } });
+  return box;
+}
+function fullRulers(c) {
+  const rows = reignRows(evOf(c.id).filter(e => e.kind === "regne"));
+  const A = c.start, B = c.end ?? Y1, gaps = reignGaps(rows, A, B);
+  const mode = full.rmode || "group";
+  const nDyn = new Set(rows.map(r => r.p && (dynsOf(r.p).find(d => (d.civIds || []).includes(c.id)) || dynsOf(r.p)[0])?.id).filter(Boolean)).size;
+  return el("div", { class: "fpane" }, [
+    el("div", { class: "toolbar" }, [el("div", { class: "seg2" }, [["group", "Par dynastie"], ["list", "Liste simple"]].map(([m, t]) => el("button", { class: mode === m ? "on" : "", onclick: () => { full.rmode = m; renderFull(true); } }, t))),
+      el("span", { class: "spacer" }), el("span", { class: "fmeta" }, `${pl(rows.filter(r => r.p).length, "souverain", "souverains")} · ${pl(nDyn, "dynastie", "dynasties")}${gaps.length ? " · " + pl(gaps.length, "trou", "trous") : ""}`)]),
+    rows.length ? rulerRibbon(rows, A, B, gaps) : el("div", { class: "emptyrel" }, "Aucun règne. La saisie rapide ci-dessous crée en une fois le règne et son souverain."),
+    rows.length ? rulerTable(rows, { group: mode === "group", gaps: gaps.slice(), onGap: (a) => { full.rq = { a, b: "", d: "" }; renderFull(true); setTimeout(() => fullSheet.querySelector(".rquick input")?.focus(), 0); } }) : null,
+    reignQuick(c, full.rq),
+    el("div", { class: "fnote" }, "Construit à partir des entrées « Règne » où un personnage a le rôle Souverain. « Lien avec le précédent » est calculé d'après la famille des personnages (orange : par adoption).")]);
+}
+function fullDynRulers(d) {
+  const ms = membersOf(d.id), evs = [...new Set(ms.flatMap(p => reignsOf(p.id)))];
+  const rows = reignRows(evs).filter(r => r.p && (r.p.dynastyIds || []).includes(d.id));
+  if (!rows.length) return el("div", { class: "fpane" }, el("div", { class: "emptyrel" }, "Aucun règne pour l'instant. Un règne est une entrée de nature « Règne » où un membre a le rôle Souverain ; l'onglet Dirigeants d'une civilisation permet d'en saisir plusieurs à la suite."));
+  const A = Math.min(...rows.map(r => r.a)), B = Math.max(...rows.map(r => r.b));
+  return el("div", { class: "fpane" }, [rulerRibbon(rows, A, B, []), rulerTable(rows, { group: false })]);
+}
+function fullDynTerr(d) {
+  const ms = membersOf(d.id), rows = reignRows([...new Set(ms.flatMap(p => reignsOf(p.id)))]).filter(r => r.p && (r.p.dynastyIds || []).includes(d.id));
+  if (!rows.length) return el("div", { class: "fpane" }, el("div", { class: "emptyrel" }, "Les territoires viennent des règnes de ses membres : aucun règne pour l'instant."));
+  const A = Math.min(...rows.map(r => r.a)), B = Math.max(...rows.map(r => r.b));
+  const list = rows.map(r => {
+    const mid = Math.round((r.a + r.b) / 2), t = terrOf(r.e.civId || "").find(t => t.start <= mid && (t.end ?? Y1) >= mid);
+    return relItem("▰", r.p.name + " · " + (civ(r.e.civId)?.name || "civilisation non renseignée"), shortSpan(r.a, r.b) + (t ? " · " + (t.label || "emprise") + (terrArea(t) ? " · ≈ " + fmtArea(terrArea(t)) : "") : " · aucune emprise tracée à cette date"),
+      () => select("person", r.p.id), [t ? el("button", { class: "btn sm", onclick: () => { closeFull(); setYear(mid); fitTo(t.rings); } }, "Voir en " + fmtYear(mid, false)) : null]);
+  });
+  const band = bandRows(A, B, [{ items: rows.map(r => ({ a: r.a, b: r.b, t: r.p.name + " · " + (civ(r.e.civId)?.name || ""), c: civ(r.e.civId)?.color, on: () => setYear(Math.round((r.a + r.b) / 2)) })) }]);
+  return el("div", { class: "fpane" }, [el("div", { class: "fcol-h" }, [el("h4", {}, "Territoires gouvernés"), el("span", { class: "fmeta" }, "emprise de la civilisation au milieu de chaque règne")]), band, rowList(list, "")]);
 }
 
 /* --- formulaires --- */
@@ -4554,6 +5325,7 @@ function runSearch() {
   };
   add("Civilisations", db.civs, { text: c => c.name, year: c => fmtSpan(c.start, c.end), dot: c => c.color }, c => select("civ", c.id));
   add("Lieux", db.pois, { text: p => p.name, year: p => (p.civId ? civ(p.civId)?.name : KINDS[p.kind]) || "" }, p => select("poi", p.id, { fit: true }));
+  add("Dynasties", db.dynasties || [], { text: d => d.name, year: d => dynSpanTxt(d), dot: d => d.color }, d => select("dynasty", d.id));
   add("Personnages", db.persons || [], { text: p => p.name, year: p => p.start !== null && p.start !== undefined ? personSpan(p) : (p.title || "") }, p => select("person", p.id));
   add("Événements", db.events, { text: e => e.title, year: e => fmtYear(e.year, true) }, e => select("event", e.id));
   if (!qItems.length) qRes.append(el("b", {}, "Aucun résultat"));
@@ -4645,7 +5417,13 @@ Chaque civilisation, lieu, entrée et personnage a deux niveaux. Le panneau en d
 - **Civilisation** : Aperçu, Chronologie, Relations (filiations, tutelles), Géographie (couverture, emprises, lieux) ;
 - **Lieu** : Aperçu, Chronologie, Contrôle (qui le tenait, d'après les territoires), Géographie (position, entrées proches à rattacher) ;
 - **Entrée** : Aperçu, Chronologie de ses étapes (pour un épisode : guerre, période, règne, ou toute entrée qui a des étapes), Participants (civilisations et personnages avec leur rôle), Géographie (point, mouvements, lieux) ; une étape propose ← précédente · ↑ épisode · suivante → ;
-- **Personnage** : Aperçu, Chronologie (avec son rôle), Relations (civilisations, lieux, personnages croisés).
+- **Personnage** : Aperçu, Famille (parents naturels ou adoptifs, conjoints, enfants et fratrie calculés, petit arbre), Chronologie (avec son rôle et ses faits de vie), Relations (civilisations, lieux, personnages croisés) ;
+- **Dynastie** : Aperçu (civilisations, « issue de » : union, branche cadette ou changement de nom), Arbre généalogique complet, Souverains, Territoires gouvernés, Chronologie.
+
+Une civilisation a aussi un onglet **Dirigeants** : ses souverains dans l'ordre, regroupés par dynastie, avec le lien de parenté avec le précédent et les périodes sans souverain saisi. La saisie rapide crée en une fois le règne et, si besoin, le personnage.
+
+## Faits
+Un **fait** est un événement léger, sans fiche, rangé dans l'élément qu'il concerne : naissance, mariage, exil d'un personnage ; fondation, changement de nom, séisme d'un lieu ; changement de capitale d'une civilisation ; union ou extinction d'une dynastie. **+ Fait** dans l'onglet Chronologie en ajoute ; **→ entrée** le transforme en entrée complète s'il prend de l'importance.
 
 Chaque nom ouvre la fiche correspondante sans quitter la vue ; **← Retour** revient à la précédente, **Échap** referme. Les comptes autorisés modifient chaque bloc avec son crayon ✎ ; dans une Chronologie, ✎ corrige une ligne et **+ Entrée** (ou **+ Étape**) enchaîne les saisies (Entrée enregistre, Échap arrête). Dans un épisode, **Appliquer aux étapes** reporte ses participants sur les étapes, sans rien retirer.
 
